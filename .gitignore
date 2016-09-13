@@ -1,4 +1,10 @@
-*
+.DS_Store
+
+.idea/
+*.iml
+
+.gradle/
+
 *.log
 *.class
 *.jar
@@ -8,3 +14,4 @@ org/lateralgm/joshedit
 lib/
 plugins/
 lookandfeels/
+build/
