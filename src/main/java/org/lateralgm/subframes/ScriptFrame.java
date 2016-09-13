@@ -60,7 +60,7 @@ public class ScriptFrame extends InstantiableResourceFrame<Script, PScript> {
 		setSize(700, 430);
 		setLayout(new BorderLayout());
 
-		code = new CodeTextArea((String) res.get(PScript.CODE), MarkerCache.getMarker("gml"));
+		code = new CodeTextArea((String) res.get(PScript.CODE), MarkerCache.getMarker(MarkerCache.Language.GML));
 		add(code, BorderLayout.CENTER);
 
 		// Setup the toolbar

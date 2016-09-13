@@ -28,6 +28,7 @@ import org.lateralgm.joshedit.lexers.GLSLTokenMarker;
 import org.lateralgm.joshedit.lexers.GMLTokenMarker;
 import org.lateralgm.joshedit.lexers.HLSLTokenMarker;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,8 +39,11 @@ import java.util.Map;
  * @author Robert B. Colton
  */
 public final class MarkerCache {
+	public enum Language {
+		GLSLES, GLSL, GML, HLSL
+	}
 	/** The cached token markers keyed with the language **/
-	private static Map<String, DefaultTokenMarker> markers = new HashMap<String, DefaultTokenMarker>();
+	private static EnumMap<Language, DefaultTokenMarker> markers = new EnumMap<>(Language.class);
 
 	/**
 	 * Get one of the cached markers or cache it if it doesn't exist.
@@ -47,21 +51,22 @@ public final class MarkerCache {
 	 * @param language
 	 *            One of available token markers, eg. "glsles", "glsl", "gml", "hlsl"
 	 **/
-	public static DefaultTokenMarker getMarker(String language) {
-		language = language.toLowerCase();
+	public static DefaultTokenMarker getMarker(Language language) {
 		DefaultTokenMarker marker = markers.get(language);
 		if (marker == null) {
-			if (language == "glsles") {
-				marker = new GLESTokenMarker();
-			}
-			if (language == "glsl") {
-				marker = new GLSLTokenMarker();
-			}
-			if (language == "hlsl") {
-				marker = new HLSLTokenMarker();
-			}
-			if (language == "gml") {
-				marker = new GMLTokenMarker();
+			switch (language) {
+				case GLSLES:
+					marker = new GLESTokenMarker();
+					break;
+				case GLSL:
+					marker = new GLSLTokenMarker();
+					break;
+				case GML:
+					marker = new HLSLTokenMarker();
+					break;
+				case HLSL:
+					marker = new GMLTokenMarker();
+					break;
 			}
 			markers.put(language, marker);
 		}

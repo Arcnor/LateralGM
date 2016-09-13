@@ -115,11 +115,11 @@ public class CodeTextArea extends JoshTextPanel implements UpdateListener, Actio
 	};
 
 	public CodeTextArea() {
-		this(null, MarkerCache.getMarker("gml"));
+		this(null, MarkerCache.getMarker(MarkerCache.Language.GML));
 	}
 
 	public CodeTextArea(String code) {
-		this(code, MarkerCache.getMarker("gml"));
+		this(code, MarkerCache.getMarker(MarkerCache.Language.GML));
 	}
 
 	public CodeTextArea(String code, DefaultTokenMarker marker) {

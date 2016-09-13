@@ -91,8 +91,8 @@ public class ShaderFrame extends InstantiableResourceFrame<Shader, PShader> {
 		setSize(700, 430);
 		setLayout(new BorderLayout());
 
-		vcode = new CodeTextArea((String) res.get(PShader.VERTEX), MarkerCache.getMarker("glsles"));
-		fcode = new CodeTextArea((String) res.get(PShader.FRAGMENT), MarkerCache.getMarker("glsles"));
+		vcode = new CodeTextArea((String) res.get(PShader.VERTEX), MarkerCache.getMarker(MarkerCache.Language.GLSLES));
+		fcode = new CodeTextArea((String) res.get(PShader.FRAGMENT), MarkerCache.getMarker(MarkerCache.Language.GLSLES));
 
 		editors = new JTabbedPane();
 		editors.addTab("Vertex", vcode);

@@ -161,7 +161,7 @@ public class ActionFrame extends RevertableMDIFrame implements ActionListener {
 			tool.add(save);
 			tool.addSeparator();
 
-			code = new CodeTextArea(a.getArguments().get(0).getVal(), MarkerCache.getMarker("gml"));
+			code = new CodeTextArea(a.getArguments().get(0).getVal(), MarkerCache.getMarker(MarkerCache.Language.GML));
 			code.addEditorButtons(tool);
 
 			if (Prefs.enableDragAndDrop) {

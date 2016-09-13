@@ -51,7 +51,7 @@ public class CodeFrame extends RevertableMDIFrame implements ActionListener {
 		tool.add(save);
 		tool.addSeparator();
 
-		code = new CodeTextArea(codeHolder.getCode(), MarkerCache.getMarker("gml"));
+		code = new CodeTextArea(codeHolder.getCode(), MarkerCache.getMarker(MarkerCache.Language.GML));
 		code.addEditorButtons(tool);
 
 		status = new JPanel(new FlowLayout());
