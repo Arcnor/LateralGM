@@ -4,7 +4,7 @@ version '2.0.0-SNAPSHOT'
 buildscript {
 	ext {
 		versionKotlin = '1.0.3'
-		versionJoshEdit = '1.0.0-SNAPSHOT'
+		versionJoshEdit = '-SNAPSHOT'
 	}
 	repositories {
 		mavenCentral()
@@ -23,11 +23,12 @@ repositories {
 	mavenLocal()
 	mavenCentral()
 	jcenter()
+	maven { url "https://jitpack.io" }
 }
 
 dependencies {
 	compile "org.jetbrains.kotlin:kotlin-stdlib:$versionKotlin"
-	compile "org.lateralgm.joshedit:JoshEdit:$versionJoshEdit"
+	compile "com.github.Arcnor:JoshEdit:$versionJoshEdit"
 }
 
 task wrapper(type: Wrapper) {
