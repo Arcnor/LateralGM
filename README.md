@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/Arcnor/LateralGM/tree/master.svg?style=shield&circle-token=271bc4957136aa2fd8dd14454a6d655445bf0fc5)](https://circleci.com/gh/Arcnor/LateralGM/tree/master)
+
 LateralGM Fork
 ==============
 A Java Swing based cross-platform editor for Game Maker project files.
