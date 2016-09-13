@@ -107,6 +107,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.zip.DataFormatException;
 
@@ -345,7 +346,7 @@ public final class GMXFileReader {
 						PGameSettings.TREAT_CLOSE_AS_ESCAPE,
 						Boolean.parseBoolean(setdoc.getElementsByTagName("option_closeesc").item(0).getTextContent()));
 				String changed = setdoc.getElementsByTagName("option_lastchanged").item(0).getTextContent();
-				if (changed != "") {
+				if (!Objects.equals(changed, "")) {
 					pSet.put(PGameSettings.LAST_CHANGED, Double.parseDouble(changed));
 				}
 

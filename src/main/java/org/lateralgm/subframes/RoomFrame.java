@@ -133,6 +133,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 import static java.lang.Integer.MAX_VALUE;
@@ -2755,7 +2756,7 @@ public class RoomFrame extends InstantiableResourceFrame<Room, PRoom> implements
 				String objectNewName = new String(selectedPiece.getName());
 
 				// If the rotation of the object has been changed
-				if (objectNewName != pieceOriginalName) {
+				if (!Objects.equals(objectNewName, pieceOriginalName)) {
 					// Record the effect of rotating an object for the undo
 					UndoableEdit edit = new ModifyPieceInstance(this, selectedPiece, pieceOriginalName,
 							objectNewName);

@@ -19,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Objects;
 
 public class FileChooserImagePreview extends JLabel implements PropertyChangeListener {
 	private static final long serialVersionUID = 1L;
@@ -33,7 +34,7 @@ public class FileChooserImagePreview extends JLabel implements PropertyChangeLis
 	}
 
 	public void propertyChange(PropertyChangeEvent e) {
-		if (e.getPropertyName() == JFileChooser.SELECTED_FILE_CHANGED_PROPERTY) {
+		if (Objects.equals(e.getPropertyName(), JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
 			if (isShowing()) {
 				File f = (File) e.getNewValue();
 				if (f == null)
