@@ -1746,7 +1746,7 @@ public final class GMXFileWriter
 		try
 			{
 			out = new PrintWriter(Util.getPOSIXPath(f.getDirectory() + "/help.rtf"));
-			out.println(f.gameInfo.properties.get(PGameInformation.TEXT));
+			out.println((String)f.gameInfo.properties.get(PGameInformation.TEXT));
 			}
 		finally
 			{
