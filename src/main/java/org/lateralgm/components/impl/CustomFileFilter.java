@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 public class CustomFileFilter extends FileFilter implements FilenameFilter {
@@ -20,8 +21,7 @@ public class CustomFileFilter extends FileFilter implements FilenameFilter {
 
 	public CustomFileFilter(String desc, String... ext) {
 		this.desc = desc;
-		for (String element : ext)
-			this.ext.add(element);
+		Collections.addAll(this.ext, ext);
 	}
 
 	/**

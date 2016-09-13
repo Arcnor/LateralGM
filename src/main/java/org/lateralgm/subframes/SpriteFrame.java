@@ -1169,8 +1169,7 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 		}
 		clear = res.subImages.isEmpty();
 		imageChanged = true;
-		for (BufferedImage i : img)
-			res.subImages.add(i);
+		Collections.addAll(res.subImages, img);
 		show.setRange(0, res.subImages.size());
 		if (clear) setSubIndex(0);
 		updateStatusLabel();

@@ -74,6 +74,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -244,9 +245,7 @@ public final class Util {
 		if (LGM.javaVersion >= 10600) {
 			String[] internalexts = ImageIO.getReaderFileSuffixes();
 			ArrayList<String> extensions = new ArrayList<String>();
-			for (String ext : readexts) {
-				extensions.add(ext);
-			}
+			Collections.addAll(extensions, readexts);
 			for (String ext : internalexts) {
 				if (!extensions.contains(ext)) {
 					extensions.add(ext);
@@ -275,9 +274,7 @@ public final class Util {
 		if (LGM.javaVersion >= 10600) {
 			String[] internalexts = ImageIO.getWriterFileSuffixes();
 			ArrayList<String> extensions = new ArrayList<String>();
-			for (String ext : writeexts) {
-				extensions.add(ext);
-			}
+			Collections.addAll(extensions, writeexts);
 			for (String ext : internalexts) {
 				if (!extensions.contains(ext)) {
 					extensions.add(ext);

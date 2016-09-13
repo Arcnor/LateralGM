@@ -66,6 +66,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -108,8 +109,7 @@ public class FileChooser {
 	public static void addFilters(FilterSet fs, FilterUnion all, GroupFilter gf) {
 		fs.add(gf.getGroupFilter());
 		all.add(gf.getGroupFilter());
-		for (FileFilter ff : gf.getFilters())
-			fs.add(ff);
+		Collections.addAll(fs, gf.getFilters());
 		if (all.size() == 2) fs.add(0, all);
 	}
 
@@ -557,8 +557,7 @@ public class FileChooser {
 		}
 
 		public void add(FileFilter... filters) {
-			for (FileFilter ff : filters)
-				this.filters.add(ff);
+			Collections.addAll(this.filters, filters);
 		}
 
 		public int size() {
