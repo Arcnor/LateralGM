@@ -2555,14 +2555,14 @@ public class RoomFrame extends InstantiableResourceFrame<Room, PRoom> implements
 
 	public CodeFrame openInstanceCodeFrame(Instance inst) {
 		return openCodeFrame(inst, Messages.getString("RoomFrame.TITLE_FORMAT_CREATION"),
-				Messages.format("RoomFrame.INSTANCE", inst.properties.get(PInstance.ID)));
+				Messages.format("RoomFrame.INSTANCE", (Integer)inst.properties.get(PInstance.ID)));
 	}
 
 	public CodeFrame openInstanceCodeFrame(int id, boolean select) {
 		Instance inst = findInstance(id, select);
 		if (inst != null) {
 			return openCodeFrame(inst, Messages.getString("RoomFrame.TITLE_FORMAT_CREATION"),
-					Messages.format("RoomFrame.INSTANCE", inst.properties.get(PInstance.ID)));
+					Messages.format("RoomFrame.INSTANCE", (Integer)inst.properties.get(PInstance.ID)));
 		}
 		return null;
 	}
