@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Locale;
 
 public class CustomFileFilter extends FileFilter implements FilenameFilter {
-	private ArrayList<String> ext = new ArrayList<String>();
+	protected ArrayList<String> ext = new ArrayList<>();
 	private String desc;
 
 	public CustomFileFilter(String desc, String... ext) {
@@ -46,7 +46,7 @@ public class CustomFileFilter extends FileFilter implements FilenameFilter {
 		//if (f.isDirectory()) return true;
 		String s = getExtension(name);
 		if (s == null) return false;
-		return ext.contains(s);
+		return ext.contains("*" + s);
 	}
 
 	public String getDescription() {

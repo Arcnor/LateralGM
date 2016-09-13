@@ -20,7 +20,9 @@
 
 package org.lateralgm.main;
 
-import org.lateralgm.components.CustomFileChooser;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import org.lateralgm.components.CustomFileChooserFx;
 import org.lateralgm.components.ErrorDialog;
 import org.lateralgm.components.GmMenuBar;
 import org.lateralgm.components.impl.CustomFileFilter;
@@ -41,13 +43,11 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.TransferHandler;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileView;
 import javax.swing.tree.TreeNode;
 import java.awt.datatransfer.DataFlavor;
@@ -69,6 +69,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class FileChooser {
 	private static List<FileReader> readers = new ArrayList<FileReader>();
@@ -76,8 +77,8 @@ public class FileChooser {
 	private static List<FileView> fileViews = new ArrayList<FileView>();
 	private static ProjectReader projectReader;
 	private FileWriter selectedWriter;
-	private CustomFileChooser fc = new CustomFileChooser("/org/lateralgm", "LAST_FILE_DIR"); //$NON-NLS-1$ //$NON-NLS-2$
-	private List<FileFilter> openFs = new ArrayList<>(), saveFs = new ArrayList<>();
+	private CustomFileChooserFx fc = new CustomFileChooserFx("/org/lateralgm", "LAST_FILE_DIR");
+	private List<CustomFileFilter> openFs = new ArrayList<>(), saveFs = new ArrayList<>();
 	private FilterUnion openAllFilter = new FilterUnion(), saveAllFilter = new FilterUnion();
 	private JCheckBox forceExt = new JCheckBox(Messages.getString("FileChooser.FORCE_EXT"), true); //$NON-NLS-1$
 
@@ -86,8 +87,6 @@ public class FileChooser {
 	 * Headless applications should use the static methods and fields available.
 	 */
 	public FileChooser() {
-		fc.setFileView(new FileViewUnion());
-
 		addDefaultReadersAndWriters();
 		addOpenFilters(projectReader);
 		selectedWriter = writers.get(0); //TODO: need a better way to pick a default...
@@ -105,7 +104,7 @@ public class FileChooser {
 			writers.add(new ProjectWriter(gmver));
 	}
 
-	public static void addFilters(List<FileFilter> fs, FilterUnion all, GroupFilter gf) {
+	public static void addFilters(List<CustomFileFilter> fs, FilterUnion all, GroupFilter gf) {
 		fs.add(gf.getGroupFilter());
 		all.add(gf.getGroupFilter());
 		Collections.addAll(fs, gf.getFilters());
@@ -238,7 +237,7 @@ public class FileChooser {
 		LGM.newRoot();
 		LGM.currentFile = new ProjectFile();
 		LGM.populateTree();
-		fc.setSelectedFile(new File(new String()));
+//		fc.setSelectedFile(new File(""));
 		selectedWriter = null;
 		LGM.reload(true);
 		OutputManager.append("\n" + Messages.getString("FileChooser.PROJECTCREATED") + ": " + new Date().toString());
@@ -246,9 +245,7 @@ public class FileChooser {
 
 	public void openNewFile() {
 		fc.setFilterSet(openFs);
-		fc.setAccessory(null);
-		if (fc.showOpenDialog(LGM.frame) != CustomFileChooser.APPROVE_OPTION) return;
-		File f = fc.getSelectedFile();
+		File f = fc.showOpenDialog(LGM.frame);
 		if (f == null) return;
 		open(f.toURI());
 	}
@@ -268,9 +265,7 @@ public class FileChooser {
 		}
 		FileReader reader = findReader(file.toURI());
 		if (reader == null) {
-			String title = Messages.getString("FileChooser.UNRECOGNIZED_TITLE"); //$NON-NLS-1$
-			String message = Messages.format("FileChooser.UNRECOGNIZED", file); //$NON-NLS-1$
-			JOptionPane.showMessageDialog(LGM.frame, message, title, JOptionPane.WARNING_MESSAGE);
+			showWarningDialog("FileChooser.UNRECOGNIZED_TITLE", "FileChooser.UNRECOGNIZED", file);
 			return;
 		}
 		open(file.toURI(), reader);
@@ -286,12 +281,29 @@ public class FileChooser {
 		}
 		FileReader reader = findReader(uri);
 		if (reader == null) {
-			String title = Messages.getString("FileChooser.UNRECOGNIZED_TITLE"); //$NON-NLS-1$
-			String message = Messages.format("FileChooser.UNRECOGNIZED", uri); //$NON-NLS-1$
-			JOptionPane.showMessageDialog(LGM.frame, message, title, JOptionPane.WARNING_MESSAGE);
+			showWarningDialog("FileChooser.UNRECOGNIZED_TITLE", "FileChooser.UNRECOGNIZED", uri);
 			return;
 		}
 		open(uri, reader);
+	}
+
+	private void showWarningDialog(String i18nTitle, String i18nMsg, Object msgArg) {
+		String title = Messages.getString(i18nTitle);
+		String message = Messages.format(i18nMsg, msgArg);
+
+		// FIXME: Modal dialog, should hang from `LGM.frame`
+		final CountDownLatch latch = new CountDownLatch(1);
+		Platform.runLater(() -> {
+			final Alert alert = new Alert(Alert.AlertType.WARNING, message);
+			alert.setTitle(title);
+			alert.showAndWait();
+			latch.countDown();
+		});
+		try {
+			latch.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -342,15 +354,15 @@ public class FileChooser {
 	public boolean saveNewFile() {
 		fc.setFilterSet(saveFs);
 		//Populated fresh each time to ensure an up-to-date list of writers
-		fc.setAccessory(makeSelectionAccessory());
+//		fc.setAccessory(makeSelectionAccessory());
 		URI uri = LGM.currentFile.uri;
 		File file = uri == null ? null : new File(uri);
-		fc.setSelectedFile(file);
+//		fc.setSelectedFile(file);
 		uri = null;
 		do //repeatedly display dialog until a valid response is given
 		{
-			if (fc.showSaveDialog(LGM.frame) != JFileChooser.APPROVE_OPTION) return false;
-			file = fc.getSelectedFile();
+			file = fc.showSaveDialog(LGM.frame);
+			if (file == null) return false;
 			if (forceExt.isSelected()) {
 				String ext = selectedWriter.getExtension();
 				if (!file.getName().endsWith(ext)) file = new File(file.getPath() + ext);
@@ -468,9 +480,9 @@ public class FileChooser {
 	}
 
 	public static interface GroupFilter {
-		FileFilter getGroupFilter();
+		CustomFileFilter getGroupFilter();
 
-		FileFilter[] getFilters();
+		CustomFileFilter[] getFilters();
 	}
 
 	public static interface FileReader {
@@ -548,31 +560,21 @@ public class FileChooser {
 		}
 	}
 
-	public static class FilterUnion extends FileFilter {
-		List<FileFilter> filters = new ArrayList<FileFilter>();
+	public static class FilterUnion extends CustomFileFilter {
+		List<CustomFileFilter> filters = new ArrayList<>();
 
-		public FilterUnion(FileFilter... filters) {
+		public FilterUnion(CustomFileFilter... filters) {
+			super(Messages.getString("FileChooser.ALL_SUPPORTED"));
 			add(filters);
 		}
 
-		public void add(FileFilter... filters) {
+		public void add(CustomFileFilter... filters) {
 			Collections.addAll(this.filters, filters);
+			this.filters.forEach(f -> Collections.addAll(ext, f.getExtensions()));
 		}
 
 		public int size() {
 			return filters.size();
-		}
-
-		@Override
-		public boolean accept(File f) {
-			for (FileFilter ff : filters)
-				if (ff.accept(f)) return true;
-			return false;
-		}
-
-		@Override
-		public String getDescription() {
-			return Messages.getString("FileChooser.ALL_SUPPORTED"); //$NON-NLS-1$
 		}
 	}
 
@@ -581,7 +583,7 @@ public class FileChooser {
 		protected CustomFileFilter groupFilter;
 
 		protected ProjectReader() {
-			String[] exts = {".gm81", ".gmk", ".gm6", ".gmd", ".gmx"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			String[] exts = {"*.gm81", "*.gmk", "*.gm6", "*.gmd", "*.gmx"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			String[] descs = {"GM81", "GMK", "GM6", "GMD", "GMX"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			groupFilter = new CustomFileFilter(Messages.getString("FileChooser.FORMAT_READERS_GM"), exts); //$NON-NLS-1$
 			filters = new CustomFileFilter[exts.length];
@@ -590,11 +592,11 @@ public class FileChooser {
 						Messages.getString("FileChooser.FORMAT_" + descs[i]), exts[i]); //$NON-NLS-1$
 		}
 
-		public FileFilter getGroupFilter() {
+		public CustomFileFilter getGroupFilter() {
 			return groupFilter;
 		}
 
-		public FileFilter[] getFilters() {
+		public CustomFileFilter[] getFilters() {
 			return filters;
 		}
 
@@ -744,11 +746,11 @@ public class FileChooser {
 						Messages.getString("FileChooser.FORMAT_" + descs[i]), exts[i]); //$NON-NLS-1$
 		}
 
-		public FileFilter[] getFilters() {
+		public CustomFileFilter[] getFilters() {
 			return filters;
 		}
 
-		public FileFilter getGroupFilter() {
+		public CustomFileFilter getGroupFilter() {
 			return groupFilter;
 		}
 	}
