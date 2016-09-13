@@ -12,23 +12,19 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.ContainerOrderFocusTraversalPolicy;
 
-public class TextAreaFocusTraversalPolicy extends ContainerOrderFocusTraversalPolicy
-	{
+public class TextAreaFocusTraversalPolicy extends ContainerOrderFocusTraversalPolicy {
 	private static final long serialVersionUID = 1L;
 	Component comp;
 
-	public TextAreaFocusTraversalPolicy(Component comp)
-		{
+	public TextAreaFocusTraversalPolicy(Component comp) {
 		this.comp = comp;
-		}
-
-	public Component getDefaultComponent(Container container)
-		{
-		return comp;
-		}
-
-	public Component getFirstComponent(Container container)
-		{
-		return comp;
-		}
 	}
+
+	public Component getDefaultComponent(Container container) {
+		return comp;
+	}
+
+	public Component getFirstComponent(Container container) {
+		return comp;
+	}
+}

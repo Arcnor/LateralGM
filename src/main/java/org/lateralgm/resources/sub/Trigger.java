@@ -8,20 +8,18 @@
 
 package org.lateralgm.resources.sub;
 
-public class Trigger
-	{
+public class Trigger {
 	public String name = ""; //$NON-NLS-1$
 	public String condition = ""; //$NON-NLS-1$
 	public int checkStep = Event.EV_STEP_NORMAL;
 	public String constant = ""; //$NON-NLS-1$
 
-	public Trigger copy()
-		{
+	public Trigger copy() {
 		Trigger copy = new Trigger();
 		copy.name = name;
 		copy.condition = condition;
 		copy.checkStep = checkStep;
 		copy.constant = constant;
 		return copy;
-		}
 	}
+}

@@ -9,46 +9,38 @@
 
 package org.lateralgm.components.mdi;
 
+import javax.swing.JInternalFrame;
+import javax.swing.border.Border;
 import java.awt.Container;
 import java.beans.PropertyVetoException;
 
-import javax.swing.JInternalFrame;
-import javax.swing.border.Border;
-
-public class MDIFrame extends JInternalFrame
-	{
+public class MDIFrame extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
 	private Border border;
 
-	public MDIFrame()
-		{
-		this("",false,false,false,false);
-		}
+	public MDIFrame() {
+		this("", false, false, false, false);
+	}
 
-	public MDIFrame(String title)
-		{
-		this(title,false,false,false,false);
-		}
+	public MDIFrame(String title) {
+		this(title, false, false, false, false);
+	}
 
-	public MDIFrame(String title, boolean resizable)
-		{
-		this(title,resizable,false,false,false);
-		}
+	public MDIFrame(String title, boolean resizable) {
+		this(title, resizable, false, false, false);
+	}
 
-	public MDIFrame(String title, boolean resizable, boolean closable)
-		{
-		this(title,resizable,closable,false,false);
-		}
+	public MDIFrame(String title, boolean resizable, boolean closable) {
+		this(title, resizable, closable, false, false);
+	}
 
-	public MDIFrame(String title, boolean resizable, boolean closable, boolean maximizable)
-		{
-		this(title,resizable,closable,maximizable,false);
-		}
+	public MDIFrame(String title, boolean resizable, boolean closable, boolean maximizable) {
+		this(title, resizable, closable, maximizable, false);
+	}
 
 	public MDIFrame(String title, boolean resizable, boolean closable, boolean maximizable,
-			boolean iconifiable)
-		{
-		super(title,resizable,closable,maximizable,iconifiable);
+	                boolean iconifiable) {
+		super(title, resizable, closable, maximizable, iconifiable);
 
 		// real multiple document interfaces hide the window border, it gives us a little extra room
 		// and makes it feel not only more native, but resemble DWM's better
@@ -73,48 +65,37 @@ public class MDIFrame extends JInternalFrame
 				}
 
 		});*/
-		}
+	}
 
-	private MDIPane getMDIPane()
-		{
+	private MDIPane getMDIPane() {
 		Container c = getParent();
 		if (c != null && c instanceof MDIPane) return (MDIPane) c;
 		return null;
-		}
+	}
 
-	public void toTop()
-		{
-		try
-			{
+	public void toTop() {
+		try {
 			setVisible(true);
 			setIcon(false);
 			setSelected(true);
 			MDIPane pane = getMDIPane();
-			if (pane != null)
-				{
-				if (pane.isMaximum())
-					{
-					if (isMaximizable())
-						{
+			if (pane != null) {
+				if (pane.isMaximum()) {
+					if (isMaximizable()) {
 						toFront();
 						setMaximum(true);
-						}
-					else
+					} else
 						pane.bringMaximumToTop();
-					}
-				else
+				} else
 					toFront();
-				}
 			}
-		catch (PropertyVetoException e1)
-			{
+		} catch (PropertyVetoException e1) {
 			e1.printStackTrace();
-			}
 		}
+	}
 
 	@Override
-	public void setMaximum(boolean b) throws PropertyVetoException
-		{
+	public void setMaximum(boolean b) throws PropertyVetoException {
 		if (b) {
 			//border = getBorder();
 			//setBorder(null);
@@ -122,30 +103,24 @@ public class MDIFrame extends JInternalFrame
 		super.setMaximum(b);
 		MDIPane pane = getMDIPane();
 		if (pane != null) pane.resizeDesktop();
-		}
+	}
 
 	@Override
-	public void setVisible(boolean visible)
-		{
+	public void setVisible(boolean visible) {
 		super.setVisible(visible);
 		MDIPane pane = getMDIPane();
-		if (pane != null)
-			{
-			if (visible)
-				{
+		if (pane != null) {
+			if (visible) {
 				if (pane.isMaximum() && isMaximizable())
-					try
-						{
+					try {
 						setMaximum(true);
-						}
-					catch (PropertyVetoException e)
-						{
+					} catch (PropertyVetoException e) {
 						e.printStackTrace();
-						}
+					}
 				else
 					pane.bringMaximumToTop();
-				}
 			}
 		}
-
 	}
+
+}

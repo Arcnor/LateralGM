@@ -8,52 +8,46 @@
 
 package org.lateralgm.ui.swing.propertylink;
 
-import javax.swing.JList;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.lateralgm.util.PropertyLink;
 import org.lateralgm.util.PropertyMap;
 import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
 
-public class ListLink<K extends Enum<K>, V> extends PropertyLink<K,V> implements
-		ListSelectionListener
-	{
+import javax.swing.JList;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+public class ListLink<K extends Enum<K>, V> extends PropertyLink<K, V> implements
+		ListSelectionListener {
 	public final JList<?> list;
 
-	public ListLink(JList<?> l, PropertyMap<K> m, K k)
-		{
-		super(m,k);
+	public ListLink(JList<?> l, PropertyMap<K> m, K k) {
+		super(m, k);
 		list = l;
 		reset();
 		list.addListSelectionListener(this);
-		}
+	}
 
 	@Override
-	protected void setComponent(Object v)
-		{
-		list.setSelectedValue(v,true);
-		}
+	protected void setComponent(Object v) {
+		list.setSelectedValue(v, true);
+	}
 
 	@Override
-	public void remove()
-		{
+	public void remove() {
 		super.remove();
 		list.removeListSelectionListener(this);
-		}
+	}
 
 	@Override
-	public void updated(PropertyUpdateEvent<K> e)
-		{
+	public void updated(PropertyUpdateEvent<K> e) {
 		// TODO: Should have a converter interface like ComboBoxLink
-		editComponentIfChanged((V)list.getSelectedValue());
-		}
+		editComponentIfChanged((V) list.getSelectedValue());
+	}
 
-	public void valueChanged(ListSelectionEvent e)
-		{
+	public void valueChanged(ListSelectionEvent e) {
 		Object v = list.getSelectedValue();
 		if (v == null ? map.get(key) == null : v.equals(map.get(key))) return;
 		editProperty(v);
-		}
-
 	}
+
+}

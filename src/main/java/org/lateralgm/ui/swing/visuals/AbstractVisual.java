@@ -10,18 +10,15 @@ package org.lateralgm.ui.swing.visuals;
 
 import java.awt.Rectangle;
 
-public abstract class AbstractVisual implements Visual
-	{
+public abstract class AbstractVisual implements Visual {
 	public final VisualContainer parent;
 
-	public AbstractVisual(VisualContainer c)
-		{
+	public AbstractVisual(VisualContainer c) {
 		parent = c;
-		}
-
-	protected void repaint(Rectangle r)
-		{
-		parent.repaint(r);
-		}
-
 	}
+
+	protected void repaint(Rectangle r) {
+		parent.repaint(r);
+	}
+
+}

@@ -8,80 +8,69 @@
 
 package org.lateralgm.ui.swing.propertylink;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.AbstractButton;
-
 import org.lateralgm.util.PropertyLink;
 import org.lateralgm.util.PropertyMap;
 
+import javax.swing.AbstractButton;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 public class ButtonIncrementLink<K extends Enum<K>, V extends Number & Comparable<V>> extends
-		PropertyLink<K,V> implements ActionListener
-	{
+		PropertyLink<K, V> implements ActionListener {
 	public final AbstractButton button;
 	public final Incrementor<V> incrementor;
 	public final V min, max;
 	private V value;
 
 	public ButtonIncrementLink(AbstractButton ab, Incrementor<V> i, V min, V max, PropertyMap<K> m,
-			K k)
-		{
-		super(m,k);
+	                           K k) {
+		super(m, k);
 		button = ab;
 		incrementor = i;
 		this.min = min;
 		this.max = max;
 		reset();
 		ab.addActionListener(this);
-		}
+	}
+
+	public static <K extends Enum<K>> ButtonIncrementLink<K, Integer> make(AbstractButton ab, int i,
+	                                                                       int l, PropertyMap<K> m, K k) {
+		return new ButtonIncrementLink<K, Integer>(ab, new IntegerIncrementor(i), i < 0 ? l
+				: Integer.MIN_VALUE, i > 0 ? l : Integer.MAX_VALUE, m, k);
+	}
 
 	@Override
-	protected void setComponent(V v)
-		{
+	protected void setComponent(V v) {
 		value = min.compareTo(v) > 0 ? min : max.compareTo(v) < 0 ? max : v;
 		V n = incrementor.increment(value);
 		button.setEnabled(min.compareTo(n) <= 0 && max.compareTo(n) >= 0);
-		}
+	}
 
 	@Override
-	public void remove()
-		{
+	public void remove() {
 		super.remove();
 		button.removeActionListener(this);
-		}
+	}
 
-	public void actionPerformed(ActionEvent e)
-		{
+	public void actionPerformed(ActionEvent e) {
 		V n = incrementor.increment(value);
 		editProperty(n);
-		}
+	}
 
-	public static <K extends Enum<K>>ButtonIncrementLink<K,Integer> make(AbstractButton ab, int i,
-			int l, PropertyMap<K> m, K k)
-		{
-		return new ButtonIncrementLink<K,Integer>(ab,new IntegerIncrementor(i),i < 0 ? l
-				: Integer.MIN_VALUE,i > 0 ? l : Integer.MAX_VALUE,m,k);
-		}
-
-	public static interface Incrementor<V extends Number & Comparable<V>>
-		{
+	public static interface Incrementor<V extends Number & Comparable<V>> {
 		V increment(V v);
-		}
+	}
 
-	public static class IntegerIncrementor implements Incrementor<Integer>
-		{
+	public static class IntegerIncrementor implements Incrementor<Integer> {
 		public final int increment;
 
-		public IntegerIncrementor(int i)
-			{
+		public IntegerIncrementor(int i) {
 			increment = i;
-			}
-
-		public Integer increment(Integer i)
-			{
-			return i + increment;
-			}
 		}
 
+		public Integer increment(Integer i) {
+			return i + increment;
+		}
 	}
+
+}

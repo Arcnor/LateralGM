@@ -32,36 +32,38 @@ import java.io.IOException;
  * This interface describes a class which defines a 1-1 mapping between
  * an RTF keyword and a SwingText attribute.
  */
-interface RTFAttributeExt
-{
-    static final int D_CHARACTER = 0;
-    static final int D_PARAGRAPH = 1;
-    static final int D_SECTION = 2;
-    static final int D_DOCUMENT = 3;
-    static final int D_META = 4;
+interface RTFAttributeExt {
+	static final int D_CHARACTER = 0;
+	static final int D_PARAGRAPH = 1;
+	static final int D_SECTION = 2;
+	static final int D_DOCUMENT = 3;
+	static final int D_META = 4;
 
-    /* These next three should really be public variables,
-       but you can't declare public variables in an interface... */
-    /* int domain; */
-    public int domain();
-    /* String swingName; */
-    public Object swingName();
-    /* String rtfName; */
-    public String rtfName();
+	/* These next three should really be public variables,
+	   but you can't declare public variables in an interface... */
+	/* int domain; */
+	public int domain();
 
-    public boolean set(MutableAttributeSet target);
-    public boolean set(MutableAttributeSet target, int parameter);
+	/* String swingName; */
+	public Object swingName();
 
-    public boolean setDefault(MutableAttributeSet target);
+	/* String rtfName; */
+	public String rtfName();
 
-    /* TODO: This method is poorly thought out */
-    public boolean write(AttributeSet source,
-                         RTFGeneratorExt target,
-                         boolean force)
-        throws IOException;
+	public boolean set(MutableAttributeSet target);
 
-    public boolean writeValue(Object value,
-                              RTFGeneratorExt target,
-                              boolean force)
-        throws IOException;
+	public boolean set(MutableAttributeSet target, int parameter);
+
+	public boolean setDefault(MutableAttributeSet target);
+
+	/* TODO: This method is poorly thought out */
+	public boolean write(AttributeSet source,
+	                     RTFGeneratorExt target,
+	                     boolean force)
+			throws IOException;
+
+	public boolean writeValue(Object value,
+	                          RTFGeneratorExt target,
+	                          boolean force)
+			throws IOException;
 }

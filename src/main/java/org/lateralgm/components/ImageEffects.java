@@ -1,28 +1,40 @@
 /**
-* @file  ImageEffects.java
-* @brief Class implementing the generic pluggable image effects.
-*
-* @section License
-*
-* Copyright (C) 2014 Robert B. Colton
-* This file is a part of the LateralGM IDE.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-**/
+ * @file ImageEffects.java
+ * @brief Class implementing the generic pluggable image effects.
+ * @section License
+ * <p>
+ * Copyright (C) 2014 Robert B. Colton
+ * This file is a part of the LateralGM IDE.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ **/
 
 package org.lateralgm.components;
 
+import org.lateralgm.components.NumberField.ValueChangeEvent;
+import org.lateralgm.components.NumberField.ValueChangeListener;
+import org.lateralgm.main.Util;
+import org.lateralgm.messages.Messages;
+
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -42,24 +54,31 @@ import java.awt.image.RGBImageFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.GroupLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import org.lateralgm.components.NumberField.ValueChangeEvent;
-import org.lateralgm.components.NumberField.ValueChangeListener;
-import org.lateralgm.main.Util;
-import org.lateralgm.messages.Messages;
-
 import static javax.swing.GroupLayout.PREFERRED_SIZE;
 
-public class ImageEffects
-	{
+public class ImageEffects {
+
+	public static double ColourDistance(Color c1, Color c2) {
+		double rmean = (c1.getRed() + c2.getRed()) / 2;
+		int r = c1.getRed() - c2.getRed();
+		int g = c1.getGreen() - c2.getGreen();
+		int b = c1.getBlue() - c2.getBlue();
+		double weightR = 2 + rmean / 256;
+		double weightG = 4.0;
+		double weightB = 2 + (255 - rmean) / 256;
+		return Math.sqrt(weightR * r * r + weightG * g * g + weightB * b * b);
+	}
+
+	public static float clamp(float val, float min, float max) {
+		return Math.max(min, Math.min(max, val));
+	}
+
+	public static float wrap(float val, float min, float max) {
+		float dif = max - min;
+		while (val < min) val += dif;
+		while (val > max) val -= dif;
+		return val;
+	}
 
 	public abstract interface EffectOptionListener {
 		public abstract void optionsUpdated();
@@ -69,10 +88,13 @@ public class ImageEffects
 		private List<EffectOptionListener> listeners = new ArrayList<EffectOptionListener>();
 
 		public abstract BufferedImage getAppliedImage(BufferedImage img);
+
 		public abstract JPanel getOptionsPanel();
+
 		public String getName() {
 			return Messages.getString("ImageEffects." + getKey());
 		}
+
 		public abstract String getKey();
 
 		protected void optionsUpdated() {
@@ -81,42 +103,38 @@ public class ImageEffects
 			}
 		}
 
-		public void addOptionUpdateListener(EffectOptionListener listener)
-			{
+		public void addOptionUpdateListener(EffectOptionListener listener) {
 			listeners.add(listener);
-			}
-		public void removeOptionUpdateListener(EffectOptionListener listener)
-			{
+		}
+
+		public void removeOptionUpdateListener(EffectOptionListener listener) {
 			listeners.remove(listener);
-			}
+		}
 	}
 
 	public static class BlackAndWhiteEffect extends ImageEffect {
 		private final String key = "BlackAndWhiteEffect";
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
+		public BufferedImage getAppliedImage(BufferedImage img) {
 			BufferedImage ret = new BufferedImage(img.getColorModel(), img.copyData(null),
 					img.isAlphaPremultiplied(), null);
 			ColorConvertOp op = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
 			op.filter(img, ret);
 			return ret;
-			}
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
 	public static class OpacityEffect extends ImageEffect {
@@ -125,48 +143,44 @@ public class ImageEffects
 		private JSlider alphaSlider = null;
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
+		public BufferedImage getAppliedImage(BufferedImage img) {
 			BufferedImage target = new BufferedImage(img.getWidth(),
 					img.getHeight(), java.awt.Transparency.TRANSLUCENT);
 			// Get the images graphics
 			Graphics2D g = target.createGraphics();
 			// Set the Graphics composite to Alpha
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-					(float) alphaSlider.getValue()/255));
+					(float) alphaSlider.getValue() / 255));
 			// Draw the image into the prepared reciver image
 			g.drawImage(img, null, 0, 0);
 			// let go of all system resources in this Graphics
 			g.dispose();
 			// Return the image
 			return target;
-			}
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 			JLabel alphaLabel = new JLabel(Messages.getString("ImageEffects.TRANSPARENCY"));
-			alphaSlider = new JSlider(0,255,155);
+			alphaSlider = new JSlider(0, 255, 155);
 			alphaSlider.setPaintTicks(true);
 			alphaSlider.setMajorTickSpacing(15);
 			alphaSlider.setMinorTickSpacing(3);
-			final NumberField alphaField = new NumberField(0,255,155);
+			final NumberField alphaField = new NumberField(0, 255, 155);
 			alphaSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						alphaField.setValue(alphaSlider.getValue());
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					alphaField.setValue(alphaSlider.getValue());
+					optionsUpdated();
+				}
 			});
 			alphaField.addValueChangeListener(new ValueChangeListener() {
 
 				@Override
-				public void valueChange(ValueChangeEvent evt)
-					{
-						alphaSlider.setValue((int) evt.getNewValue());
-					}
+				public void valueChange(ValueChangeEvent evt) {
+					alphaSlider.setValue((int) evt.getNewValue());
+				}
 
 			});
 
@@ -179,37 +193,35 @@ public class ImageEffects
 			/**/.addGroup(gl.createSequentialGroup()
 			/*	*/.addComponent(alphaLabel)
 			/*	*/.addComponent(alphaSlider)
-			/*	*/.addComponent(alphaField,PREFERRED_SIZE,PREFERRED_SIZE,PREFERRED_SIZE)));
+			/*	*/.addComponent(alphaField, PREFERRED_SIZE, PREFERRED_SIZE, PREFERRED_SIZE)));
 
 			gl.setVerticalGroup(gl.createSequentialGroup()
 			/**/.addGroup(gl.createParallelGroup(Alignment.CENTER)
 			/*	*/.addComponent(alphaLabel)
 			/*	*/.addComponent(alphaSlider)
-			/*	*/.addComponent(alphaField,PREFERRED_SIZE,PREFERRED_SIZE,PREFERRED_SIZE)));
+			/*	*/.addComponent(alphaField, PREFERRED_SIZE, PREFERRED_SIZE, PREFERRED_SIZE)));
 
 			pane.setLayout(gl);
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
 	public static class InvertEffect extends ImageEffect {
 		private final String key = "InvertEffect";
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
+		public BufferedImage getAppliedImage(BufferedImage img) {
 			int width = img.getWidth();
 			int height = img.getHeight();
 			BufferedImage dst = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 			for (int i = 0; i < width; i++) {
 				for (int ii = 0; ii < height; ii++) {
-					int rgba = img.getRGB(i,ii);
+					int rgba = img.getRGB(i, ii);
 					Color col = new Color(rgba, true);
 					/* Monochrome
 					col = new Color(Math.abs(255 - col.getRed()),
@@ -218,71 +230,65 @@ public class ImageEffects
 													col.getAlpha()); */
 
 					col = new Color(255 - col.getRed(),
-													255 - col.getGreen(),
-													255 - col.getBlue(),
-													col.getAlpha());
-					dst.setRGB(i,ii,col.getRGB());
+							255 - col.getGreen(),
+							255 - col.getBlue(),
+							col.getAlpha());
+					dst.setRGB(i, ii, col.getRGB());
 				}
 			}
 			return dst;
-			}
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
 	public static class EdgeDetectEffect extends ImageEffect {
 		private final String key = "EdgeDetectEffect";
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
-			img = Util.convertImage(img,BufferedImage.TYPE_INT_ARGB);
-			BufferedImage dst = new BufferedImage(img.getWidth(),img.getHeight(), img.getType());
+		public BufferedImage getAppliedImage(BufferedImage img) {
+			img = Util.convertImage(img, BufferedImage.TYPE_INT_ARGB);
+			BufferedImage dst = new BufferedImage(img.getWidth(), img.getHeight(), img.getType());
 
 			Kernel kernel = new Kernel(3, 3,
-													new float[]{
-															-1, -1, -1,
-															-1, 8, -1,
-															-1, -1, -1});
+					new float[]{
+							-1, -1, -1,
+							-1, 8, -1,
+							-1, -1, -1});
 
-			BufferedImageOp op = new ConvolveOp(kernel,ConvolveOp.EDGE_ZERO_FILL,null);
+			BufferedImageOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_ZERO_FILL, null);
 
 			return op.filter(img, dst);
-			}
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
 	public static class EmbossEffect extends ImageEffect {
 		private final String key = "EmbossColorEffect";
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
+		public BufferedImage getAppliedImage(BufferedImage img) {
 			int width = img.getWidth();
 			int height = img.getHeight();
 			BufferedImage dst = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -321,21 +327,19 @@ public class ImageEffects
 				}
 
 			return dst;
-			}
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
 	public static class BlurEffect extends ImageEffect {
@@ -343,43 +347,40 @@ public class ImageEffects
 		private JSlider repeatSlider;
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
-			img = Util.convertImage(img,BufferedImage.TYPE_INT_ARGB);
-			BufferedImage dst = new BufferedImage(img.getWidth(),img.getHeight(), img.getType());
+		public BufferedImage getAppliedImage(BufferedImage img) {
+			img = Util.convertImage(img, BufferedImage.TYPE_INT_ARGB);
+			BufferedImage dst = new BufferedImage(img.getWidth(), img.getHeight(), img.getType());
 
 			Kernel kernel = new Kernel(3, 3,
-													new float[]{
-															1f/9f, 1f/9f, 1f/9f,
-															1f/9f, 1f/9f, 1f/9f,
-															1f/9f, 1f/9f, 1f/9f});
+					new float[]{
+							1f / 9f, 1f / 9f, 1f / 9f,
+							1f / 9f, 1f / 9f, 1f / 9f,
+							1f / 9f, 1f / 9f, 1f / 9f});
 
-			BufferedImageOp op = new ConvolveOp(kernel,ConvolveOp.EDGE_ZERO_FILL,null);
+			BufferedImageOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_ZERO_FILL, null);
 
 			dst = op.filter(img, dst);
 
 			for (int i = 0; i < repeatSlider.getValue() - 1; i++) {
-				dst = op.filter(dst,null);
+				dst = op.filter(dst, null);
 			}
 			return dst;
-			}
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 			JLabel alphaLabel = new JLabel(Messages.getString("ImageEffects.REPETITIONS"));
-			repeatSlider = new JSlider(1,20,2);
+			repeatSlider = new JSlider(1, 20, 2);
 			repeatSlider.setPaintTicks(true);
 			repeatSlider.setSnapToTicks(true);
 			repeatSlider.setMajorTickSpacing(5);
 			repeatSlider.setMinorTickSpacing(1);
 			repeatSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					optionsUpdated();
+				}
 			});
 
 
@@ -399,13 +400,12 @@ public class ImageEffects
 
 			pane.setLayout(gl);
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
 	public static class SharpenEffect extends ImageEffect {
@@ -413,42 +413,39 @@ public class ImageEffects
 		private JSlider repeatSlider;
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
-			img = Util.convertImage(img,BufferedImage.TYPE_INT_ARGB);
-			BufferedImage dst = new BufferedImage(img.getWidth(),img.getHeight(), img.getType());
+		public BufferedImage getAppliedImage(BufferedImage img) {
+			img = Util.convertImage(img, BufferedImage.TYPE_INT_ARGB);
+			BufferedImage dst = new BufferedImage(img.getWidth(), img.getHeight(), img.getType());
 
 			Kernel kernel = new Kernel(3, 3,
-													new float[]{
-															-1, -1, -1,
-															-1, 9, -1,
-															-1, -1, -1});
+					new float[]{
+							-1, -1, -1,
+							-1, 9, -1,
+							-1, -1, -1});
 
-			BufferedImageOp op = new ConvolveOp(kernel,ConvolveOp.EDGE_ZERO_FILL,null);
+			BufferedImageOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_ZERO_FILL, null);
 
 			dst = op.filter(img, dst);
 			for (int i = 0; i < repeatSlider.getValue() - 1; i++) {
-				dst = op.filter(dst,null);
+				dst = op.filter(dst, null);
 			}
 			return dst;
-			}
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 			JLabel alphaLabel = new JLabel(Messages.getString("ImageEffects.REPETITIONS"));
-			repeatSlider = new JSlider(1,20,2);
+			repeatSlider = new JSlider(1, 20, 2);
 			repeatSlider.setPaintTicks(true);
 			repeatSlider.setSnapToTicks(true);
 			repeatSlider.setMajorTickSpacing(5);
 			repeatSlider.setMinorTickSpacing(1);
 			repeatSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					optionsUpdated();
+				}
 			});
 
 
@@ -468,13 +465,12 @@ public class ImageEffects
 
 			pane.setLayout(gl);
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
 	public static class RemoveTransparencyEffect extends ImageEffect {
@@ -482,24 +478,21 @@ public class ImageEffects
 		private ColorSelect colorSelect;
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
-			BufferedImage dst = Util.clearBackground(img,colorSelect.getSelectedColor());
+		public BufferedImage getAppliedImage(BufferedImage img) {
+			BufferedImage dst = Util.clearBackground(img, colorSelect.getSelectedColor());
 			return dst;
 		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 			JLabel colorLabel = new JLabel(Messages.getString("ImageEffects.COLOR"));
-			colorSelect = new ColorSelect(Color.WHITE,true);
+			colorSelect = new ColorSelect(Color.WHITE, true);
 			colorSelect.addItemListener(new ItemListener() {
 				@Override
-				public void itemStateChanged(ItemEvent ie)
-					{
-						optionsUpdated();
-					}
+				public void itemStateChanged(ItemEvent ie) {
+					optionsUpdated();
+				}
 			});
 
 			GroupLayout gl = new GroupLayout(pane);
@@ -518,26 +511,13 @@ public class ImageEffects
 
 			pane.setLayout(gl);
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
-	}
-
-	public static double ColourDistance(Color c1, Color c2)
-		{
-		double rmean = ( c1.getRed() + c2.getRed() )/2;
-		int r = c1.getRed() - c2.getRed();
-		int g = c1.getGreen() - c2.getGreen();
-		int b = c1.getBlue() - c2.getBlue();
-		double weightR = 2 + rmean/256;
-		double weightG = 4.0;
-		double weightB = 2 + (255-rmean)/256;
-		return Math.sqrt(weightR*r*r + weightG*g*g + weightB*b*b);
 		}
+	}
 
 	public static class RemoveColorEffect extends ImageEffect {
 		private final String key = "RemoveColorEffect";
@@ -545,50 +525,44 @@ public class ImageEffects
 		private JSlider toleranceSlider;
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
+		public BufferedImage getAppliedImage(BufferedImage img) {
 			final int col = colorSelect.getSelectedColor().getRGB();
-			ImageFilter filter = new RGBImageFilter()
-				{
-					@Override
-					public int filterRGB(int x, int y, int rgb)
-						{
+			ImageFilter filter = new RGBImageFilter() {
+				@Override
+				public int filterRGB(int x, int y, int rgb) {
 
-						if (ColourDistance(new Color(rgb), new Color(col)) < toleranceSlider.getValue())
-							return col & 0x00FFFFFF;
-						return rgb;
-						}
-				};
-			ImageProducer ip = new FilteredImageSource(img.getSource(),filter);
+					if (ColourDistance(new Color(rgb), new Color(col)) < toleranceSlider.getValue())
+						return col & 0x00FFFFFF;
+					return rgb;
+				}
+			};
+			ImageProducer ip = new FilteredImageSource(img.getSource(), filter);
 			return Util.toBufferedImage(Toolkit.getDefaultToolkit().createImage(ip));
 		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 			JLabel colorLabel = new JLabel(Messages.getString("ImageEffects.COLOR"));
-			colorSelect = new ColorSelect(Color.WHITE,true);
+			colorSelect = new ColorSelect(Color.WHITE, true);
 			colorSelect.addItemListener(new ItemListener() {
 				@Override
-				public void itemStateChanged(ItemEvent ie)
-					{
-						optionsUpdated();
-					}
+				public void itemStateChanged(ItemEvent ie) {
+					optionsUpdated();
+				}
 			});
 
 			JLabel toleranceLabel = new JLabel(Messages.getString("ImageEffects.TOLERANCE"));
-			toleranceSlider = new JSlider(0,255,15);
+			toleranceSlider = new JSlider(0, 255, 15);
 			toleranceSlider.setPaintTicks(true);
 			toleranceSlider.setSnapToTicks(true);
 			toleranceSlider.setMajorTickSpacing(15);
 			toleranceSlider.setMinorTickSpacing(3);
 			toleranceSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					optionsUpdated();
+				}
 			});
 
 			GroupLayout gl = new GroupLayout(pane);
@@ -613,13 +587,12 @@ public class ImageEffects
 
 			pane.setLayout(gl);
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
 	public static class FadeColorEffect extends ImageEffect {
@@ -628,8 +601,7 @@ public class ImageEffects
 		private JSlider intensitySlider;
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
+		public BufferedImage getAppliedImage(BufferedImage img) {
 			BufferedImage target = new BufferedImage(img.getWidth(),
 					img.getHeight(), java.awt.Transparency.TRANSLUCENT);
 			// Get the images graphics
@@ -638,41 +610,38 @@ public class ImageEffects
 			g.drawImage(img, null, 0, 0);
 			// Set the Graphics composite to Alpha
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
-					(float) intensitySlider.getValue()/255));
+					(float) intensitySlider.getValue() / 255));
 			g.setColor(colorSelect.getSelectedColor());
-			g.fillRect(0,0,img.getWidth(),img.getHeight());
+			g.fillRect(0, 0, img.getWidth(), img.getHeight());
 			// let go of all system resources in this Graphics
 			g.dispose();
 			// Return the image
 			return target;
-			}
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 			JLabel colorLabel = new JLabel(Messages.getString("ImageEffects.COLOR"));
-			colorSelect = new ColorSelect(Color.YELLOW,false);
+			colorSelect = new ColorSelect(Color.YELLOW, false);
 			colorSelect.addItemListener(new ItemListener() {
 				@Override
-				public void itemStateChanged(ItemEvent ie)
-					{
-						optionsUpdated();
-					}
+				public void itemStateChanged(ItemEvent ie) {
+					optionsUpdated();
+				}
 			});
 
 			JLabel toleranceLabel = new JLabel(Messages.getString("ImageEffects.INTENSITY"));
-			intensitySlider = new JSlider(0,255,155);
+			intensitySlider = new JSlider(0, 255, 155);
 			intensitySlider.setPaintTicks(true);
 			intensitySlider.setSnapToTicks(true);
 			intensitySlider.setMajorTickSpacing(15);
 			intensitySlider.setMinorTickSpacing(3);
 			intensitySlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					optionsUpdated();
+				}
 			});
 
 			GroupLayout gl = new GroupLayout(pane);
@@ -697,24 +666,12 @@ public class ImageEffects
 
 			pane.setLayout(gl);
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
-	}
-
-	public static float clamp(float val, float min, float max) {
-		return Math.max(min, Math.min(max, val));
-	}
-
-	public static float wrap(float val, float min, float max) {
-		float dif = max - min;
-		while (val < min) val += dif;
-		while (val > max) val -= dif;
-		return val;
+		}
 	}
 
 	public static class ColorizeEffect extends ImageEffect {
@@ -727,14 +684,13 @@ public class ImageEffects
 		private JCheckBox valShift;
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
+		public BufferedImage getAppliedImage(BufferedImage img) {
 			int width = img.getWidth();
 			int height = img.getHeight();
 			BufferedImage dst = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 			for (int i = 0; i < width; i++) {
 				for (int ii = 0; ii < height; ii++) {
-					int rgba = img.getRGB(i,ii);
+					int rgba = img.getRGB(i, ii);
 					Color col = new Color(rgba, true);
 
 					float[] hslVals = new float[3];
@@ -743,89 +699,82 @@ public class ImageEffects
 
 					// Pass .5 (= 180 degrees) as HUE
 					col = new Color(Color.HSBtoRGB(
-							wrap((hueShift.isSelected() ? hslVals[0] : 0) + hueSlider.getValue() / 360.0f,0,1),
+							wrap((hueShift.isSelected() ? hslVals[0] : 0) + hueSlider.getValue() / 360.0f, 0, 1),
 							satShift.isSelected() ? clamp(hslVals[1] + satSlider.getValue() / 100.0f, 0.0f, 1.0f)
 									: (100.0f + satSlider.getValue()) / 200.0f,
 							valShift.isSelected() ? clamp(hslVals[2] + valSlider.getValue() / 100.0f, 0.0f, 1.0f)
 									: (100.0f + valSlider.getValue()) / 200.0f));
 					col = new Color(col.getRed(), col.getGreen(), col.getBlue(), alpha);
-					dst.setRGB(i,ii,col.getRGB());
+					dst.setRGB(i, ii, col.getRGB());
 				}
 			}
 			return dst;
-			}
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 			JLabel hueLabel = new JLabel(Messages.getString("ImageEffects.HUE"));
-			hueSlider = new JSlider(-180,180,0);
+			hueSlider = new JSlider(-180, 180, 0);
 			hueSlider.setPaintTicks(true);
 			hueSlider.setSnapToTicks(false);
 			hueSlider.setMajorTickSpacing(45);
 			hueSlider.setMinorTickSpacing(5);
 			hueSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					optionsUpdated();
+				}
 			});
 
 			hueShift = new JCheckBox(Messages.getString("ImageEffects.RELATIVE"), true);
 			hueShift.addItemListener(new ItemListener() {
 				@Override
-				public void itemStateChanged(ItemEvent arg0)
-					{
-						optionsUpdated();
-					}
+				public void itemStateChanged(ItemEvent arg0) {
+					optionsUpdated();
+				}
 			});
 
 			JLabel satLabel = new JLabel(Messages.getString("ImageEffects.SATURATION"));
-			satSlider = new JSlider(-100,100,0);
+			satSlider = new JSlider(-100, 100, 0);
 			satSlider.setPaintTicks(true);
 			satSlider.setSnapToTicks(false);
 			satSlider.setMajorTickSpacing(20);
 			satSlider.setMinorTickSpacing(5);
 			satSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					optionsUpdated();
+				}
 			});
 
 			satShift = new JCheckBox(Messages.getString("ImageEffects.RELATIVE"), true);
 			satShift.addItemListener(new ItemListener() {
 				@Override
-				public void itemStateChanged(ItemEvent arg0)
-					{
-						optionsUpdated();
-					}
+				public void itemStateChanged(ItemEvent arg0) {
+					optionsUpdated();
+				}
 			});
 
 			JLabel valLabel = new JLabel(Messages.getString("ImageEffects.VALUE"));
-			valSlider = new JSlider(-100,100,0);
+			valSlider = new JSlider(-100, 100, 0);
 			valSlider.setPaintTicks(true);
 			valSlider.setSnapToTicks(false);
 			valSlider.setMajorTickSpacing(20);
 			valSlider.setMinorTickSpacing(5);
 			valSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					optionsUpdated();
+				}
 			});
 
 			valShift = new JCheckBox(Messages.getString("ImageEffects.RELATIVE"), true);
 			valShift.addItemListener(new ItemListener() {
 				@Override
-				public void itemStateChanged(ItemEvent arg0)
-					{
-						optionsUpdated();
-					}
+				public void itemStateChanged(ItemEvent arg0) {
+					optionsUpdated();
+				}
 			});
 
 
@@ -865,13 +814,12 @@ public class ImageEffects
 
 			pane.setLayout(gl);
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
 	public static class IntensityEffect extends ImageEffect {
@@ -879,130 +827,126 @@ public class ImageEffects
 		private JSlider brightnessSlider;
 		private JSlider contrastSlider;
 
-			//from David Fichtmüller
-			public BufferedImage applyBrightnessAndContrast(BufferedImage bi, double brightness,
-					double contrast) {
-				final double gamma = 0.25;
+		//from David Fichtmüller
+		public BufferedImage applyBrightnessAndContrast(BufferedImage bi, double brightness,
+		                                                double contrast) {
+			final double gamma = 0.25;
 
-				if (contrast > 0) {
-					contrast = (100 * Math.pow(contrast - 1, 1 / gamma) / Math.pow(100, 1 / gamma)) + 1;
-				} else if (contrast == 0) {
-					contrast = 1;
-				} else {
-					contrast = 1 / ((100 * Math.pow(-contrast + 1,
-							1 / gamma) / Math.pow(100, 1 / gamma)) + 1);
+			if (contrast > 0) {
+				contrast = (100 * Math.pow(contrast - 1, 1 / gamma) / Math.pow(100, 1 / gamma)) + 1;
+			} else if (contrast == 0) {
+				contrast = 1;
+			} else {
+				contrast = 1 / ((100 * Math.pow(-contrast + 1,
+						1 / gamma) / Math.pow(100, 1 / gamma)) + 1);
+			}
+
+			if (brightness > 0) {
+				brightness = (100 * Math.pow(brightness, 1 / gamma) / Math.pow(100, 1 / gamma)) + 1;
+			} else if (brightness == 0) {
+				brightness = 1;
+			} else {
+				brightness = 1 / ((100 * Math.pow(-brightness,
+						1 / gamma) / Math.pow(100, 1 / gamma)) + 1);
+			}
+
+			final int w = bi.getWidth();
+			final int h = bi.getHeight();
+			final BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+
+			for (int x = 0; x < w; x++) {
+				for (int y = 0; y < h; y++) {
+					int rgb = bi.getRGB(x, y);
+
+					// get the rgb-values
+					int alpha = (int) ((rgb & 0xff000000l) >> 24);
+					int r = ((rgb & 0x00ff0000) >> 16);
+					int g = ((rgb & 0x0000ff00) >> 8);
+					int b = ((rgb & 0x000000ff));
+
+					// apply brightness filter
+					r = (int) (r * brightness);
+					g = (int) (g * brightness);
+					b = (int) (b * brightness);
+
+					// convert to YCbCr
+					double Y = r * 0.299 + g * 0.587 + b * 0.114;
+					double Cb = r * -0.168736 + g * -0.331264 + b * 0.5;
+					double Cr = r * 0.5 + g * -0.418688 + b * -0.081312;
+
+					// apply contrast filter
+					Y = (Y + brightness - 127) * contrast + 127;
+					Cb = Cb * contrast;
+					Cr = Cr * contrast;
+
+					// convert back to RGB
+					r = (int) (Y + (Cr * 1.402));
+					g = (int) (Y + (Cb * -0.344136) + (Cr * -0.714136));
+					b = (int) (Y + (Cb * 1.772));
+
+					// check sizes of return values
+					if (alpha > 255) {
+						alpha = 255;
+					} else if (alpha < 0) {
+						alpha = 0;
+					}
+					if (g > 255) {
+						g = 255;
+					} else if (g < 0) {
+						g = 0;
+					}
+					if (r > 255) {
+						r = 255;
+					} else if (r < 0) {
+						r = 0;
+					}
+					if (b > 255) {
+						b = 255;
+					} else if (b < 0) {
+						b = 0;
+					}
+
+					rgb = ((alpha & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+					out.setRGB(x, y, rgb);
 				}
-
-				if (brightness > 0) {
-					brightness = (100 * Math.pow(brightness, 1 / gamma) / Math.pow(100, 1 / gamma)) + 1;
-				} else if (brightness == 0) {
-					brightness = 1;
-				} else {
-					brightness = 1 / ((100 * Math.pow(-brightness,
-							1 / gamma) / Math.pow(100, 1 / gamma)) + 1);
-				}
-
-				final int w = bi.getWidth();
-				final int h = bi.getHeight();
-				final BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-
-				for (int x = 0; x < w; x++) {
-						for (int y = 0; y < h; y++) {
-							int rgb = bi.getRGB(x, y);
-
-							// get the rgb-values
-							int alpha = (int) ((rgb & 0xff000000l) >> 24);
-							int r = ((rgb & 0x00ff0000) >> 16);
-							int g = ((rgb & 0x0000ff00) >> 8);
-							int b = ((rgb & 0x000000ff));
-
-							// apply brightness filter
-							r = (int) (r * brightness);
-							g = (int) (g * brightness);
-							b = (int) (b * brightness);
-
-							// convert to YCbCr
-							double Y = r * 0.299 + g * 0.587 + b * 0.114;
-							double Cb = r * -0.168736 + g * -0.331264 + b * 0.5;
-							double Cr = r * 0.5 + g * -0.418688 + b * -0.081312;
-
-							// apply contrast filter
-							Y = (Y + brightness - 127) * contrast + 127;
-							Cb = Cb * contrast;
-							Cr = Cr * contrast;
-
-							// convert back to RGB
-							r = (int) (Y + (Cr * 1.402));
-							g = (int) (Y + (Cb * -0.344136) + (Cr * -0.714136));
-							b = (int) (Y + (Cb * 1.772));
-
-							// check sizes of return values
-							if (alpha > 255) {
-								alpha = 255;
-							} else if (alpha < 0) {
-								alpha = 0;
-							}
-							if (g > 255) {
-								g = 255;
-							} else if (g < 0) {
-								g = 0;
-							}
-							if (r > 255) {
-								r = 255;
-							} else if (r < 0) {
-								r = 0;
-							}
-							if (b > 255) {
-								b = 255;
-							} else if (b < 0) {
-								b = 0;
-							}
-
-							rgb = ((alpha & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
-							out.setRGB(x, y, rgb);
-						}
-				}
-				return out;
+			}
+			return out;
 		}
 
 
 		@Override
-		public BufferedImage getAppliedImage(BufferedImage img)
-			{
-				return this.applyBrightnessAndContrast(img,brightnessSlider.getValue(),
-						contrastSlider.getValue());
-			}
+		public BufferedImage getAppliedImage(BufferedImage img) {
+			return this.applyBrightnessAndContrast(img, brightnessSlider.getValue(),
+					contrastSlider.getValue());
+		}
 
 		@Override
-		public JPanel getOptionsPanel()
-			{
+		public JPanel getOptionsPanel() {
 			JPanel pane = new JPanel();
 			JLabel hueLabel = new JLabel(Messages.getString("ImageEffects.BRIGHTNESS"));
-			brightnessSlider = new JSlider(-100,100,0);
+			brightnessSlider = new JSlider(-100, 100, 0);
 			brightnessSlider.setPaintTicks(true);
 			brightnessSlider.setSnapToTicks(false);
 			brightnessSlider.setMajorTickSpacing(20);
 			brightnessSlider.setMinorTickSpacing(5);
 			brightnessSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					optionsUpdated();
+				}
 			});
 
 			JLabel satLabel = new JLabel(Messages.getString("ImageEffects.CONTRAST"));
-			contrastSlider = new JSlider(-100,100,0);
+			contrastSlider = new JSlider(-100, 100, 0);
 			contrastSlider.setPaintTicks(true);
 			contrastSlider.setSnapToTicks(false);
 			contrastSlider.setMajorTickSpacing(20);
 			contrastSlider.setMinorTickSpacing(5);
 			contrastSlider.addChangeListener(new ChangeListener() {
 				@Override
-				public void stateChanged(ChangeEvent ce)
-					{
-						optionsUpdated();
-					}
+				public void stateChanged(ChangeEvent ce) {
+					optionsUpdated();
+				}
 			});
 
 
@@ -1028,13 +972,12 @@ public class ImageEffects
 
 			pane.setLayout(gl);
 			return pane;
-			}
+		}
 
 		@Override
-		public String getKey()
-			{
+		public String getKey() {
 			return key;
-			}
+		}
 	}
 
-	}
+}

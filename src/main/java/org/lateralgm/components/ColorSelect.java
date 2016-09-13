@@ -11,8 +11,22 @@
 
 package org.lateralgm.components;
 
-import static javax.swing.GroupLayout.PREFERRED_SIZE;
+import org.lateralgm.main.LGM;
+import org.lateralgm.main.Util;
+import org.lateralgm.messages.Messages;
+import org.lateralgm.util.PropertyEditor;
+import org.lateralgm.util.PropertyLink;
+import org.lateralgm.util.PropertyMap;
+import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
 
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JColorChooser;
+import javax.swing.JFormattedTextField;
+import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+import javax.swing.text.MaskFormatter;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.ItemSelectable;
@@ -25,49 +39,31 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.ParseException;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.JColorChooser;
-import javax.swing.JFormattedTextField;
-import javax.swing.JPanel;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.border.BevelBorder;
-import javax.swing.text.MaskFormatter;
 
-import org.lateralgm.main.LGM;
-import org.lateralgm.main.Util;
-import org.lateralgm.messages.Messages;
-import org.lateralgm.util.PropertyEditor;
-import org.lateralgm.util.PropertyLink;
-import org.lateralgm.util.PropertyMap;
-import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
+import static javax.swing.GroupLayout.PREFERRED_SIZE;
 
-public class ColorSelect extends JPanel implements ItemSelectable,PropertyEditor<Color>
-{
+public class ColorSelect extends JPanel implements ItemSelectable, PropertyEditor<Color> {
 
 	private static final long serialVersionUID = 1L;
+	private static BufferedImage transparentImage;
 	private Color selectedColor;
 	// If false, return always 255. Used for the instance's color.
 	private boolean returnAlpha = true;
-
 	private JPanel colorPanel;
 	private JFormattedTextField textField;
 
-	private static BufferedImage transparentImage;
-
-	public ColorSelect(Color col)
-	{
+	public ColorSelect(Color col) {
 		if (transparentImage == null) {
 			transparentImage = Util.paintBackground(2, 2);
 		}
 		colorPanel = new JPanel() {
 
-		/**
-		 * NOTE: Default UID generated, change if necessary.
-		 */
-		private static final long serialVersionUID = -948015130105405683L;
+			/**
+			 * NOTE: Default UID generated, change if necessary.
+			 */
+			private static final long serialVersionUID = -948015130105405683L;
 
-	@Override
+			@Override
 			public void paint(Graphics g) {
 				Rectangle clipBounds = g.getClipBounds();
 				g.drawImage(transparentImage, 0, 0, clipBounds.width, clipBounds.height, null);
@@ -75,7 +71,7 @@ public class ColorSelect extends JPanel implements ItemSelectable,PropertyEditor
 			}
 		};
 		colorPanel.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED, Color.WHITE,
-			Color.BLACK));
+				Color.BLACK));
 		colorPanel.setBackground(col);
 		// needed by some look and feels such as Quaqua
 		colorPanel.setOpaque(true);
@@ -84,19 +80,19 @@ public class ColorSelect extends JPanel implements ItemSelectable,PropertyEditor
 			@Override
 			public void mousePressed(MouseEvent e) {
 				colorPanel.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.LOWERED, Color.WHITE,
-					Color.BLACK));
+						Color.BLACK));
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				colorPanel.setBorder(BorderFactory.createSoftBevelBorder(BevelBorder.RAISED, Color.WHITE,
-					Color.BLACK));
+						Color.BLACK));
 			}
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Color newcol = JColorChooser.showDialog(getParent(),
-					Messages.getString("ColorSelect.CHOOSE_TITLE"), selectedColor); //$NON-NLS-1$
+						Messages.getString("ColorSelect.CHOOSE_TITLE"), selectedColor); //$NON-NLS-1$
 				if (newcol != null) {
 					setSelectedColor(newcol);
 					fireItemChanged();
@@ -108,12 +104,9 @@ public class ColorSelect extends JPanel implements ItemSelectable,PropertyEditor
 		formatter.setPlaceholder("FFFFFFFF"); //$NON-NLS-1$
 		formatter.setPlaceholderCharacter('F'); //$NON-NLS-1$
 
-		try
-		{
+		try {
 			formatter.setMask("HHHHHHHH"); //$NON-NLS-1$
-		}
-		catch (ParseException e)
-		{
+		} catch (ParseException e) {
 			// This should never occur because the format is correct
 			// and this has been well tested.
 			LGM.showDefaultExceptionHandler(e);
@@ -124,10 +117,9 @@ public class ColorSelect extends JPanel implements ItemSelectable,PropertyEditor
 		textField.setText(Util.formatColortoHex(col));
 		textField.addPropertyChangeListener(new PropertyChangeListener() {
 			@Override
-			public void propertyChange(PropertyChangeEvent evt)
-			{
+			public void propertyChange(PropertyChangeEvent evt) {
 				selectedColor = new Color(Integer.rotateRight(
-						(int) Long.parseLong(textField.getText(),16),textField.getText().length()), true);
+						(int) Long.parseLong(textField.getText(), 16), textField.getText().length()), true);
 				colorPanel.setBackground(selectedColor);
 				fireItemChanged();
 			}
@@ -151,29 +143,26 @@ public class ColorSelect extends JPanel implements ItemSelectable,PropertyEditor
 		selectedColor = col;
 	}
 
+	public ColorSelect() {
+		this(Color.BLACK);
+	}
+
+	public ColorSelect(Color col, boolean returnAlpha) {
+		this(col);
+		this.returnAlpha = returnAlpha;
+	}
+
 	@Override
 	public int getBaseline(int width, int height) {
 		return textField.getBaseline(width, height);
 	}
 
-	public ColorSelect()
-	{
-		this(Color.BLACK);
-	}
-
-	public ColorSelect(Color col, boolean returnAlpha)
-	{
-		this(col);
-		this.returnAlpha = returnAlpha;
-	}
-
-	protected void fireItemChanged()
-	{
+	protected void fireItemChanged() {
 		// Guaranteed to return a non-null array
 		Object[] listeners = listenerList.getListenerList();
 		// Process the listeners last to first, notifying
 		// those that are interested in this event
-		ItemEvent e = new ItemEvent(this,ItemEvent.ITEM_STATE_CHANGED,selectedColor,ItemEvent.SELECTED);
+		ItemEvent e = new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED, selectedColor, ItemEvent.SELECTED);
 		for (int i = listeners.length - 2; i >= 0; i -= 2) {
 			if (listeners[i] == ItemListener.class) {
 				((ItemListener) listeners[i + 1]).itemStateChanged(e);
@@ -181,11 +170,20 @@ public class ColorSelect extends JPanel implements ItemSelectable,PropertyEditor
 		}
 	}
 
-	public void setSelectedColor(Color selectedColor)
-	{
+	public Color getSelectedColor() {
+		if (returnAlpha == true) {
+			return selectedColor;
+		} else {
+			Color selectedColorWithoutAlpha = new Color(selectedColor.getRed(), selectedColor.getGreen(),
+					selectedColor.getBlue());
+			return selectedColorWithoutAlpha;
+		}
+	}
+
+	public void setSelectedColor(Color selectedColor) {
 		if (returnAlpha == false)
-			selectedColor = new Color (selectedColor.getRed(),selectedColor.getGreen(),
-				selectedColor.getBlue());
+			selectedColor = new Color(selectedColor.getRed(), selectedColor.getGreen(),
+					selectedColor.getBlue());
 
 		colorPanel.setBackground(selectedColor);
 		textField.setText(Util.formatColortoHex(selectedColor));
@@ -193,72 +191,51 @@ public class ColorSelect extends JPanel implements ItemSelectable,PropertyEditor
 		this.selectedColor = selectedColor;
 	}
 
-	public Color getSelectedColor()
-	{
-		if (returnAlpha == true) {
-			return selectedColor;
-		} else {
-			Color selectedColorWithoutAlpha = new Color (selectedColor.getRed(),selectedColor.getGreen(),
-				selectedColor.getBlue());
-			return selectedColorWithoutAlpha;
-		}
+	@Override
+	public void addItemListener(ItemListener l) {
+		listenerList.add(ItemListener.class, l);
 	}
 
 	@Override
-	public void addItemListener(ItemListener l)
-	{
-		listenerList.add(ItemListener.class,l);
+	public Object[] getSelectedObjects() {
+		return new Color[]{selectedColor};
 	}
 
 	@Override
-	public Object[] getSelectedObjects()
-	{
-		return new Color[] { selectedColor };
+	public void removeItemListener(ItemListener l) {
+		listenerList.remove(ItemListener.class, l);
 	}
 
-	@Override
-	public void removeItemListener(ItemListener l)
-	{
-		listenerList.remove(ItemListener.class,l);
+	public <K extends Enum<K>> PropertyLink<K, Color> getLink(PropertyMap<K> m, K k) {
+		return new ColorSelectLink<K>(m, k);
 	}
 
-	public <K extends Enum<K>>PropertyLink<K,Color> getLink(PropertyMap<K> m, K k)
-	{
-		return new ColorSelectLink<K>(m,k);
-	}
+	private class ColorSelectLink<K extends Enum<K>> extends PropertyLink<K, Color> implements
+			ItemListener {
 
-	private class ColorSelectLink<K extends Enum<K>> extends PropertyLink<K,Color> implements
-		ItemListener
-	{
-
-		public ColorSelectLink(PropertyMap<K> m, K k)
-		{
-			super(m,k);
+		public ColorSelectLink(PropertyMap<K> m, K k) {
+			super(m, k);
 			reset();
 			addItemListener(this);
 		}
 
 		@Override
-		protected void setComponent(Color c)
-		{
+		protected void setComponent(Color c) {
 			setSelectedColor(c);
 		}
 
 		@Override
-		public void remove()
-		{
+		public void remove() {
 			super.remove();
 			removeItemListener(this);
 		}
 
 		@Override
-		public void updated(PropertyUpdateEvent<K> e)
-		{
+		public void updated(PropertyUpdateEvent<K> e) {
 			editComponentIfChanged(selectedColor);
 		}
 
-		public void itemStateChanged(ItemEvent e)
-		{
+		public void itemStateChanged(ItemEvent e) {
 			if (selectedColor.equals(map.get(key))) return;
 			editProperty(selectedColor);
 		}

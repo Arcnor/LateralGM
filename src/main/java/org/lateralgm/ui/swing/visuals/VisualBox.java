@@ -10,34 +10,29 @@ package org.lateralgm.ui.swing.visuals;
 
 import java.awt.Rectangle;
 
-public abstract class VisualBox extends AbstractVisual
-	{
+public abstract class VisualBox extends AbstractVisual {
 	final BinVisual bv;
 	private final Rectangle bounds = new Rectangle();
 	private boolean removed;
 
-	public VisualBox(BinVisual v)
-		{
+	public VisualBox(BinVisual v) {
 		super(v);
 		bv = v;
-		v.add(this,null,0);
-		}
+		v.add(this, null, 0);
+	}
 
-	protected void setBounds(Rectangle b)
-		{
+	protected void setBounds(Rectangle b) {
 		if (removed) return;
 		bounds.setBounds(b);
-		bv.setBounds(this,bounds);
-		}
+		bv.setBounds(this, bounds);
+	}
 
-	protected void repaint()
-		{
+	protected void repaint() {
 		repaint(bounds);
-		}
+	}
 
-	public void remove()
-		{
+	public void remove() {
 		removed = true;
 		bv.remove(this);
-		}
 	}
+}

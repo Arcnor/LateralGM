@@ -24,8 +24,7 @@ import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-public final class Messages
-	{
+public final class Messages {
 	private static final String LANGUAGE_BUNDLE_NAME = "org.lateralgm.messages.messages"; //$NON-NLS-1$
 	private static final String INPUT_BUNDLE_NAME = "org.lateralgm.messages.keyboard"; //$NON-NLS-1$
 
@@ -33,57 +32,42 @@ public final class Messages
 	private static ResourceBundle LANGUAGE_BUNDLE = null;
 	private static ResourceBundle KEYBOARD_BUNDLE = null;
 
-	static
-	{
+	static {
 		updateLangPack();
 	}
 
-	private Messages()
-		{
+	private Messages() {
 
-		}
+	}
 
 	//TODO: This method is exceedingly verbose, and we also need a way for users to install their own language packages.
-	public static void updateLangPack()
-		{
+	public static void updateLangPack() {
 		LANGUAGE_BUNDLE = ResourceBundle.getBundle(LANGUAGE_BUNDLE_NAME);
 		KEYBOARD_BUNDLE = ResourceBundle.getBundle(INPUT_BUNDLE_NAME);
-		}
+	}
 
-	public static String getString(String key)
-		{
-		try
-			{
+	public static String getString(String key) {
+		try {
 			return LANGUAGE_BUNDLE.getString(key);
-			}
-		catch (MissingResourceException e)
-			{
+		} catch (MissingResourceException e) {
 			return '!' + key + '!';
-			}
-		}
-
-	public static String getKeyboardString(String key)
-		{
-		try
-			{
-			return KEYBOARD_BUNDLE.getString(key);
-			}
-		catch (MissingResourceException e)
-			{
-			return '!' + key + '!';
-			}
-		}
-
-	public static String format(String key, Object...arguments)
-		{
-		try
-			{
-			String p = LANGUAGE_BUNDLE.getString(key);
-			return MessageFormat.format(p,arguments);
-			}
-		catch (MissingResourceException e)
-			{
-			return '!' + key + '!';
-			}
 		}
 	}
+
+	public static String getKeyboardString(String key) {
+		try {
+			return KEYBOARD_BUNDLE.getString(key);
+		} catch (MissingResourceException e) {
+			return '!' + key + '!';
+		}
+	}
+
+	public static String format(String key, Object... arguments) {
+		try {
+			String p = LANGUAGE_BUNDLE.getString(key);
+			return MessageFormat.format(p, arguments);
+		} catch (MissingResourceException e) {
+			return '!' + key + '!';
+		}
+	}
+}

@@ -10,24 +10,21 @@ package org.lateralgm.resources.library;
 
 import java.util.ArrayList;
 
-public class Library
-	{
+public class Library {
 	public int id = 0;
 	public String tabCaption = "";
 	public boolean advanced = false;
 	public ArrayList<LibAction> libActions = new ArrayList<LibAction>();
 
-	public LibAction addLibAction()
-		{
+	public LibAction addLibAction() {
 		LibAction act = new LibAction();
 		libActions.add(act);
 		return act;
-		}
+	}
 
-	public LibAction getLibAction(int id)
-		{
+	public LibAction getLibAction(int id) {
 		for (LibAction act : libActions)
 			if (act.id == id) return act;
 		return null;
-		}
 	}
+}

@@ -12,52 +12,6 @@
 
 package org.lateralgm.subframes;
 
-import static java.lang.Integer.MAX_VALUE;
-import static javax.swing.GroupLayout.DEFAULT_SIZE;
-import static javax.swing.GroupLayout.PREFERRED_SIZE;
-
-import java.awt.CardLayout;
-import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Random;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeSelectionModel;
-import javax.swing.SwingConstants;
-
 import org.lateralgm.components.ColorSelect;
 import org.lateralgm.components.CustomFileChooser;
 import org.lateralgm.components.NumberField;
@@ -80,15 +34,56 @@ import org.lateralgm.resources.GameSettings.ProgressBar;
 import org.lateralgm.resources.GameSettings.Resolution;
 import org.lateralgm.resources.Include;
 
-public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
-	{
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Random;
+
+import static java.lang.Integer.MAX_VALUE;
+import static javax.swing.GroupLayout.DEFAULT_SIZE;
+import static javax.swing.GroupLayout.PREFERRED_SIZE;
+
+public class GameSettingFrame extends ResourceFrame<GameSettings, PGameSettings> {
 	private static final long serialVersionUID = 1L;
 
 	private static final int MAX_VIEWABLE_ICON_SIZE = 64; //Icons bigger than this are scaled down (for viewing only).
-
-	boolean imagesChanged = false;
 	public JPanel cardPane;
-
 	public JCheckBox startFullscreen;
 	public IndexButtonGroup scaling;
 	public NumberField scale;
@@ -101,9 +96,155 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 	public JCheckBox noWindowButtons;
 	public JCheckBox displayMouse;
 	public JCheckBox freezeGame;
+	public JCheckBox synchronised;
+	public JCheckBox setResolution;
+	public ButtonGroup colorDepth;
+	public ButtonGroup resolution;
+	public ButtonGroup frequency;
+	public JPanel resolutionPane;
+	public JCheckBox esc, close, f1, f4, f5, f9;
+	public ButtonGroup gamePriority;
+	public JCheckBox showCustomLoadImage;
+	public BufferedImage customLoadingImage;
+	public JButton changeCustomLoad;
+	public JCheckBox imagePartiallyTransparent;
+	public NumberField loadImageAlpha;
+	public ButtonGroup loadBarMode;
+	public JRadioButton pbCustom;
+	public JButton backLoad;
+	public JButton frontLoad;
+	public BufferedImage backLoadImage;
+	public BufferedImage frontLoadImage;
+	public JCheckBox scaleProgressBar;
+	public NumberField gameId;
+	public JButton randomise;
+	public JList<Include> includes;
+	public ButtonGroup exportFolder;
+	public JCheckBox overwriteExisting;
+	public JCheckBox removeAtGameEnd;
+	public JLabel iconPreview;
+	public ICOFile gameIcon;
+	public JButton changeIcon;
+	public JButton discardButton;
+	public JTree tree;
+	boolean imagesChanged = false;
+	JCheckBox displayErrors;
+	JCheckBox writeToLog;
+	JCheckBox abortOnError;
+	JCheckBox treatUninitialisedAs0;
+	JCheckBox errorOnArgs;
+	JTextField author;
+	JTextField version;
+	JTextField lastChanged;
+	JTextArea information;
+	NumberField versionMajorField;
+	NumberField versionMinorField;
+	NumberField versionReleaseField;
+	NumberField versionBuildField;
+	JTextField companyField;
+	JTextField productField;
+	JTextField copyrightField;
+	JTextField descriptionField;
+	private CustomFileChooser includesFc;
+	private CustomFileChooser iconFc;
 
-	private JPanel makeGraphicsPane()
-		{
+	public GameSettingFrame(GameSettings res) {
+		this(res, null);
+	}
+
+	public GameSettingFrame(GameSettings res, ResNode node) {
+		super(res, node, Messages.getString("GameSettingFrame.TITLE"), true, true, true, true); //$NON-NLS-1$
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
+
+		GroupLayout layout = new GroupLayout(getContentPane());
+		layout.setAutoCreateGaps(true);
+		setLayout(layout);
+
+		String t = Messages.getString("GameSettingFrame.BUTTON_SAVE"); //$NON-NLS-1$
+		save.setText(t);
+		t = Messages.getString("GameSettingFrame.BUTTON_DISCARD"); //$NON-NLS-1$
+		discardButton = new JButton(t);
+		discardButton.addActionListener(this);
+		discardButton.setIcon(LGM.getIconForKey("GameSettingFrame.BUTTON_DISCARD"));
+		// make discard button the height as save, Win32 look and feel makes
+		// buttons with icons 2x as tall
+		discardButton.setMinimumSize(save.getMaximumSize());
+
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Preferences");
+
+		tree = new JTree(new DefaultTreeModel(root));
+		tree.setEditable(false);
+		//tree.expandRow(0);
+		tree.setRootVisible(false);
+		tree.setShowsRootHandles(true);
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+		// Simplest way to stop updateUI/setUI calls for changing the look and feel from reverting the
+		// tree icons.
+		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+		renderer.setLeafIcon(null);
+		renderer.setClosedIcon(null);
+		renderer.setOpenIcon(null);
+		tree.setCellRenderer(renderer);
+
+		buildTabs(root);
+
+		// reload after adding all root children to make sure its children are visible
+		((DefaultTreeModel) tree.getModel()).reload();
+
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			public void valueChanged(TreeSelectionEvent e) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+						tree.getLastSelectedPathComponent();
+
+				// if nothing is selected
+				if (node == null) return;
+
+				// retrieve the node that was selected
+				String nodeInfo = node.getUserObject().toString();
+
+				CardLayout cl = (CardLayout) (cardPane.getLayout());
+				cl.show(cardPane, nodeInfo);
+			}
+		});
+
+		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
+				new JScrollPane(tree), cardPane);
+		split.setDividerLocation(200);
+
+		layout.setHorizontalGroup(layout.createParallelGroup()
+		/**/.addComponent(split)
+		/**/.addGroup(layout.createSequentialGroup()
+		/*		*/.addContainerGap()
+		/*		*/.addComponent(save, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE)
+		/*		*/.addComponent(discardButton, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE)
+		/*		*/.addContainerGap()));
+		layout.setVerticalGroup(layout.createSequentialGroup()
+		/**/.addComponent(split)
+		/**/.addPreferredGap(ComponentPlacement.UNRELATED)
+		/**/.addGroup(layout.createParallelGroup()
+		/*		*/.addComponent(save)
+		/*		*/.addComponent(discardButton))
+		/**/.addContainerGap());
+		pack();
+		this.setSize(600, 500);
+	}
+
+	private static BufferedImage scale_image(BufferedImage src, int imgType, int destSize) {
+		if (src == null) {
+			return null;
+		}
+		BufferedImage dest = new BufferedImage(destSize, destSize, imgType);
+		Graphics2D g = dest.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		AffineTransform at = AffineTransform.getScaleInstance(destSize / ((float) src.getWidth()), destSize / ((float) src.getHeight()));
+		g.drawRenderedImage(src, at);
+
+		return dest;
+	}
+
+	private JPanel makeGraphicsPane() {
 		JPanel panel = new JPanel();
 		GroupLayout layout = new GroupLayout(panel);
 		layout.setAutoCreateGaps(true);
@@ -111,27 +252,27 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		panel.setLayout(layout);
 
 		startFullscreen = new JCheckBox(Messages.getString("GameSettingFrame.FULLSCREEN")); //$NON-NLS-1$
-		plf.make(startFullscreen,PGameSettings.START_FULLSCREEN);
+		plf.make(startFullscreen, PGameSettings.START_FULLSCREEN);
 
 		JPanel scalegroup = new JPanel();
 		GroupLayout sLayout = new GroupLayout(scalegroup);
 		scalegroup.setLayout(sLayout);
 		String t = Messages.getString("GameSettingFrame.SCALING_TITLE"); //$NON-NLS-1$
 		scalegroup.setBorder(BorderFactory.createTitledBorder(t));
-		scaling = new IndexButtonGroup(3,true,false,this);
+		scaling = new IndexButtonGroup(3, true, false, this);
 		JRadioButton osFixed = new JRadioButton(Messages.getString("GameSettingFrame.SCALING_FIXED")); //$NON-NLS-1$
-		scaling.add(osFixed,1);
-		scale = new NumberField(1,999,100);
+		scaling.add(osFixed, 1);
+		scale = new NumberField(1, 999, 100);
 		JRadioButton osRatio = new JRadioButton(Messages.getString("GameSettingFrame.SCALING_RATIO")); //$NON-NLS-1$
-		scaling.add(osRatio,-1);
+		scaling.add(osRatio, -1);
 		JRadioButton osFull = new JRadioButton(Messages.getString("GameSettingFrame.SCALING_FULL")); //$NON-NLS-1$
-		scaling.add(osFull,0);
+		scaling.add(osFull, 0);
 		//due to the complexity of this setup resolving to 1 property, we handle this in commitChanges.
 
 		sLayout.setHorizontalGroup(sLayout.createParallelGroup()
 		/**/.addGroup(sLayout.createSequentialGroup()
 		/*		*/.addComponent(osFixed).addPreferredGap(ComponentPlacement.RELATED)
-		/*		*/.addComponent(scale,DEFAULT_SIZE,DEFAULT_SIZE,PREFERRED_SIZE).addContainerGap())
+		/*		*/.addComponent(scale, DEFAULT_SIZE, DEFAULT_SIZE, PREFERRED_SIZE).addContainerGap())
 		/**/.addComponent(osRatio)
 		/**/.addComponent(osFull));
 		sLayout.setVerticalGroup(sLayout.createSequentialGroup()
@@ -147,13 +288,13 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		scale.setEnabled(s > 0);
 
 		t = Messages.getString("GameSettingFrame.INTERPOLATE"); //$NON-NLS-1$
-		plf.make(interpolatecolors = new JCheckBox(t),PGameSettings.INTERPOLATE);
+		plf.make(interpolatecolors = new JCheckBox(t), PGameSettings.INTERPOLATE);
 		softwareVertexProcessing = new JCheckBox(
 				Messages.getString("GameSettingFrame.FORCE_SOFTWARE_VERTEX_PROCESSING")); //$NON-NLS-1$
-		plf.make(softwareVertexProcessing,PGameSettings.FORCE_SOFTWARE_VERTEX_PROCESSING);
+		plf.make(softwareVertexProcessing, PGameSettings.FORCE_SOFTWARE_VERTEX_PROCESSING);
 
 		JLabel backcolor = new JLabel(Messages.getString("GameSettingFrame.BACKCOLOR")); //$NON-NLS-1$
-		plf.make(colorbutton = new ColorSelect(),PGameSettings.COLOR_OUTSIDE_ROOM);
+		plf.make(colorbutton = new ColorSelect(), PGameSettings.COLOR_OUTSIDE_ROOM);
 
 		resizeWindow = new JCheckBox(Messages.getString("GameSettingFrame.RESIZE")); //$NON-NLS-1$
 		stayOnTop = new JCheckBox(Messages.getString("GameSettingFrame.STAYONTOP")); //$NON-NLS-1$
@@ -162,12 +303,12 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		displayMouse = new JCheckBox(Messages.getString("GameSettingFrame.DISPLAYCURSOR")); //$NON-NLS-1$
 		freezeGame = new JCheckBox(Messages.getString("GameSettingFrame.FREEZE")); //$NON-NLS-1$
 
-		plf.make(resizeWindow,PGameSettings.ALLOW_WINDOW_RESIZE);
-		plf.make(stayOnTop,PGameSettings.ALWAYS_ON_TOP);
-		plf.make(noWindowBorder,PGameSettings.DONT_DRAW_BORDER);
-		plf.make(noWindowButtons,PGameSettings.DONT_SHOW_BUTTONS);
-		plf.make(displayMouse,PGameSettings.DISPLAY_CURSOR);
-		plf.make(freezeGame,PGameSettings.FREEZE_ON_LOSE_FOCUS);
+		plf.make(resizeWindow, PGameSettings.ALLOW_WINDOW_RESIZE);
+		plf.make(stayOnTop, PGameSettings.ALWAYS_ON_TOP);
+		plf.make(noWindowBorder, PGameSettings.DONT_DRAW_BORDER);
+		plf.make(noWindowButtons, PGameSettings.DONT_SHOW_BUTTONS);
+		plf.make(displayMouse, PGameSettings.DISPLAY_CURSOR);
+		plf.make(freezeGame, PGameSettings.FREEZE_ON_LOSE_FOCUS);
 
 		layout.setHorizontalGroup(layout.createParallelGroup()
 		/**/.addComponent(startFullscreen)
@@ -188,7 +329,7 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		/**/.addComponent(scalegroup)
 		/**/.addComponent(interpolatecolors)
 		/**/.addComponent(softwareVertexProcessing)
-		/**/.addGroup(layout.createParallelGroup(Alignment.BASELINE,false)
+		/**/.addGroup(layout.createParallelGroup(Alignment.BASELINE, false)
 		/*	*/.addComponent(backcolor)
 		/*	*/.addComponent(colorbutton))
 		/**/.addComponent(resizeWindow)
@@ -197,37 +338,27 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		/**/.addComponent(noWindowButtons)
 		/**/.addComponent(displayMouse)
 		/**/.addComponent(freezeGame)
-		/**/.addGap(4,4,MAX_VALUE));
+		/**/.addGap(4, 4, MAX_VALUE));
 		return panel;
-		}
+	}
 
-	public JCheckBox synchronised;
-	public JCheckBox setResolution;
-	public ButtonGroup colorDepth;
-	public ButtonGroup resolution;
-	public ButtonGroup frequency;
-	public JPanel resolutionPane;
-
-	private <V extends Enum<V>>JPanel makeRadioPane(String title, ButtonGroup bg, PGameSettings prop,
-			Class<V> optsClass, String[] vals)
-		{
+	private <V extends Enum<V>> JPanel makeRadioPane(String title, ButtonGroup bg, PGameSettings prop,
+	                                                 Class<V> optsClass, String[] vals) {
 		JPanel p = new JPanel();
 		p.setBorder(BorderFactory.createTitledBorder(title));
-		p.setLayout(new BoxLayout(p,BoxLayout.PAGE_AXIS));
+		p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
 
-		for (String s : vals)
-			{
+		for (String s : vals) {
 			JRadioButton but = new JRadioButton(Messages.getString(s));
 			bg.add(but);
 			p.add(but);
-			}
-		plf.make(bg,prop,optsClass);
+		}
+		plf.make(bg, prop, optsClass);
 
 		return p;
-		}
+	}
 
-	private JPanel makeResolutionPane()
-		{
+	private JPanel makeResolutionPane() {
 		JPanel panel = new JPanel();
 		GroupLayout layout = new GroupLayout(panel);
 		layout.setAutoCreateGaps(true);
@@ -236,9 +367,9 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		panel.setLayout(layout);
 
 		synchronised = new JCheckBox(Messages.getString("GameSettingFrame.USE_SYNC")); //$NON-NLS-1$
-		plf.make(synchronised,PGameSettings.USE_SYNCHRONIZATION);
+		plf.make(synchronised, PGameSettings.USE_SYNCHRONIZATION);
 		setResolution = new JCheckBox(Messages.getString("GameSettingFrame.SET_RESOLUTION")); //$NON-NLS-1$
-		plf.make(setResolution,PGameSettings.SET_RESOLUTION);
+		plf.make(setResolution, PGameSettings.SET_RESOLUTION);
 		setResolution.addActionListener(this);
 
 		resolutionPane = new JPanel();
@@ -246,32 +377,32 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		rpLayout.setAutoCreateGaps(true);
 		resolutionPane.setLayout(rpLayout);
 
-		String colDepths[] = { "GameSettingFrame.NO_CHANGE", //$NON-NLS-1$
-				"GameSettingFrame.16_BIT","GameSettingFrame.32_BIT" }; //$NON-NLS-1$ //$NON-NLS-2$
+		String colDepths[] = {"GameSettingFrame.NO_CHANGE", //$NON-NLS-1$
+				"GameSettingFrame.16_BIT", "GameSettingFrame.32_BIT"}; //$NON-NLS-1$ //$NON-NLS-2$
 
-		String resolutions[] = { "GameSettingFrame.NO_CHANGE","GameSettingFrame.320X240", //$NON-NLS-1$ //$NON-NLS-2$
-				"GameSettingFrame.640X480","GameSettingFrame.800X600","GameSettingFrame.1024X768", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				"GameSettingFrame.1280X1024","GameSettingFrame.1600X1200" }; //$NON-NLS-1$ //$NON-NLS-2$
+		String resolutions[] = {"GameSettingFrame.NO_CHANGE", "GameSettingFrame.320X240", //$NON-NLS-1$ //$NON-NLS-2$
+				"GameSettingFrame.640X480", "GameSettingFrame.800X600", "GameSettingFrame.1024X768", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				"GameSettingFrame.1280X1024", "GameSettingFrame.1600X1200"}; //$NON-NLS-1$ //$NON-NLS-2$
 
-		String freqs[] = { "GameSettingFrame.NO_CHANGE","GameSettingFrame.60HZ", //$NON-NLS-1$ //$NON-NLS-2$
-				"GameSettingFrame.70HZ","GameSettingFrame.85HZ", //$NON-NLS-1$ //$NON-NLS-2$
-				"GameSettingFrame.100HZ","GameSettingFrame.120HZ", }; //$NON-NLS-1$ //$NON-NLS-2$
+		String freqs[] = {"GameSettingFrame.NO_CHANGE", "GameSettingFrame.60HZ", //$NON-NLS-1$ //$NON-NLS-2$
+				"GameSettingFrame.70HZ", "GameSettingFrame.85HZ", //$NON-NLS-1$ //$NON-NLS-2$
+				"GameSettingFrame.100HZ", "GameSettingFrame.120HZ",}; //$NON-NLS-1$ //$NON-NLS-2$
 
 		JPanel depth = makeRadioPane(Messages.getString("GameSettingFrame.TITLE_COLOR_DEPTH"), //$NON-NLS-1$
-				colorDepth = new ButtonGroup(),PGameSettings.COLOR_DEPTH,ColorDepth.class,colDepths);
+				colorDepth = new ButtonGroup(), PGameSettings.COLOR_DEPTH, ColorDepth.class, colDepths);
 		JPanel resol = makeRadioPane(Messages.getString("GameSettingFrame.TITLE_RESOLUTION"), //$NON-NLS-1$
-				resolution = new ButtonGroup(),PGameSettings.RESOLUTION,Resolution.class,resolutions);
+				resolution = new ButtonGroup(), PGameSettings.RESOLUTION, Resolution.class, resolutions);
 		JPanel freq = makeRadioPane(Messages.getString("GameSettingFrame.TITLE_FREQUENCY"), //$NON-NLS-1$
-				frequency = new ButtonGroup(),PGameSettings.FREQUENCY,Frequency.class,freqs);
+				frequency = new ButtonGroup(), PGameSettings.FREQUENCY, Frequency.class, freqs);
 
 		rpLayout.setHorizontalGroup(rpLayout.createSequentialGroup()
-		/**/.addComponent(depth,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE)
-		/**/.addComponent(resol,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE)
-		/**/.addComponent(freq,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE));
-		rpLayout.setVerticalGroup(rpLayout.createParallelGroup(Alignment.LEADING,false)
-		/**/.addComponent(depth,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE)
-		/**/.addComponent(resol,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE)
-		/**/.addComponent(freq,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE));
+		/**/.addComponent(depth, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE)
+		/**/.addComponent(resol, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE)
+		/**/.addComponent(freq, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE));
+		rpLayout.setVerticalGroup(rpLayout.createParallelGroup(Alignment.LEADING, false)
+		/**/.addComponent(depth, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE)
+		/**/.addComponent(resol, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE)
+		/**/.addComponent(freq, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE));
 		resolutionPane.setVisible(setResolution.isSelected());
 
 		layout.setHorizontalGroup(layout.createParallelGroup()
@@ -279,13 +410,9 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		layout.setVerticalGroup(layout.createSequentialGroup()
 		/**/.addComponent(synchronised).addComponent(setResolution).addComponent(resolutionPane));
 		return panel;
-		}
+	}
 
-	public JCheckBox esc, close, f1, f4, f5, f9;
-	public ButtonGroup gamePriority;
-
-	private JPanel makeOtherPane()
-		{
+	private JPanel makeOtherPane() {
 		JPanel panel = new JPanel();
 		GroupLayout layout = new GroupLayout(panel);
 		layout.setAutoCreateGaps(true);
@@ -295,7 +422,7 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		String t = Messages.getString("GameSettingFrame.TITLE_KEYS"); //$NON-NLS-1$
 		JPanel dKeys = new JPanel();
 		dKeys.setBorder(BorderFactory.createTitledBorder(t));
-		dKeys.setLayout(new BoxLayout(dKeys,BoxLayout.PAGE_AXIS));
+		dKeys.setLayout(new BoxLayout(dKeys, BoxLayout.PAGE_AXIS));
 
 		esc = new JCheckBox(Messages.getString("GameSettingFrame.KEY_ENDGAME")); //$NON-NLS-1$
 		close = new JCheckBox(Messages.getString("GameSettingFrame.KEY_CLOSEGAME")); //$NON-NLS-1$
@@ -309,54 +436,37 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		dKeys.add(f4);
 		dKeys.add(f5);
 		dKeys.add(f9);
-		plf.make(esc,PGameSettings.LET_ESC_END_GAME);
-		plf.make(close,PGameSettings.TREAT_CLOSE_AS_ESCAPE);
-		plf.make(f1,PGameSettings.LET_F1_SHOW_GAME_INFO);
-		plf.make(f4,PGameSettings.LET_F4_SWITCH_FULLSCREEN);
-		plf.make(f5,PGameSettings.LET_F5_SAVE_F6_LOAD);
-		plf.make(f9,PGameSettings.LET_F9_SCREENSHOT);
+		plf.make(esc, PGameSettings.LET_ESC_END_GAME);
+		plf.make(close, PGameSettings.TREAT_CLOSE_AS_ESCAPE);
+		plf.make(f1, PGameSettings.LET_F1_SHOW_GAME_INFO);
+		plf.make(f4, PGameSettings.LET_F4_SWITCH_FULLSCREEN);
+		plf.make(f5, PGameSettings.LET_F5_SAVE_F6_LOAD);
+		plf.make(f9, PGameSettings.LET_F9_SCREENSHOT);
 
-		String priorities[] = { "GameSettingFrame.PRIORITY_NORMAL", //$NON-NLS-1$
-				"GameSettingFrame.PRIORITY_HIGH","GameSettingFrame.PRIORITY_HIHGEST" }; //$NON-NLS-1$ //$NON-NLS-2$
+		String priorities[] = {"GameSettingFrame.PRIORITY_NORMAL", //$NON-NLS-1$
+				"GameSettingFrame.PRIORITY_HIGH", "GameSettingFrame.PRIORITY_HIHGEST"}; //$NON-NLS-1$ //$NON-NLS-2$
 		JPanel priority = makeRadioPane(Messages.getString("GameSettingFrame.TITLE_PRIORITY"), //$NON-NLS-1$
-				gamePriority = new ButtonGroup(),PGameSettings.GAME_PRIORITY,Priority.class,priorities);
+				gamePriority = new ButtonGroup(), PGameSettings.GAME_PRIORITY, Priority.class, priorities);
 
 		layout.setHorizontalGroup(layout.createParallelGroup()
-		/**/.addComponent(dKeys,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE)
-		/**/.addComponent(priority,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE));
+		/**/.addComponent(dKeys, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE)
+		/**/.addComponent(priority, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE));
 		layout.setVerticalGroup(layout.createSequentialGroup()
 		/**/.addComponent(dKeys)
 		/**/.addComponent(priority));
 		return panel;
-		}
+	}
 
-	private JPanel makeTextureAtlasesPane()
-		{
+	private JPanel makeTextureAtlasesPane() {
 		JPanel panel = new JPanel();
 		GroupLayout layout = new GroupLayout(panel);
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		panel.setLayout(layout);
 		return panel;
-		}
+	}
 
-	public JCheckBox showCustomLoadImage;
-	public BufferedImage customLoadingImage;
-	public JButton changeCustomLoad;
-	public JCheckBox imagePartiallyTransparent;
-	public NumberField loadImageAlpha;
-	public ButtonGroup loadBarMode;
-	public JRadioButton pbCustom;
-	public JButton backLoad;
-	public JButton frontLoad;
-	public BufferedImage backLoadImage;
-	public BufferedImage frontLoadImage;
-	public JCheckBox scaleProgressBar;
-	public NumberField gameId;
-	public JButton randomise;
-
-	private JPanel makeLoadingPane()
-		{
+	private JPanel makeLoadingPane() {
 		JPanel panel = new JPanel();
 		GroupLayout layout = new GroupLayout(panel);
 		layout.setAutoCreateGaps(true);
@@ -369,7 +479,7 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		GroupLayout liLayout = new GroupLayout(loadImage);
 		loadImage.setLayout(liLayout);
 		showCustomLoadImage = new JCheckBox(Messages.getString("GameSettingFrame.CUSTOM_LOAD_IMAGE")); //$NON-NLS-1$
-		plf.make(showCustomLoadImage,PGameSettings.SHOW_CUSTOM_LOAD_IMAGE);
+		plf.make(showCustomLoadImage, PGameSettings.SHOW_CUSTOM_LOAD_IMAGE);
 		showCustomLoadImage.addActionListener(this);
 		customLoadingImage = res.properties.get(PGameSettings.LOADING_IMAGE);
 
@@ -379,10 +489,10 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 
 		imagePartiallyTransparent = new JCheckBox(
 				Messages.getString("GameSettingFrame.MAKE_TRANSPARENT")); //$NON-NLS-1$
-		plf.make(imagePartiallyTransparent,PGameSettings.IMAGE_PARTIALLY_TRANSPARENTY);
+		plf.make(imagePartiallyTransparent, PGameSettings.IMAGE_PARTIALLY_TRANSPARENTY);
 		JLabel lAlpha = new JLabel(Messages.getString("GameSettingFrame.ALPHA_TRANSPARENCY")); //$NON-NLS-1$
-		loadImageAlpha = new NumberField(0,255);
-		plf.make(loadImageAlpha,PGameSettings.LOAD_IMAGE_ALPHA);
+		loadImageAlpha = new NumberField(0, 255);
+		plf.make(loadImageAlpha, PGameSettings.LOAD_IMAGE_ALPHA);
 
 		liLayout.setHorizontalGroup(liLayout.createParallelGroup()
 		/**/.addGroup(liLayout.createSequentialGroup()
@@ -391,7 +501,7 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		/**/.addComponent(imagePartiallyTransparent)
 		/**/.addGroup(liLayout.createSequentialGroup().addContainerGap()
 		/*		*/.addComponent(lAlpha).addPreferredGap(ComponentPlacement.RELATED)
-		/*		*/.addComponent(loadImageAlpha,DEFAULT_SIZE,DEFAULT_SIZE,PREFERRED_SIZE)
+		/*		*/.addComponent(loadImageAlpha, DEFAULT_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
 		/*		*/.addContainerGap()));
 		liLayout.setVerticalGroup(liLayout.createSequentialGroup()
 		/**/.addGroup(liLayout.createParallelGroup(Alignment.BASELINE)
@@ -416,7 +526,7 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 				Messages.getString("GameSettingFrame.DEF_PROGRESS_BAR"))); //$NON-NLS-1$
 		loadBarMode.add(pbCustom = new JRadioButton(
 				Messages.getString("GameSettingFrame.CUSTOM_PROGRESS_BAR"))); //$NON-NLS-1$
-		plf.make(loadBarMode,PGameSettings.LOAD_BAR_MODE,ProgressBar.class);
+		plf.make(loadBarMode, PGameSettings.LOAD_BAR_MODE, ProgressBar.class);
 
 		backLoad = new JButton(Messages.getString("GameSettingFrame.BACK_IMAGE")); //$NON-NLS-1$
 		backLoad.addActionListener(this);
@@ -427,7 +537,7 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		backLoad.setEnabled(pbCustom.isSelected());
 		frontLoad.setEnabled(backLoad.isEnabled());
 		scaleProgressBar = new JCheckBox(Messages.getString("GameSettingFrame.SCALE_IMAGE")); //$NON-NLS-1$
-		plf.make(scaleProgressBar,PGameSettings.SCALE_PROGRESS_BAR);
+		plf.make(scaleProgressBar, PGameSettings.SCALE_PROGRESS_BAR);
 
 		pbLayout.setHorizontalGroup(pbLayout.createParallelGroup()
 		/**/.addComponent(pbNo).addComponent(pbDef).addComponent(pbCustom)
@@ -444,23 +554,23 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 
 
 		JFileChooser fc = new JFileChooser();
-		fc.setFileFilter(new CustomFileFilter(Messages.getString("GameSettingFrame.ICO_FILES"),".ico")); //$NON-NLS-1$ //$NON-NLS-2$
+		fc.setFileFilter(new CustomFileFilter(Messages.getString("GameSettingFrame.ICO_FILES"), ".ico")); //$NON-NLS-1$ //$NON-NLS-2$
 		JLabel lId = new JLabel(Messages.getString("GameSettingFrame.GAME_ID")); //$NON-NLS-1$
-		gameId = new NumberField(0,100000000);
-		plf.make(gameId,PGameSettings.GAME_ID);
+		gameId = new NumberField(0, 100000000);
+		plf.make(gameId, PGameSettings.GAME_ID);
 		randomise = new JButton(Messages.getString("GameSettingFrame.RANDOMIZE")); //$NON-NLS-1$
 		randomise.addActionListener(this);
 
 		layout.setHorizontalGroup(layout.createParallelGroup()
-		/**/.addComponent(loadImage,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE)
-		/**/.addComponent(progBar,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE)
+		/**/.addComponent(loadImage, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE)
+		/**/.addComponent(progBar, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE)
 		/**/.addGroup(layout.createSequentialGroup()
 		/*		*/.addGroup(layout.createParallelGroup()
 		/*				*/.addGroup(layout.createSequentialGroup()
 		/*						*/.addComponent(lId)
-		/*						*/.addComponent(gameId,DEFAULT_SIZE,DEFAULT_SIZE,PREFERRED_SIZE)))
+		/*						*/.addComponent(gameId, DEFAULT_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)))
 		/*		*/.addGroup(layout.createParallelGroup()
-		/*				*/.addComponent(randomise,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE))));
+		/*				*/.addComponent(randomise, DEFAULT_SIZE, DEFAULT_SIZE, MAX_VALUE))));
 		layout.setVerticalGroup(layout.createSequentialGroup()
 		/**/.addComponent(loadImage)
 		/**/.addComponent(progBar)
@@ -469,39 +579,32 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		/*		*/.addComponent(gameId)
 		/*		*/.addComponent(randomise)));
 		return panel;
-		}
+	}
 
-	public JList<Include> includes;
-	public ButtonGroup exportFolder;
-	public JCheckBox overwriteExisting;
-	public JCheckBox removeAtGameEnd;
-	private CustomFileChooser includesFc;
-
-	private JPanel makeIncludePane()
-		{
+	private JPanel makeIncludePane() {
 		JPanel panel = new JPanel();
 		GroupLayout layout = new GroupLayout(panel);
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		panel.setLayout(layout);
 
-		String incFolders[] = { "GameSettingFrame.SAME_FOLDER","GameSettingFrame.TEMP_DIRECTORY" }; //$NON-NLS-1$ //$NON-NLS-2$
+		String incFolders[] = {"GameSettingFrame.SAME_FOLDER", "GameSettingFrame.TEMP_DIRECTORY"}; //$NON-NLS-1$ //$NON-NLS-2$
 		JPanel folderPanel = makeRadioPane(
 				Messages.getString("GameSettingFrame.EXPORT_TO"), //$NON-NLS-1$
-				exportFolder = new ButtonGroup(),PGameSettings.INCLUDE_FOLDER,IncludeFolder.class,
+				exportFolder = new ButtonGroup(), PGameSettings.INCLUDE_FOLDER, IncludeFolder.class,
 				incFolders);
 
 		overwriteExisting = new JCheckBox(Messages.getString("GameSettingFrame.OVERWRITE_EXISTING")); //$NON-NLS-1$
 		removeAtGameEnd = new JCheckBox(Messages.getString("GameSettingFrame.REMOVE_FILES_AT_END")); //$NON-NLS-1$
-		plf.make(overwriteExisting,PGameSettings.OVERWRITE_EXISTING);
-		plf.make(removeAtGameEnd,PGameSettings.REMOVE_AT_GAME_END);
+		plf.make(overwriteExisting, PGameSettings.OVERWRITE_EXISTING);
+		plf.make(removeAtGameEnd, PGameSettings.REMOVE_AT_GAME_END);
 
-		includesFc = new CustomFileChooser("/org/lateralgm","LAST_INCLUDES_DIR"); //$NON-NLS-1$ //$NON-NLS-2$
+		includesFc = new CustomFileChooser("/org/lateralgm", "LAST_INCLUDES_DIR"); //$NON-NLS-1$ //$NON-NLS-2$
 		includesFc.setMultiSelectionEnabled(true);
 
 		layout.setHorizontalGroup(layout.createParallelGroup()
 		/**/.addGroup(layout.createSequentialGroup()
-		/*		*/.addComponent(folderPanel).addGap(4,8,MAX_VALUE)
+		/*		*/.addComponent(folderPanel).addGap(4, 8, MAX_VALUE)
 		/*		*/.addGroup(layout.createParallelGroup()
 		/*				*/.addComponent(overwriteExisting)
 		/*				*/.addComponent(removeAtGameEnd))));
@@ -512,16 +615,9 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		/*				*/.addComponent(overwriteExisting)
 		/*				*/.addComponent(removeAtGameEnd))));
 		return panel;
-		}
+	}
 
-	JCheckBox displayErrors;
-	JCheckBox writeToLog;
-	JCheckBox abortOnError;
-	JCheckBox treatUninitialisedAs0;
-	JCheckBox errorOnArgs;
-
-	private JPanel makeErrorPane()
-		{
+	private JPanel makeErrorPane() {
 		JPanel panel = new JPanel();
 		GroupLayout layout = new GroupLayout(panel);
 		layout.setAutoCreateGaps(true);
@@ -534,11 +630,11 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		treatUninitialisedAs0 = new JCheckBox(Messages.getString("GameSettingFrame.UNINITZERO")); //$NON-NLS-1$
 		errorOnArgs = new JCheckBox(Messages.getString("GameSettingFrame.ERRORS_ARGS")); //$NON-NLS-1$
 
-		plf.make(displayErrors,PGameSettings.DISPLAY_ERRORS);
-		plf.make(writeToLog,PGameSettings.WRITE_TO_LOG);
-		plf.make(abortOnError,PGameSettings.ABORT_ON_ERROR);
-		plf.make(treatUninitialisedAs0,PGameSettings.TREAT_UNINIT_AS_0);
-		plf.make(errorOnArgs,PGameSettings.ERROR_ON_ARGS);
+		plf.make(displayErrors, PGameSettings.DISPLAY_ERRORS);
+		plf.make(writeToLog, PGameSettings.WRITE_TO_LOG);
+		plf.make(abortOnError, PGameSettings.ABORT_ON_ERROR);
+		plf.make(treatUninitialisedAs0, PGameSettings.TREAT_UNINIT_AS_0);
+		plf.make(errorOnArgs, PGameSettings.ERROR_ON_ARGS);
 
 		layout.setHorizontalGroup(layout.createParallelGroup().
 		/**/addComponent(displayErrors).addComponent(writeToLog).addComponent(abortOnError).
@@ -547,15 +643,9 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		/**/.addComponent(displayErrors).addComponent(writeToLog).addComponent(abortOnError).
 		/**/addComponent(treatUninitialisedAs0).addComponent(errorOnArgs));
 		return panel;
-		}
+	}
 
-	JTextField author;
-	JTextField version;
-	JTextField lastChanged;
-	JTextArea information;
-
-	private JPanel makeInfoPane()
-		{
+	private JPanel makeInfoPane() {
 		JPanel panel = new JPanel();
 		GroupLayout layout = new GroupLayout(panel);
 		layout.setAutoCreateGaps(true);
@@ -573,9 +663,9 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		information.setLineWrap(true);
 		JScrollPane infoScroll = new JScrollPane(information);
 
-		plf.make(author.getDocument(),PGameSettings.AUTHOR);
-		plf.make(version.getDocument(),PGameSettings.VERSION);
-		plf.make(information.getDocument(),PGameSettings.INFORMATION);
+		plf.make(author.getDocument(), PGameSettings.AUTHOR);
+		plf.make(version.getDocument(), PGameSettings.VERSION);
+		plf.make(information.getDocument(), PGameSettings.INFORMATION);
 
 		layout.setHorizontalGroup(layout.createParallelGroup()
 		/**/.addGroup(layout.createSequentialGroup()
@@ -584,10 +674,10 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		/*				*/.addComponent(lVersion)
 		/*				*/.addComponent(lChanged))
 		/*		*/.addGroup(layout.createParallelGroup()
-		/*				*/.addComponent(author,DEFAULT_SIZE,240,MAX_VALUE)
-		/*				*/.addComponent(version,DEFAULT_SIZE,240,MAX_VALUE)
-		/*				*/.addComponent(lastChanged,DEFAULT_SIZE,240,MAX_VALUE)))
-		/**/.addComponent(lInfo,DEFAULT_SIZE,320,MAX_VALUE)
+		/*				*/.addComponent(author, DEFAULT_SIZE, 240, MAX_VALUE)
+		/*				*/.addComponent(version, DEFAULT_SIZE, 240, MAX_VALUE)
+		/*				*/.addComponent(lastChanged, DEFAULT_SIZE, 240, MAX_VALUE)))
+		/**/.addComponent(lInfo, DEFAULT_SIZE, 320, MAX_VALUE)
 		/**/.addComponent(infoScroll));
 		layout.setVerticalGroup(layout.createSequentialGroup()
 		/**/.addGroup(layout.createParallelGroup(Alignment.BASELINE)
@@ -604,46 +694,20 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 
 		panel.setLayout(layout);
 		return panel;
-		}
-
-	public JLabel iconPreview;
-	public ICOFile gameIcon;
-	public JButton changeIcon;
-	private CustomFileChooser iconFc;
-
-	private static BufferedImage scale_image(BufferedImage src, int imgType, int destSize) {
-		if(src == null) { return null; }
-			BufferedImage dest = new BufferedImage(destSize, destSize, imgType);
-			Graphics2D g = dest.createGraphics();
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-			AffineTransform at = AffineTransform.getScaleInstance(destSize/((float)src.getWidth()), destSize/((float)src.getHeight()));
-			g.drawRenderedImage(src, at);
-
-			return dest;
 	}
 
 	private void setIconPreviewToGameIcon() {
 		BufferedImage src = null;
 		if (gameIcon != null) {
-			src = (BufferedImage)gameIcon.getDisplayImage();
-			if (src!=null) {
-				if (src.getWidth()>32 || src.getHeight()>32) {
-					src = scale_image((BufferedImage)src, BufferedImage.TYPE_INT_ARGB, MAX_VIEWABLE_ICON_SIZE);
+			src = (BufferedImage) gameIcon.getDisplayImage();
+			if (src != null) {
+				if (src.getWidth() > 32 || src.getHeight() > 32) {
+					src = scale_image((BufferedImage) src, BufferedImage.TYPE_INT_ARGB, MAX_VIEWABLE_ICON_SIZE);
 				}
 			}
 		}
 		iconPreview.setIcon(new ImageIcon(src));
 	}
-
-	NumberField versionMajorField;
-	NumberField versionMinorField;
-	NumberField versionReleaseField;
-	NumberField versionBuildField;
-	JTextField companyField;
-	JTextField productField;
-	JTextField copyrightField;
-	JTextField descriptionField;
 
 	private JPanel makeWindowsPane() {
 		JPanel panel = new JPanel();
@@ -656,35 +720,35 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		changeIcon = new JButton(Messages.getString("GameSettingFrame.CHANGE_ICON")); //$NON-NLS-1$
 		changeIcon.addActionListener(this);
 
-		iconFc = new CustomFileChooser("/org/lateralgm","LAST_ICON_DIR"); //$NON-NLS-1$ //$NON-NLS-2$
+		iconFc = new CustomFileChooser("/org/lateralgm", "LAST_ICON_DIR"); //$NON-NLS-1$ //$NON-NLS-2$
 		iconFc.setAccessory(new FileChooserImagePreview(iconFc));
 		iconFc.setFileFilter(new CustomFileFilter(
-				Messages.getString("GameSettingFrame.ICO_FILES"),".ico")); //$NON-NLS-1$ //$NON-NLS-2$
+				Messages.getString("GameSettingFrame.ICO_FILES"), ".ico")); //$NON-NLS-1$ //$NON-NLS-2$
 
 		JPanel versionPanel = new JPanel();
 		versionPanel.setBorder(BorderFactory.createTitledBorder(Messages.getString("GameSettingFrame.VERSION_INFORMATION")));
 
 		JLabel versionLabel = new JLabel(Messages.getString("GameSettingFrame.VERSION"));
 		versionMajorField = new NumberField(0);
-		plf.make(versionMajorField,PGameSettings.VERSION_MAJOR);
+		plf.make(versionMajorField, PGameSettings.VERSION_MAJOR);
 		versionMinorField = new NumberField(0);
-		plf.make(versionMinorField,PGameSettings.VERSION_MINOR);
+		plf.make(versionMinorField, PGameSettings.VERSION_MINOR);
 		versionReleaseField = new NumberField(0);
-		plf.make(versionReleaseField,PGameSettings.VERSION_RELEASE);
+		plf.make(versionReleaseField, PGameSettings.VERSION_RELEASE);
 		versionBuildField = new NumberField(0);
-		plf.make(versionBuildField,PGameSettings.VERSION_BUILD);
+		plf.make(versionBuildField, PGameSettings.VERSION_BUILD);
 		JLabel companyLabel = new JLabel(Messages.getString("GameSettingFrame.COMPANY"));
 		companyField = new JTextField("");
-		plf.make(companyField.getDocument(),PGameSettings.COMPANY);
+		plf.make(companyField.getDocument(), PGameSettings.COMPANY);
 		JLabel productLabel = new JLabel(Messages.getString("GameSettingFrame.PRODUCT"));
 		productField = new JTextField("");
-		plf.make(productField.getDocument(),PGameSettings.PRODUCT);
+		plf.make(productField.getDocument(), PGameSettings.PRODUCT);
 		JLabel copyrightLabel = new JLabel(Messages.getString("GameSettingFrame.COPYRIGHT"));
 		copyrightField = new JTextField("");
-		plf.make(copyrightField.getDocument(),PGameSettings.COPYRIGHT);
+		plf.make(copyrightField.getDocument(), PGameSettings.COPYRIGHT);
 		JLabel descriptionLabel = new JLabel(Messages.getString("GameSettingFrame.DESCRIPTION"));
 		descriptionField = new JTextField("");
-		plf.make(descriptionField.getDocument(),PGameSettings.DESCRIPTION);
+		plf.make(descriptionField.getDocument(), PGameSettings.DESCRIPTION);
 
 		GroupLayout vl = new GroupLayout(versionPanel);
 		vl.setAutoCreateGaps(true);
@@ -750,110 +814,21 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		return panel;
 	}
 
-	public JButton discardButton;
-
-	public JTree tree;
-
-	public GameSettingFrame(GameSettings res)
-		{
-		this(res,null);
-		}
-
 	public void updateTitle() {
 		this.setTitle(Messages.getString("GameSettingFrame.TITLE") + " : " + resOriginal.getName());
 	}
-
-	public GameSettingFrame(GameSettings res, ResNode node)
-		{
-		super(res,node,Messages.getString("GameSettingFrame.TITLE"),true,true,true,true); //$NON-NLS-1$
-		setDefaultCloseOperation(HIDE_ON_CLOSE);
-
-		GroupLayout layout = new GroupLayout(getContentPane());
-		layout.setAutoCreateGaps(true);
-		setLayout(layout);
-
-		String t = Messages.getString("GameSettingFrame.BUTTON_SAVE"); //$NON-NLS-1$
-		save.setText(t);
-		t = Messages.getString("GameSettingFrame.BUTTON_DISCARD"); //$NON-NLS-1$
-		discardButton = new JButton(t);
-		discardButton.addActionListener(this);
-		discardButton.setIcon(LGM.getIconForKey("GameSettingFrame.BUTTON_DISCARD"));
-		// make discard button the height as save, Win32 look and feel makes
-		// buttons with icons 2x as tall
-		discardButton.setMinimumSize(save.getMaximumSize());
-
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode("Preferences");
-
-		tree = new JTree(new DefaultTreeModel(root));
-		tree.setEditable(false);
-		//tree.expandRow(0);
-		tree.setRootVisible(false);
-		tree.setShowsRootHandles(true);
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-		// Simplest way to stop updateUI/setUI calls for changing the look and feel from reverting the
-		// tree icons.
-		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-		renderer.setLeafIcon(null);
-		renderer.setClosedIcon(null);
-		renderer.setOpenIcon(null);
-		tree.setCellRenderer(renderer);
-
-		buildTabs(root);
-
-		// reload after adding all root children to make sure its children are visible
-		((DefaultTreeModel)tree.getModel()).reload();
-
-		tree.addTreeSelectionListener(new TreeSelectionListener() {
-		public void valueChanged(TreeSelectionEvent e) {
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-													 tree.getLastSelectedPathComponent();
-
-				// if nothing is selected
-				if (node == null) return;
-
-				// retrieve the node that was selected
-				String nodeInfo = node.getUserObject().toString();
-
-				CardLayout cl = (CardLayout)(cardPane.getLayout());
-				cl.show(cardPane, nodeInfo);
-			}
-		});
-
-		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,true,
-				new JScrollPane(tree),cardPane);
-		split.setDividerLocation(200);
-
-		layout.setHorizontalGroup(layout.createParallelGroup()
-		/**/.addComponent(split)
-		/**/.addGroup(layout.createSequentialGroup()
-		/*		*/.addContainerGap()
-		/*		*/.addComponent(save,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE)
-		/*		*/.addComponent(discardButton,DEFAULT_SIZE,DEFAULT_SIZE,MAX_VALUE)
-		/*		*/.addContainerGap()));
-		layout.setVerticalGroup(layout.createSequentialGroup()
-		/**/.addComponent(split)
-		/**/.addPreferredGap(ComponentPlacement.UNRELATED)
-		/**/.addGroup(layout.createParallelGroup()
-		/*		*/.addComponent(save)
-		/*		*/.addComponent(discardButton))
-		/**/.addContainerGap());
-		pack();
-		this.setSize(600,500);
-		}
 
 	private DefaultMutableTreeNode buildTab(DefaultMutableTreeNode root, String key, JComponent pane) {
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(Messages.getString(key));
 		root.add(node);
 		if (pane != null) {
 			pane.setName(key);
-			cardPane.add(Messages.getString(key),pane);
+			cardPane.add(Messages.getString(key), pane);
 		}
 		return node;
 	}
 
-	private void buildTabs(DefaultMutableTreeNode root)
-		{
+	private void buildTabs(DefaultMutableTreeNode root) {
 		cardPane = new JPanel(new CardLayout());
 
 		buildTab(root, "GameSettingFrame.TAB_GRAPHICS", makeGraphicsPane());
@@ -870,18 +845,16 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		buildTab(pnode, "GameSettingFrame.TAB_WINDOWS", makeWindowsPane());
 		buildTab(pnode, "GameSettingFrame.TAB_MAC", null);
 		buildTab(pnode, "GameSettingFrame.TAB_UBUNTU", null);
-		}
+	}
 
-	public void actionPerformed(ActionEvent e)
-		{
+	public void actionPerformed(ActionEvent e) {
 		super.actionPerformed(e);
 
-		if (e.getSource() == discardButton)
-			{
+		if (e.getSource() == discardButton) {
 			revertResource();
 			close();
 			return;
-			}
+		}
 		//TODO: icky way of getting the selected index
 		String name = null;
 		for (Component comp : cardPane.getComponents()) {
@@ -901,97 +874,70 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 			windowsActionPerformed(e);
 		}
 
-		}
+	}
 
-	private void windowsActionPerformed(ActionEvent e)
-		{
-			if (e.getSource() == changeIcon)
-				{
-				if (iconFc.showOpenDialog(LGM.frame) == JFileChooser.APPROVE_OPTION)
-					{
-					File f = iconFc.getSelectedFile();
-					if (f.exists()) try
-						{
-						FileInputStream fis = new FileInputStream(f);
-						gameIcon = new ICOFile(fis);
-						fis.close();
-						setIconPreviewToGameIcon();
-						imagesChanged = true;
-						}
-					catch (FileNotFoundException e1)
-						{
-						e1.printStackTrace();
-						}
-					catch (IOException ex)
-						{
-						ex.printStackTrace();
-						}
-					}
+	private void windowsActionPerformed(ActionEvent e) {
+		if (e.getSource() == changeIcon) {
+			if (iconFc.showOpenDialog(LGM.frame) == JFileChooser.APPROVE_OPTION) {
+				File f = iconFc.getSelectedFile();
+				if (f.exists()) try {
+					FileInputStream fis = new FileInputStream(f);
+					gameIcon = new ICOFile(fis);
+					fis.close();
+					setIconPreviewToGameIcon();
+					imagesChanged = true;
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				} catch (IOException ex) {
+					ex.printStackTrace();
 				}
-		}
-
-	private void loadActionPerformed(ActionEvent e)
-		{
-		if (e.getSource() == showCustomLoadImage)
-			{
-			changeCustomLoad.setEnabled(showCustomLoadImage.isSelected());
 			}
-		else if (e.getSource() == changeCustomLoad)
-			{
-			try
-				{
+		}
+	}
+
+	private void loadActionPerformed(ActionEvent e) {
+		if (e.getSource() == showCustomLoadImage) {
+			changeCustomLoad.setEnabled(showCustomLoadImage.isSelected());
+		} else if (e.getSource() == changeCustomLoad) {
+			try {
 				customLoadingImage = Util.getValidImage();
 				imagesChanged = true;
-				}
-			catch (Throwable ex)
-				{
+			} catch (Throwable ex) {
 				JOptionPane.showMessageDialog(LGM.frame,
 						Messages.getString("GameSettingFrame.ERROR_LOADING_IMAGE")); //$NON-NLS-1$
-				}
 			}
-		else if (e.getSource() instanceof JRadioButton)
-			{
+		} else if (e.getSource() instanceof JRadioButton) {
 			backLoad.setEnabled(pbCustom.isSelected());
 			frontLoad.setEnabled(backLoad.isEnabled());
-			}
-		else if (e.getSource() == backLoad)
-			{
+		} else if (e.getSource() == backLoad) {
 			BufferedImage img = Util.getValidImage();
-			if (img != null)
-				{
+			if (img != null) {
 				backLoadImage = img;
 				imagesChanged = true;
-				}
 			}
-		else if (e.getSource() == frontLoad)
-			{
+		} else if (e.getSource() == frontLoad) {
 			BufferedImage img = Util.getValidImage();
-			if (img != null)
-				{
+			if (img != null) {
 				frontLoadImage = img;
 				imagesChanged = true;
-				}
 			}
-		else if (e.getSource() == randomise)
-			{
+		} else if (e.getSource() == randomise) {
 			gameId.setValue(new Random().nextInt(100000001));
-			}
 		}
+	}
 
-	public void commitChanges()
-		{
+	public void commitChanges() {
 		// in GMX this is two options binded together into one value
 		//res.put(PGameSettings.FORCE_SOFTWARE_VERTEX_PROCESSING,softwareVertexProcessing.is);
-		res.put(PGameSettings.SCALING,scaling.getValue() > 0 ? scale.getIntValue() : scaling.getValue());
-		res.put(PGameSettings.LOADING_IMAGE,customLoadingImage);
-		res.put(PGameSettings.BACK_LOAD_BAR,backLoadImage);
-		res.put(PGameSettings.FRONT_LOAD_BAR,frontLoadImage);
-		res.put(PGameSettings.GAME_ICON,gameIcon);
+		res.put(PGameSettings.SCALING, scaling.getValue() > 0 ? scale.getIntValue() : scaling.getValue());
+		res.put(PGameSettings.LOADING_IMAGE, customLoadingImage);
+		res.put(PGameSettings.BACK_LOAD_BAR, backLoadImage);
+		res.put(PGameSettings.FRONT_LOAD_BAR, frontLoadImage);
+		res.put(PGameSettings.GAME_ICON, gameIcon);
 		// we don't update the lastChanged time - that's only altered on file save/load
-		}
+	}
 
-	public void setComponents(GameSettings g)
-		{
+	public void setComponents(GameSettings g) {
 		int s = g.get(PGameSettings.SCALING);
 		scaling.setValue(s > 1 ? 1 : s);
 		if (s > 1) scale.setValue(s);
@@ -1004,17 +950,15 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		gameIcon = g.get(PGameSettings.GAME_ICON);
 		setIconPreviewToGameIcon();
 		imagesChanged = true;
-		}
+	}
 
 	@Override
-	public String getConfirmationName()
-		{
+	public String getConfirmationName() {
 		return getTitle();
-		}
+	}
 
 	@Override
-	public boolean resourceChanged()
-		{
+	public boolean resourceChanged() {
 		// NOTE: commit changes must be the first line because if we don't
 		// the method will be flagged that we handled committing ourselves,
 		// and the changes wont actually get committed.
@@ -1022,22 +966,20 @@ public class GameSettingFrame extends ResourceFrame<GameSettings,PGameSettings>
 		if (frameListener != null && frameListener.resourceChanged()) return true;
 		if (imagesChanged) return true;
 		return !res.properties.equals(resOriginal.properties);
-		}
+	}
 
 	@Override
-	public void revertResource()
-		{
+	public void revertResource() {
 		if (frameListener != null) frameListener.revertResource();
 		res.properties.putAll(resOriginal.properties);
 		setComponents(res);
 		plf.setMap(res.properties);
 		imagesChanged = false;
-		}
+	}
 
 	@Override
-	public void updateResource(boolean commit)
-		{
+	public void updateResource(boolean commit) {
 		super.updateResource(commit);
 		imagesChanged = false;
-		}
 	}
+}

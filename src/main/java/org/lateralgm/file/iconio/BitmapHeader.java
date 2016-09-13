@@ -1,9 +1,9 @@
 package org.lateralgm.file.iconio;
 
-import java.io.IOException;
-
 import org.lateralgm.file.StreamDecoder;
 import org.lateralgm.file.StreamEncoder;
+
+import java.io.IOException;
 
 /**
  * <p>
@@ -13,8 +13,7 @@ import org.lateralgm.file.StreamEncoder;
  *
  * @author &copy; Christian Treber, ct@ctreber.com
  */
-public class BitmapHeader
-	{
+public class BitmapHeader {
 	// Always 40
 	private long headerSize;
 	private long width;
@@ -38,19 +37,15 @@ public class BitmapHeader
 	 * @throws IOException
 	 */
 	// @PMD:REVIEWED:CallSuperInConstructor: by Chris on 06.03.06 10:26
-	public BitmapHeader(final StreamDecoder pDec) throws IOException
-		{
+	public BitmapHeader(final StreamDecoder pDec) throws IOException {
 		pDec.mark(4);
 		headerSize = pDec.read4();
 		//0x89+PNG is the start of a png header
-		if (headerSize == 0x474E5089)
-			{
+		if (headerSize == 0x474E5089) {
 			headerSize = -1;
 			compression = TypeCompression.BI_PNG;
 			pDec.reset();
-			}
-		else
-			{
+		} else {
 			width = pDec.read4();
 			height = pDec.read4();
 			planes = pDec.read2();
@@ -63,47 +58,43 @@ public class BitmapHeader
 			yPixelsPerM = pDec.read4();
 			colorsUsed = pDec.read4();
 			colorsImportant = pDec.read4();
-			}
 		}
+	}
 
-	public String toString()
-		{
+	public String toString() {
 		return "size: " + headerSize + ", width: " + width + ", height: " + height + ", planes: "
 				+ planes + ", BPP: " + bpp + /* ", compression: " + _compression + */", imageSize: "
 				+ imageSize + ", XPixelsPerM: " + xPixelsPerM + ", YPixelsPerM: " + yPixelsPerM
 				+ ", colorsUsed: " + colorsUsed + ", colorsImportant: " + colorsImportant
 				+ (colorsImportant == 0 ? " (all)" : "");
-		}
+	}
 
 	/**
 	 * Bits per pixel.
 	 *
 	 * @return Bits per pixel.
 	 */
-	public int getBPP()
-		{
+	public int getBPP() {
 		return bpp;
-		}
+	}
 
 	/**
 	 * Number of important colors (0: All).
 	 *
 	 * @return Important colors.
 	 */
-	public long getColorsImportant()
-		{
+	public long getColorsImportant() {
 		return colorsImportant;
-		}
+	}
 
 	/**
 	 * Number of colors used (often not set properly).
 	 *
 	 * @return Colors used.
 	 */
-	public long getColorsUsed()
-		{
+	public long getColorsUsed() {
 		return colorsUsed;
-		}
+	}
 
 	/**
 	 * The bitmap compression type.
@@ -111,93 +102,83 @@ public class BitmapHeader
 	 * @return Compression type.
 	 * @see TypeCompression
 	 */
-	public TypeCompression getCompression()
-		{
+	public TypeCompression getCompression() {
 		return compression;
-		}
+	}
 
 	/**
 	 * Bitmap height. Note: It seems the mask gets reported as well, so divide this number by two.
 	 *
 	 * @return Height.
 	 */
-	public long getHeight()
-		{
+	public long getHeight() {
 		return height;
-		}
+	}
 
 	/**
 	 * Bitmap size in bytes.
 	 *
 	 * @return Bitmap size.
 	 */
-	public long getBitmapSize()
-		{
+	public long getBitmapSize() {
 		return imageSize;
-		}
+	}
 
 	/**
 	 * Number of planes (always 1 in bitmaps, right?).
 	 *
 	 * @return Planes.
 	 */
-	public int getPlanes()
-		{
+	public int getPlanes() {
 		return planes;
-		}
+	}
 
 	/**
 	 * Header size (40 + 4 * color count, right?).
 	 *
 	 * @return Hease size.
 	 */
-	public long getHeaderSize()
-		{
+	public long getHeaderSize() {
 		return headerSize;
-		}
+	}
 
 	/**
 	 * Bitmap width.
 	 *
 	 * @return Width.
 	 */
-	public long getWidth()
-		{
+	public long getWidth() {
 		return width;
-		}
+	}
 
 	/**
 	 * I'm not sure what this is.
 	 *
 	 * @return ???
 	 */
-	public long getXPixelsPerM()
-		{
+	public long getXPixelsPerM() {
 		return xPixelsPerM;
-		}
+	}
 
 	/**
 	 * I'm not sure what this is.
 	 *
 	 * @return ???
 	 */
-	public long getYPixelsPerM()
-		{
+	public long getYPixelsPerM() {
 		return yPixelsPerM;
-		}
+	}
 
 	/**
 	 * The number of colors (based on BPP).
 	 *
 	 * @return Colors.
 	 */
-	public int getColorCount()
-		{
+	public int getColorCount() {
 		return 1 << bpp;
-		}
+	}
 
-	void write(StreamEncoder out) throws IOException
-		{
+	void write(StreamEncoder out) throws IOException {
 		out.write4((int) headerSize);
 		out.write4((int) width);
 		out.write4((int) height);
@@ -211,5 +192,5 @@ public class BitmapHeader
 		out.write4((int) yPixelsPerM);
 		out.write4((int) colorsUsed);
 		out.write4((int) colorsImportant);
-		}
 	}
+}

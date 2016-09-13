@@ -12,26 +12,6 @@
 
 package org.lateralgm.subframes;
 
-import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.event.InternalFrameEvent;
-
 import org.lateralgm.components.CodeTextArea;
 import org.lateralgm.components.MarkerCache;
 import org.lateralgm.components.impl.ResNode;
@@ -47,8 +27,26 @@ import org.lateralgm.resources.Script;
 import org.lateralgm.resources.Script.PScript;
 import org.lateralgm.ui.swing.util.SwingExecutor;
 
-public class ScriptFrame extends InstantiableResourceFrame<Script,PScript>
-	{
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.InternalFrameEvent;
+import java.awt.BorderLayout;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class ScriptFrame extends InstantiableResourceFrame<Script, PScript> {
 	private static final long serialVersionUID = 1L;
 	public JToolBar tool;
 	public CodeTextArea code;
@@ -57,20 +55,19 @@ public class ScriptFrame extends InstantiableResourceFrame<Script,PScript>
 
 	private ScriptEditor editor;
 
-	public ScriptFrame(Script res, ResNode node)
-		{
-		super(res,node);
-		setSize(700,430);
+	public ScriptFrame(Script res, ResNode node) {
+		super(res, node);
+		setSize(700, 430);
 		setLayout(new BorderLayout());
 
-		code = new CodeTextArea((String) res.get(PScript.CODE),MarkerCache.getMarker("gml"));
-		add(code,BorderLayout.CENTER);
+		code = new CodeTextArea((String) res.get(PScript.CODE), MarkerCache.getMarker("gml"));
+		add(code, BorderLayout.CENTER);
 
 		// Setup the toolbar
 		tool = new JToolBar();
 		tool.setFloatable(false);
 		tool.setAlignmentX(0);
-		add(tool,BorderLayout.NORTH);
+		add(tool, BorderLayout.NORTH);
 
 		tool.add(save);
 		tool.addSeparator();
@@ -93,161 +90,129 @@ public class ScriptFrame extends InstantiableResourceFrame<Script,PScript>
 		tool.add(name);
 
 		status = new JPanel(new FlowLayout());
-		BoxLayout layout = new BoxLayout(status,BoxLayout.X_AXIS);
+		BoxLayout layout = new BoxLayout(status, BoxLayout.X_AXIS);
 		status.setLayout(layout);
-		status.setMaximumSize(new Dimension(Integer.MAX_VALUE,11));
+		status.setMaximumSize(new Dimension(Integer.MAX_VALUE, 11));
 		final JLabel caretPos = new JLabel(" INS | UTF-8 | " + (code.getCaretLine() + 1) + " : "
 				+ (code.getCaretColumn() + 1));
 		status.add(caretPos);
-		code.addCaretListener(new CaretListener()
-			{
-				public void caretUpdate(CaretEvent e)
-					{
-					caretPos.setText(" INS | UTF-8 | " + (code.getCaretLine() + 1) + " : "
-							+ (code.getCaretColumn() + 1));
-					}
-			});
-		add(status,BorderLayout.SOUTH);
+		code.addCaretListener(new CaretListener() {
+			public void caretUpdate(CaretEvent e) {
+				caretPos.setText(" INS | UTF-8 | " + (code.getCaretLine() + 1) + " : "
+						+ (code.getCaretColumn() + 1));
+			}
+		});
+		add(status, BorderLayout.SOUTH);
 
 		setFocusTraversalPolicy(new TextAreaFocusTraversalPolicy(code.text));
-		}
+	}
 
-	public void commitChanges()
-		{
-		res.put(PScript.CODE,code.getTextCompat());
+	public void commitChanges() {
+		res.put(PScript.CODE, code.getTextCompat());
 		res.setName(name.getText());
-		}
+	}
 
-	public void fireInternalFrameEvent(int id)
-		{
+	public void fireInternalFrameEvent(int id) {
 		if (id == InternalFrameEvent.INTERNAL_FRAME_CLOSED)
 			LGM.currentFile.updateSource.removeListener(code);
 		super.fireInternalFrameEvent(id);
-		}
+	}
 
-	public void actionPerformed(ActionEvent e)
-		{
-		if (e.getSource() == edit)
-			{
-			try
-				{
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == edit) {
+			try {
 				if (editor == null)
 					new ScriptEditor();
 				else
 					editor.start();
-				}
-			catch (IOException ex)
-				{
+			} catch (IOException ex) {
 				ex.printStackTrace();
-				}
-			return;
 			}
-		super.actionPerformed(e);
+			return;
 		}
+		super.actionPerformed(e);
+	}
 
-	private class ScriptEditor implements UpdateListener
-		{
+	public void dispose() {
+		if (editor != null) editor.stop();
+		super.dispose();
+	}
+
+	private class ScriptEditor implements UpdateListener {
 		public final FileChangeMonitor monitor;
 		private File f;
 
-		public ScriptEditor() throws IOException
-			{
-			f = File.createTempFile(res.getName(),"." + Prefs.externalScriptExtension,LGM.tempDir); //$NON-NLS-1$
+		public ScriptEditor() throws IOException {
+			f = File.createTempFile(res.getName(), "." + Prefs.externalScriptExtension, LGM.tempDir); //$NON-NLS-1$
 			f.deleteOnExit();
-			monitor = new FileChangeMonitor(f,SwingExecutor.INSTANCE);
-			monitor.updateSource.addListener(this,true);
+			monitor = new FileChangeMonitor(f, SwingExecutor.INSTANCE);
+			monitor.updateSource.addListener(this, true);
 			editor = this;
 			start();
-			}
+		}
 
-		public void start() throws IOException
-			{
+		public void start() throws IOException {
 			FileWriter out = null;
-			try
-				{
+			try {
 				out = new FileWriter(f);
 				out.write(code.getTextCompat());
-				}
-			finally
-				{
-				if (out != null)
-					{
+			} finally {
+				if (out != null) {
 					out.close();
-					}
 				}
+			}
 			if (!Prefs.useExternalScriptEditor || Prefs.externalScriptEditorCommand == null)
-				try
-					{
+				try {
 					System.out.println(Desktop.getDesktop());
 					//					Desktop d = Desktop.getDesktop();
 					//					Desktop.Action.EDIT;
 					//					Toolkit.getDefaultToolkit().createDesktopPeer(d);
 					Desktop.getDesktop().edit(monitor.file);
-					}
-				catch (UnsupportedOperationException e)
-					{
-					throw new UnsupportedOperationException("no internal or system script editor",e);
-					}
+				} catch (UnsupportedOperationException e) {
+					throw new UnsupportedOperationException("no internal or system script editor", e);
+				}
 			else
 				Runtime.getRuntime().exec(
-						String.format(Prefs.externalScriptEditorCommand,monitor.file.getAbsolutePath()));
-			}
+						String.format(Prefs.externalScriptEditorCommand, monitor.file.getAbsolutePath()));
+		}
 
-		public void stop()
-			{
+		public void stop() {
 			monitor.stop();
 			monitor.file.delete();
 			editor = null;
-			}
+		}
 
-		public void updated(UpdateEvent e)
-			{
+		public void updated(UpdateEvent e) {
 			if (!(e instanceof FileUpdateEvent)) return;
-			switch (((FileUpdateEvent) e).flag)
-				{
+			switch (((FileUpdateEvent) e).flag) {
 				case CHANGED:
 					StringBuffer sb = new StringBuffer(1024);
 					BufferedReader reader = null;
-					try
-						{
+					try {
 						reader = new BufferedReader(new FileReader(monitor.file));
 						char[] chars = new char[1024];
 						int len = 0;
 						while ((len = reader.read(chars)) > -1)
-							sb.append(chars,0,len);
-						}
-					catch (IOException ioe)
-						{
+							sb.append(chars, 0, len);
+					} catch (IOException ioe) {
 						LGM.showDefaultExceptionHandler(ioe);
 						return;
-						}
-					finally
-						{
-						if (reader != null)
-							{
-							try
-								{
+					} finally {
+						if (reader != null) {
+							try {
 								reader.close();
-								}
-							catch (IOException ex)
-								{
+							} catch (IOException ex) {
 								LGM.showDefaultExceptionHandler(ex);
-								}
 							}
 						}
+					}
 					String s = sb.toString();
-					res.put(PScript.CODE,s);
+					res.put(PScript.CODE, s);
 					code.setText(s);
 					break;
 				case DELETED:
 					editor = null;
-				}
 			}
 		}
-
-	public void dispose()
-		{
-		if (editor != null) editor.stop();
-		super.dispose();
-		}
 	}
+}

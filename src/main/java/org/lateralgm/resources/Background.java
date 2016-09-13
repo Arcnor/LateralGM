@@ -10,6 +10,11 @@
 
 package org.lateralgm.resources;
 
+import org.lateralgm.main.Util;
+import org.lateralgm.util.PropertyMap;
+import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
+import org.lateralgm.util.PropertyMap.PropertyUpdateListener;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -20,93 +25,69 @@ import java.awt.image.DataBufferShort;
 import java.lang.ref.SoftReference;
 import java.util.EnumMap;
 
-import org.lateralgm.main.Util;
-import org.lateralgm.util.PropertyMap;
-import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
-import org.lateralgm.util.PropertyMap.PropertyUpdateListener;
-
-public class Background extends InstantiableResource<Background,Background.PBackground> implements
-		Resource.Viewable
-	{
+public class Background extends InstantiableResource<Background, Background.PBackground> implements
+		Resource.Viewable {
+	private static final EnumMap<PBackground, Object> DEFS = PropertyMap.makeDefaultMap(
+			PBackground.class, false, false, false, false, 16, 16, 0, 0, 0, 0, false, false, false);
+	private final BackgroundPropertyListener bpl = new BackgroundPropertyListener();
 	private BufferedImage backgroundImage = null;
 	private SoftReference<BufferedImage> imageCache = null;
 
-	private final BackgroundPropertyListener bpl = new BackgroundPropertyListener();
-
-	public enum PBackground
-		{
-		TRANSPARENT,SMOOTH_EDGES,PRELOAD,USE_AS_TILESET,TILE_WIDTH,TILE_HEIGHT,H_OFFSET,V_OFFSET,H_SEP,
-		V_SEP,TILE_HORIZONTALLY,TILE_VERTICALLY,FOR3D
-		}
-
-	private static final EnumMap<PBackground,Object> DEFS = PropertyMap.makeDefaultMap(
-			PBackground.class,false,false,false,false,16,16,0,0,0,0,false,false,false);
-
-	public Background()
-		{
+	public Background() {
 		this(null);
-		}
+	}
 
-	public Background(ResourceReference<Background> r)
-		{
+	public Background(ResourceReference<Background> r) {
 		super(r);
 		properties.getUpdateSource(PBackground.TRANSPARENT).addListener(bpl);
-		}
+	}
 
-	public Background makeInstance(ResourceReference<Background> r)
-		{
+	public Background makeInstance(ResourceReference<Background> r) {
 		return new Background(r);
-		}
+	}
 
-	public BufferedImage getDisplayImage()
-		{
+	public BufferedImage getDisplayImage() {
 		if (backgroundImage == null) return null;
 		BufferedImage bi;
-		if (imageCache != null)
-			{
+		if (imageCache != null) {
 			bi = imageCache.get();
-			if (bi != null)
-				{
+			if (bi != null) {
 				return bi;
-				}
 			}
+		}
 		bi = backgroundImage;
 		if (get(PBackground.TRANSPARENT)) bi = Util.getTransparentImage(bi);
 		imageCache = new SoftReference<BufferedImage>(bi);
 		return bi;
-		}
+	}
 
-	protected void postCopy(Background dest)
-		{
+	protected void postCopy(Background dest) {
 		super.postCopy(dest);
 		dest.backgroundImage = Util.cloneImage(backgroundImage);
-		}
+	}
 
 	@Override
-	protected void fireUpdate()
-		{
+	protected void fireUpdate() {
 		if (imageCache != null) imageCache.clear();
 		super.fireUpdate();
-		}
+	}
 
-	public BufferedImage getBackgroundImage()
-		{
+	public BufferedImage getBackgroundImage() {
 		return backgroundImage;
-		}
+	}
 
-	public void setBackgroundImage(BufferedImage backgroundImage)
-		{
+	public void setBackgroundImage(BufferedImage backgroundImage) {
 		this.backgroundImage = backgroundImage;
 		fireUpdate();
-		}
+	}
 
-	/** Returns the byte length of a DataBuffer **/
+	/**
+	 * Returns the byte length of a DataBuffer
+	 **/
 	//TODO: This function reports astronomical values for some reason.
-	public long getDataBytes(DataBuffer data)
-		{
+	public long getDataBytes(DataBuffer data) {
 		int dataType = data.getDataType();
-		switch (dataType)
-			{
+		switch (dataType) {
 			case DataBuffer.TYPE_BYTE:
 				byte[] bytes = ((DataBufferByte) data).getData();
 				return bytes.length;
@@ -124,50 +105,49 @@ public class Background extends InstantiableResource<Background,Background.PBack
 				return doubles.length * 8;
 			default:
 				throw new IllegalArgumentException("Unknown data buffer type: " + dataType);
-			}
 		}
+	}
 
-	/** Returns the size of the background image in bytes */
-	public long getSize()
-		{
-		if (backgroundImage != null)
-			{
+	/**
+	 * Returns the size of the background image in bytes
+	 */
+	public long getSize() {
+		if (backgroundImage != null) {
 			return this.getWidth() * this.getHeight() * 4;//getDataBytes(backgroundImage.getRaster().getDataBuffer());
-			}
+		}
 		return 0;
-		}
+	}
 
-	public int getWidth()
-		{
+	public int getWidth() {
 		return backgroundImage == null ? 0 : backgroundImage.getWidth();
-		}
+	}
 
-	public int getHeight()
-		{
+	public int getHeight() {
 		return backgroundImage == null ? 0 : backgroundImage.getHeight();
-		}
+	}
 
 	@Override
-	protected PropertyMap<PBackground> makePropertyMap()
-		{
-		return new PropertyMap<PBackground>(PBackground.class,this,DEFS);
-		}
+	protected PropertyMap<PBackground> makePropertyMap() {
+		return new PropertyMap<PBackground>(PBackground.class, this, DEFS);
+	}
 
-	private class BackgroundPropertyListener extends PropertyUpdateListener<PBackground>
-		{
+	public enum PBackground {
+		TRANSPARENT, SMOOTH_EDGES, PRELOAD, USE_AS_TILESET, TILE_WIDTH, TILE_HEIGHT, H_OFFSET, V_OFFSET, H_SEP,
+		V_SEP, TILE_HORIZONTALLY, TILE_VERTICALLY, FOR3D
+	}
+
+	private class BackgroundPropertyListener extends PropertyUpdateListener<PBackground> {
 		@Override
-		public void updated(PropertyUpdateEvent<PBackground> e)
-			{
-			switch (e.key)
-				{
+		public void updated(PropertyUpdateEvent<PBackground> e) {
+			switch (e.key) {
 				case TRANSPARENT:
 					fireUpdate();
 					break;
 				default:
 					//TODO: maybe put a failsafe here?
 					break;
-				}
 			}
 		}
-
 	}
+
+}

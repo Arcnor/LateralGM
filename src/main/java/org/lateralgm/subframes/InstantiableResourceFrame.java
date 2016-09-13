@@ -21,18 +21,19 @@
 
 package org.lateralgm.subframes;
 
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import org.lateralgm.components.impl.NameDocument;
 import org.lateralgm.components.impl.ResNode;
 import org.lateralgm.resources.InstantiableResource;
 
-/** Provides common functionality and structure to Resource editing frames */
-public abstract class InstantiableResourceFrame<R extends InstantiableResource<R,P>, P extends Enum<P>>
-		extends ResourceFrame<R,P> implements DocumentListener
-	{
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+/**
+ * Provides common functionality and structure to Resource editing frames
+ */
+public abstract class InstantiableResourceFrame<R extends InstantiableResource<R, P>, P extends Enum<P>>
+		extends ResourceFrame<R, P> implements DocumentListener {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * The Resource's name - setup automatically to update the title of the frame and
@@ -45,33 +46,28 @@ public abstract class InstantiableResourceFrame<R extends InstantiableResource<R
 	 * The res and node parameters are only needed in the instantiation to assign globals;
 	 * That is, once you call this, they will immediately gain global scope and may be treated thusly.
 	 */
-	public InstantiableResourceFrame(R res, ResNode node)
-		{
-		super(res,node);
+	public InstantiableResourceFrame(R res, ResNode node) {
+		super(res, node);
 		name.setDocument(new NameDocument());
 		name.setText(res.getName());
 		name.getDocument().addDocumentListener(this);
 		name.setCaretPosition(0);
-		}
+	}
 
-	public void changedUpdate(DocumentEvent e)
-		{
+	public void changedUpdate(DocumentEvent e) {
 		// Not used
-		}
+	}
 
-	public void insertUpdate(DocumentEvent e)
-		{
+	public void insertUpdate(DocumentEvent e) {
 		if (e.getDocument() == name.getDocument()) res.setName(name.getText());
-		}
+	}
 
-	public void removeUpdate(DocumentEvent e)
-		{
+	public void removeUpdate(DocumentEvent e) {
 		if (e.getDocument() == name.getDocument()) res.setName(name.getText());
-		}
+	}
 
-	public void dispose()
-		{
+	public void dispose() {
 		super.dispose();
 		name.getDocument().removeDocumentListener(this);
-		}
 	}
+}

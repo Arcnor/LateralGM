@@ -9,13 +9,6 @@
 
 package org.lateralgm.resources;
 
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.List;
-
 import org.lateralgm.main.UpdateSource.UpdateEvent;
 import org.lateralgm.main.UpdateSource.UpdateListener;
 import org.lateralgm.main.Util;
@@ -28,131 +21,106 @@ import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
 import org.lateralgm.util.PropertyMap.PropertyUpdateListener;
 import org.lateralgm.util.PropertyMap.PropertyValidationException;
 
-public class GmObject extends InstantiableResource<GmObject,GmObject.PGmObject> implements
-		Resource.Viewable,UpdateListener
-	{
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.List;
+
+public class GmObject extends InstantiableResource<GmObject, GmObject.PGmObject> implements
+		Resource.Viewable, UpdateListener {
 	public static final ResourceReference<GmObject> OBJECT_SELF = new ResourceReference<GmObject>(
 			null);
 	public static final ResourceReference<GmObject> OBJECT_OTHER = new ResourceReference<GmObject>(
 			null);
-
-	public static int refAsInt(ResourceReference<GmObject> ref)
-		{
-		if (ref == OBJECT_SELF) return -1;
-		if (ref == OBJECT_OTHER) return -2;
-		GmObject obj = Util.deRef(ref);
-		return obj == null ? -100 : obj.getId();
-		}
-
-	private final ObjectPropertyListener opl = new ObjectPropertyListener();
-
-	private ResourceReference<?> sprite = null; //kept for listening purposes
+	private static final EnumMap<PGmObject, Object> DEFS = PropertyMap.makeDefaultMap(PGmObject.class,
+			null, false, true, 0, false, null, null, false, false, PhysicsShape.CIRCLE, 0.5, 0.1, 0, 0.1, 0.1, 0.2, true,
+			false);
 	public final List<MainEvent> mainEvents;
 	public final ActiveArrayList<ShapePoint> shapePoints = new ActiveArrayList<ShapePoint>();
+	private final ObjectPropertyListener opl = new ObjectPropertyListener();
+	private ResourceReference<?> sprite = null; //kept for listening purposes
 
-	public enum PhysicsShape
-		{
-		CIRCLE,BOX,SHAPE
-		}
-
-	public enum PGmObject
-		{
-		SPRITE,SOLID,VISIBLE,DEPTH,PERSISTENT,PARENT,MASK,PHYSICS_OBJECT,PHYSICS_SENSOR,PHYSICS_SHAPE,
-		PHYSICS_DENSITY,PHYSICS_RESTITUTION,PHYSICS_GROUP,PHYSICS_DAMPING_LINEAR,
-		PHYSICS_DAMPING_ANGULAR,PHYSICS_FRICTION,PHYSICS_AWAKE,PHYSICS_KINEMATIC
-		}
-
-	private static final EnumMap<PGmObject,Object> DEFS = PropertyMap.makeDefaultMap(PGmObject.class,
-			null,false,true,0,false,null,null,false,false,PhysicsShape.CIRCLE,0.5,0.1,0,0.1,0.1,0.2,true,
-			false);
-
-	public GmObject()
-		{
+	public GmObject() {
 		this(null);
-		}
+	}
 
-	public GmObject(ResourceReference<GmObject> r)
-		{
+	public GmObject(ResourceReference<GmObject> r) {
 		super(r);
 		MainEvent[] e = new MainEvent[12];
 		for (int j = 0; j < 12; j++)
 			e[j] = new MainEvent();
 		mainEvents = Collections.unmodifiableList(Arrays.asList(e));
 		properties.getUpdateSource(PGmObject.SPRITE).addListener(opl);
-		}
+	}
 
-	public GmObject makeInstance(ResourceReference<GmObject> r)
-		{
+	public static int refAsInt(ResourceReference<GmObject> ref) {
+		if (ref == OBJECT_SELF) return -1;
+		if (ref == OBJECT_OTHER) return -2;
+		GmObject obj = Util.deRef(ref);
+		return obj == null ? -100 : obj.getId();
+	}
+
+	public GmObject makeInstance(ResourceReference<GmObject> r) {
 		return new GmObject(r);
-		}
+	}
 
 	@Override
-	protected void postCopy(GmObject dest)
-		{
+	protected void postCopy(GmObject dest) {
 		super.postCopy(dest);
-		for (int i = 0; i < 12; i++)
-			{
+		for (int i = 0; i < 12; i++) {
 			MainEvent mev = mainEvents.get(i);
 			MainEvent mev2 = dest.mainEvents.get(i);
-			for (Event ev : mev.events)
-				{
+			for (Event ev : mev.events) {
 				mev2.events.add(ev.copy());
-				}
-			}
-		for (ShapePoint point : shapePoints)
-			{
-			ShapePoint point2 = new ShapePoint(point.getX(),point.getY());
-			dest.shapePoints.add(point2);
 			}
 		}
+		for (ShapePoint point : shapePoints) {
+			ShapePoint point2 = new ShapePoint(point.getX(), point.getY());
+			dest.shapePoints.add(point2);
+		}
+	}
 
-	public BufferedImage getDisplayImage()
-		{
+	public BufferedImage getDisplayImage() {
 		ResourceReference<Sprite> r = get(PGmObject.SPRITE);
 		Sprite s = Util.deRef(r);
 		return s == null ? null : s.getDisplayImage();
-		}
+	}
 
-	public void updated(UpdateEvent e)
-		{
+	public void updated(UpdateEvent e) {
 		reference.updateTrigger.fire(e);
-		}
+	}
 
 	@Override
-	protected PropertyMap<PGmObject> makePropertyMap()
-		{
-		return new PropertyMap<PGmObject>(PGmObject.class,this,DEFS);
-		}
+	protected PropertyMap<PGmObject> makePropertyMap() {
+		return new PropertyMap<PGmObject>(PGmObject.class, this, DEFS);
+	}
 
-	private boolean isValidParent(GmObject p)
-		{
+	private boolean isValidParent(GmObject p) {
 		if (p == this) return false;
 		if (p == null) return true;
 		HashSet<GmObject> traversed = new HashSet<GmObject>();
 		traversed.add(p);
-		while (true)
-			{
+		while (true) {
 			ResourceReference<GmObject> r = p.get(PGmObject.PARENT);
 			p = Util.deRef(r);
 			if (p == null) return true;
 			if (p == this || !traversed.add(p)) return false;
-			}
 		}
+	}
 
 	@Override
-	public Object validate(PGmObject k, Object v)
-		{
-		switch (k)
-			{
+	public Object validate(PGmObject k, Object v) {
+		switch (k) {
 			case SPRITE:
 				ResourceReference<?> r = (ResourceReference<?>) v;
-				if (r != null)
-					{
+				if (r != null) {
 					Object o = r.get();
 					if (o == null)
 						r = null;
 					else if (!(o instanceof Sprite)) throw new PropertyValidationException();
-					}
+				}
 				if (sprite != null) sprite.updateSource.removeListener(this);
 				sprite = r;
 				if (sprite != null) sprite.updateSource.addListener(this);
@@ -164,21 +132,28 @@ public class GmObject extends InstantiableResource<GmObject,GmObject.PGmObject> 
 			default:
 				//TODO: maybe put a failsafe here?
 				break;
-			}
+		}
 		return v;
-		}
+	}
 
-	public static class ParentLoopException extends PropertyValidationException
-		{
+	public enum PhysicsShape {
+		CIRCLE, BOX, SHAPE
+	}
+
+	public enum PGmObject {
+		SPRITE, SOLID, VISIBLE, DEPTH, PERSISTENT, PARENT, MASK, PHYSICS_OBJECT, PHYSICS_SENSOR, PHYSICS_SHAPE,
+		PHYSICS_DENSITY, PHYSICS_RESTITUTION, PHYSICS_GROUP, PHYSICS_DAMPING_LINEAR,
+		PHYSICS_DAMPING_ANGULAR, PHYSICS_FRICTION, PHYSICS_AWAKE, PHYSICS_KINEMATIC
+	}
+
+	public static class ParentLoopException extends PropertyValidationException {
 		private static final long serialVersionUID = 1L;
-		}
+	}
 
-	private class ObjectPropertyListener extends PropertyUpdateListener<PGmObject>
-		{
+	private class ObjectPropertyListener extends PropertyUpdateListener<PGmObject> {
 		@Override
-		public void updated(PropertyUpdateEvent<PGmObject> e)
-			{
+		public void updated(PropertyUpdateEvent<PGmObject> e) {
 			if (e.key == PGmObject.SPRITE) fireUpdate();
-			}
 		}
 	}
+}

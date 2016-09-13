@@ -10,10 +10,9 @@ package org.lateralgm.resources.library;
 
 import org.lateralgm.resources.sub.Argument;
 
-public class LibArgument
-	{
+public class LibArgument {
 	public String caption = "";
 	public byte kind = Argument.ARG_EXPRESSION;
 	public String defaultVal = "";
 	public String menu = "";
-	}
+}

@@ -9,35 +9,37 @@
 
 package org.lateralgm.util;
 
-import java.beans.ExceptionListener;
-
 import org.lateralgm.ui.swing.propertylink.PropertyLinkFactory;
 import org.lateralgm.ui.swing.propertylink.PropertyLinkFactory.PropertyLinkMapListener;
 import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
 import org.lateralgm.util.PropertyMap.PropertyUpdateListener;
 
-public abstract class PropertyLink<K extends Enum<K>, V> extends PropertyUpdateListener<K> implements PropertyLinkMapListener<K>
-	{
-	public PropertyMap<K> map;
+import java.beans.ExceptionListener;
+
+public abstract class PropertyLink<K extends Enum<K>, V> extends PropertyUpdateListener<K> implements PropertyLinkMapListener<K> {
 	public final K key;
-	private ExceptionListener exceptionListener;
+	public PropertyMap<K> map;
 	/*
 	 * We keep a reference to our plf so that we can tell it to install/uninstall us as a listener.
 	 */
 	public PropertyLinkFactory<K> factory;
+	private ExceptionListener exceptionListener;
 
-	public PropertyLink(PropertyMap<K> m, K k)
-		{
+	public PropertyLink(PropertyMap<K> m, K k) {
 		map = m;
 		key = k;
 		m.getUpdateSource(k).addListener(this);
-		}
+	}
 
-	public void remove()
-		{
+	public static void removeAll(PropertyLink<?, ?>... links) {
+		for (PropertyLink<?, ?> l : links)
+			if (l != null) l.remove();
+	}
+
+	public void remove() {
 		map.getUpdateSource(key).removeListener(this);
 		factory.removeLinkMapListener(this);
-		}
+	}
 
 	public void mapChanged(PropertyMap<K> m) {
 		map.updateSource.removeListener(this);
@@ -48,55 +50,40 @@ public abstract class PropertyLink<K extends Enum<K>, V> extends PropertyUpdateL
 
 	protected abstract void setComponent(V v);
 
-	protected void reset()
-		{
+	protected void reset() {
 		V v = map.get(key);
 		editComponent(v);
-		}
+	}
 
-	protected void editComponentIfChanged(V old)
-		{
+	protected void editComponentIfChanged(V old) {
 		V v = map.get(key);
 		if (v == null ? old == null : v.equals(old)) return;
 		editComponent(v);
-		}
+	}
 
-	protected void editComponent(V v)
-		{
+	protected void editComponent(V v) {
 		setComponent(v);
-		}
+	}
 
-	protected void editProperty(Object v)
-		{
-		try
-			{
-			map.put(key,v);
-			}
-		catch (RuntimeException re)
-			{
+	protected void editProperty(Object v) {
+		try {
+			map.put(key, v);
+		} catch (RuntimeException re) {
 			reset();
 			if (exceptionListener != null)
 				exceptionListener.exceptionThrown(re);
 			else
 				throw re;
-			}
-		}
-
-	public void setExceptionListener(ExceptionListener l)
-		{
-		exceptionListener = l;
-		}
-
-	@Override
-	public void updated(PropertyUpdateEvent<K> e)
-		{
-		V v = map.get(key);
-		editComponent(v);
-		}
-
-	public static void removeAll(PropertyLink<?,?>...links)
-		{
-		for (PropertyLink<?,?> l : links)
-			if (l != null) l.remove();
 		}
 	}
+
+	public void setExceptionListener(ExceptionListener l) {
+		exceptionListener = l;
+	}
+
+	@Override
+	public void updated(PropertyUpdateEvent<K> e) {
+		V v = map.get(key);
+		editComponent(v);
+	}
+}

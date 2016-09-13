@@ -8,24 +8,15 @@
 
 package org.lateralgm.resources;
 
-import java.util.EnumMap;
-
 import org.lateralgm.util.PropertyMap;
 
-public class Include extends InstantiableResource<Include,Include.PInclude>
-	{
+import java.util.EnumMap;
 
+public class Include extends InstantiableResource<Include, Include.PInclude> {
+
+	private static final EnumMap<PInclude, Object> DEF = PropertyMap.makeDefaultMap(PInclude.class, "",
+			"", true, 0, 2, "", false, true, true, false);
 	public byte[] data = new byte[0];
-
-	public enum PInclude
-		{
-		FILENAME,FILEPATH,ORIGINAL,SIZE,EXPORTACTION,EXPORTFOLDER,OVERWRITE,FREEMEMORY,REMOVEATGAMEEND,
-		STORE
-		}
-
-	private static final EnumMap<PInclude,Object> DEF = PropertyMap.makeDefaultMap(PInclude.class,"",
-			"",true,0,2,"",false,true,true,false);
-
 	public String filename = ""; //$NON-NLS-1$
 	public String filepath = ""; //$NON-NLS-1$
 	public boolean isOriginal;
@@ -36,8 +27,7 @@ public class Include extends InstantiableResource<Include,Include.PInclude>
 	public boolean freeMemAfterExport = true;
 	public boolean removeAtGameEnd = true;
 
-	public Include copy()
-		{
+	public Include copy() {
 		Include inc = new Include();
 		inc.filename = filename;
 		inc.filepath = filepath;
@@ -50,28 +40,29 @@ public class Include extends InstantiableResource<Include,Include.PInclude>
 		inc.freeMemAfterExport = freeMemAfterExport;
 		inc.removeAtGameEnd = removeAtGameEnd;
 		return inc;
-		}
-
-	public String toString()
-		{
-		return filepath;
-		}
-
-	@Override
-	public Include makeInstance(ResourceReference<Include> ref)
-		{
-		return new Include();
-		}
-
-	@Override
-	protected PropertyMap<PInclude> makePropertyMap()
-		{
-		return new PropertyMap<PInclude>(PInclude.class,this,DEF);
-		}
-
-	@Override
-	protected void postCopy(Include dest)
-		{ //Nothing else to copy
-
-		}
 	}
+
+	public String toString() {
+		return filepath;
+	}
+
+	@Override
+	public Include makeInstance(ResourceReference<Include> ref) {
+		return new Include();
+	}
+
+	@Override
+	protected PropertyMap<PInclude> makePropertyMap() {
+		return new PropertyMap<PInclude>(PInclude.class, this, DEF);
+	}
+
+	@Override
+	protected void postCopy(Include dest) { //Nothing else to copy
+
+	}
+
+	public enum PInclude {
+		FILENAME, FILEPATH, ORIGINAL, SIZE, EXPORTACTION, EXPORTFOLDER, OVERWRITE, FREEMEMORY, REMOVEATGAMEEND,
+		STORE
+	}
+}

@@ -22,24 +22,6 @@
 
 package org.lateralgm.file;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.net.URI;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.Vector;
-
 import org.lateralgm.file.iconio.ICOFile;
 import org.lateralgm.main.LGM;
 import org.lateralgm.main.UpdateSource;
@@ -83,236 +65,295 @@ import org.lateralgm.resources.sub.Tile;
 import org.lateralgm.resources.sub.Tile.PTile;
 import org.lateralgm.resources.sub.Trigger;
 
-public class ProjectFile implements UpdateListener
-	{
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.Vector;
+
+public class ProjectFile implements UpdateListener {
 	//Game Settings Enums
-	public static final ColorDepth[] GS_DEPTHS = { ColorDepth.NO_CHANGE,ColorDepth.BIT_16,
-			ColorDepth.BIT_32 };
-	public static final Map<ColorDepth,Integer> GS_DEPTH_CODE;
-	public static final Resolution[] GS5_RESOLS = { Resolution.RES_640X480,Resolution.RES_800X600,
-			Resolution.RES_1024X768,Resolution.RES_1280X1024,Resolution.NO_CHANGE,Resolution.RES_320X240,
-			Resolution.RES_1600X1200 };
-	public static final Resolution[] GS_RESOLS = { Resolution.NO_CHANGE,Resolution.RES_320X240,
-			Resolution.RES_640X480,Resolution.RES_800X600,Resolution.RES_1024X768,
-			Resolution.RES_1280X1024,Resolution.RES_1600X1200 };
-	public static final Map<Resolution,Integer> GS_RESOL_CODE;
-	public static final Frequency[] GS_FREQS = { Frequency.NO_CHANGE,Frequency.FREQ_60,
-			Frequency.FREQ_70,Frequency.FREQ_85,Frequency.FREQ_100,Frequency.FREQ_120 };
-	public static final Map<Frequency,Integer> GS_FREQ_CODE;
-	public static final Priority[] GS_PRIORITIES = { Priority.NORMAL,Priority.HIGH,Priority.HIGHEST };
-	public static final Map<Priority,Integer> GS_PRIORITY_CODE;
-	public static final ProgressBar[] GS_PROGBARS = { ProgressBar.NONE,ProgressBar.DEFAULT,
-			ProgressBar.CUSTOM };
-	public static final Map<ProgressBar,Integer> GS_PROGBAR_CODE;
-	public static final IncludeFolder[] GS_INCFOLDERS = { IncludeFolder.MAIN,IncludeFolder.TEMP };
-	public static final Map<IncludeFolder,Integer> GS_INCFOLDER_CODE;
-	static
-		{
-		EnumMap<ColorDepth,Integer> m = new EnumMap<ColorDepth,Integer>(ColorDepth.class);
+	public static final ColorDepth[] GS_DEPTHS = {ColorDepth.NO_CHANGE, ColorDepth.BIT_16,
+			ColorDepth.BIT_32};
+	public static final Map<ColorDepth, Integer> GS_DEPTH_CODE;
+	public static final Resolution[] GS5_RESOLS = {Resolution.RES_640X480, Resolution.RES_800X600,
+			Resolution.RES_1024X768, Resolution.RES_1280X1024, Resolution.NO_CHANGE, Resolution.RES_320X240,
+			Resolution.RES_1600X1200};
+	public static final Resolution[] GS_RESOLS = {Resolution.NO_CHANGE, Resolution.RES_320X240,
+			Resolution.RES_640X480, Resolution.RES_800X600, Resolution.RES_1024X768,
+			Resolution.RES_1280X1024, Resolution.RES_1600X1200};
+	public static final Map<Resolution, Integer> GS_RESOL_CODE;
+	public static final Frequency[] GS_FREQS = {Frequency.NO_CHANGE, Frequency.FREQ_60,
+			Frequency.FREQ_70, Frequency.FREQ_85, Frequency.FREQ_100, Frequency.FREQ_120};
+	public static final Map<Frequency, Integer> GS_FREQ_CODE;
+	public static final Priority[] GS_PRIORITIES = {Priority.NORMAL, Priority.HIGH, Priority.HIGHEST};
+	public static final Map<Priority, Integer> GS_PRIORITY_CODE;
+	public static final ProgressBar[] GS_PROGBARS = {ProgressBar.NONE, ProgressBar.DEFAULT,
+			ProgressBar.CUSTOM};
+	public static final Map<ProgressBar, Integer> GS_PROGBAR_CODE;
+	public static final IncludeFolder[] GS_INCFOLDERS = {IncludeFolder.MAIN, IncludeFolder.TEMP};
+	public static final Map<IncludeFolder, Integer> GS_INCFOLDER_CODE;
+	public static final Class<?>[] RESOURCE_KIND = {null, GmObject.class, Sprite.class, Sound.class,
+			Room.class, null, Background.class, Script.class, Path.class, Font.class, GameInformation.class,
+			GameSettings.class, Timeline.class, ExtensionPackages.class, Shader.class};
+	public static final Map<Class<?>, Integer> RESOURCE_CODE;
+	public static final PSound[] SOUND_FX_FLAGS = {PSound.CHORUS, PSound.ECHO, PSound.FLANGER,
+			PSound.GARGLE, PSound.REVERB};
+	public static final SoundKind[] SOUND_KIND = {SoundKind.NORMAL, SoundKind.BACKGROUND,
+			SoundKind.SPATIAL, SoundKind.MULTIMEDIA};
+	public static final SoundType[] SOUND_TYPE = {SoundType.MONO, SoundType.STEREO,
+			SoundType.THREED};
+	public static final Map<SoundKind, Integer> SOUND_KIND_CODE;
+	public static final Map<SoundType, Integer> SOUND_TYPE_CODE;
+	public static final PhysicsShape[] PHYSICS_SHAPE = {PhysicsShape.CIRCLE, PhysicsShape.BOX,
+			PhysicsShape.SHAPE};
+	public static final Map<PhysicsShape, Integer> SHAPE_CODE;
+	public static final BBMode[] SPRITE_BB_MODE = {BBMode.AUTO, BBMode.FULL, BBMode.MANUAL};
+	public static final Map<BBMode, Integer> SPRITE_BB_CODE;
+	public static final MaskShape[] SPRITE_MASK_SHAPE = {MaskShape.PRECISE, MaskShape.RECTANGLE,
+			MaskShape.DISK, MaskShape.DIAMOND};
+	public static final Map<MaskShape, Integer> SPRITE_MASK_CODE;
+
+	static {
+		EnumMap<ColorDepth, Integer> m = new EnumMap<ColorDepth, Integer>(ColorDepth.class);
 		for (int i = 0; i < GS_DEPTHS.length; i++)
-			m.put(GS_DEPTHS[i],i);
+			m.put(GS_DEPTHS[i], i);
 		GS_DEPTH_CODE = Collections.unmodifiableMap(m);
 
-		EnumMap<Resolution,Integer> m2 = new EnumMap<Resolution,Integer>(Resolution.class);
+		EnumMap<Resolution, Integer> m2 = new EnumMap<Resolution, Integer>(Resolution.class);
 		for (int i = 0; i < GS_RESOLS.length; i++)
-			m2.put(GS_RESOLS[i],i);
+			m2.put(GS_RESOLS[i], i);
 		GS_RESOL_CODE = Collections.unmodifiableMap(m2);
 
-		EnumMap<Frequency,Integer> m3 = new EnumMap<Frequency,Integer>(Frequency.class);
+		EnumMap<Frequency, Integer> m3 = new EnumMap<Frequency, Integer>(Frequency.class);
 		for (int i = 0; i < GS_FREQS.length; i++)
-			m3.put(GS_FREQS[i],i);
+			m3.put(GS_FREQS[i], i);
 		GS_FREQ_CODE = Collections.unmodifiableMap(m3);
 
-		EnumMap<Priority,Integer> m4 = new EnumMap<Priority,Integer>(Priority.class);
+		EnumMap<Priority, Integer> m4 = new EnumMap<Priority, Integer>(Priority.class);
 		for (int i = 0; i < GS_PRIORITIES.length; i++)
-			m4.put(GS_PRIORITIES[i],i);
+			m4.put(GS_PRIORITIES[i], i);
 		GS_PRIORITY_CODE = Collections.unmodifiableMap(m4);
 
-		EnumMap<ProgressBar,Integer> m5 = new EnumMap<ProgressBar,Integer>(ProgressBar.class);
+		EnumMap<ProgressBar, Integer> m5 = new EnumMap<ProgressBar, Integer>(ProgressBar.class);
 		for (int i = 0; i < GS_PROGBARS.length; i++)
-			m5.put(GS_PROGBARS[i],i);
+			m5.put(GS_PROGBARS[i], i);
 		GS_PROGBAR_CODE = Collections.unmodifiableMap(m5);
 
-		EnumMap<IncludeFolder,Integer> m6 = new EnumMap<IncludeFolder,Integer>(IncludeFolder.class);
+		EnumMap<IncludeFolder, Integer> m6 = new EnumMap<IncludeFolder, Integer>(IncludeFolder.class);
 		for (int i = 0; i < GS_INCFOLDERS.length; i++)
-			m6.put(GS_INCFOLDERS[i],i);
+			m6.put(GS_INCFOLDERS[i], i);
 		GS_INCFOLDER_CODE = Collections.unmodifiableMap(m6);
-		}
+	}
 
-	public static final Class<?>[] RESOURCE_KIND = { null,GmObject.class,Sprite.class,Sound.class,
-			Room.class,null,Background.class,Script.class,Path.class,Font.class,GameInformation.class,
-			GameSettings.class,Timeline.class,ExtensionPackages.class,Shader.class };
-	public static final Map<Class<?>,Integer> RESOURCE_CODE;
-	static
-		{
-		Map<Class<?>,Integer> m = new HashMap<Class<?>,Integer>();
+	static {
+		Map<Class<?>, Integer> m = new HashMap<Class<?>, Integer>();
 		for (int i = 0; i < RESOURCE_KIND.length; i++)
-			if (RESOURCE_KIND[i] != null) m.put(RESOURCE_KIND[i],i);
+			if (RESOURCE_KIND[i] != null) m.put(RESOURCE_KIND[i], i);
 		RESOURCE_CODE = Collections.unmodifiableMap(m);
-		}
-	public static final PSound[] SOUND_FX_FLAGS = { PSound.CHORUS,PSound.ECHO,PSound.FLANGER,
-			PSound.GARGLE,PSound.REVERB };
-	public static final SoundKind[] SOUND_KIND = { SoundKind.NORMAL,SoundKind.BACKGROUND,
-			SoundKind.SPATIAL,SoundKind.MULTIMEDIA };
-	public static final SoundType[] SOUND_TYPE = { SoundType.MONO, SoundType.STEREO,
-			SoundType.THREED };
-	public static final Map<SoundKind,Integer> SOUND_KIND_CODE;
-	static
-		{
-		EnumMap<SoundKind,Integer> m = new EnumMap<SoundKind,Integer>(SoundKind.class);
+	}
+
+	static {
+		EnumMap<SoundKind, Integer> m = new EnumMap<SoundKind, Integer>(SoundKind.class);
 		for (int i = 0; i < SOUND_KIND.length; i++)
-			m.put(SOUND_KIND[i],i);
+			m.put(SOUND_KIND[i], i);
 		SOUND_KIND_CODE = Collections.unmodifiableMap(m);
-		}
-	public static final Map<SoundType,Integer> SOUND_TYPE_CODE;
-	static
-		{
-		EnumMap<SoundType,Integer> m = new EnumMap<SoundType,Integer>(SoundType.class);
+	}
+
+	static {
+		EnumMap<SoundType, Integer> m = new EnumMap<SoundType, Integer>(SoundType.class);
 		for (int i = 0; i < SOUND_TYPE.length; i++)
-			m.put(SOUND_TYPE[i],i);
+			m.put(SOUND_TYPE[i], i);
 		SOUND_TYPE_CODE = Collections.unmodifiableMap(m);
-		}
-	public static final PhysicsShape[] PHYSICS_SHAPE = { PhysicsShape.CIRCLE,PhysicsShape.BOX,
-			PhysicsShape.SHAPE };
-	public static final Map<PhysicsShape,Integer> SHAPE_CODE;
-	static
-		{
-		EnumMap<PhysicsShape,Integer> m = new EnumMap<PhysicsShape,Integer>(PhysicsShape.class);
+	}
+
+	static {
+		EnumMap<PhysicsShape, Integer> m = new EnumMap<PhysicsShape, Integer>(PhysicsShape.class);
 		for (int i = 0; i < PHYSICS_SHAPE.length; i++)
-			m.put(PHYSICS_SHAPE[i],i);
+			m.put(PHYSICS_SHAPE[i], i);
 		SHAPE_CODE = Collections.unmodifiableMap(m);
-		}
-	public static final BBMode[] SPRITE_BB_MODE = { BBMode.AUTO,BBMode.FULL,BBMode.MANUAL };
-	public static final Map<BBMode,Integer> SPRITE_BB_CODE;
-	static
-		{
-		EnumMap<BBMode,Integer> m = new EnumMap<BBMode,Integer>(BBMode.class);
+	}
+
+	static {
+		EnumMap<BBMode, Integer> m = new EnumMap<BBMode, Integer>(BBMode.class);
 		for (int i = 0; i < SPRITE_BB_MODE.length; i++)
-			m.put(SPRITE_BB_MODE[i],i);
+			m.put(SPRITE_BB_MODE[i], i);
 		SPRITE_BB_CODE = Collections.unmodifiableMap(m);
-		}
-	public static final MaskShape[] SPRITE_MASK_SHAPE = { MaskShape.PRECISE,MaskShape.RECTANGLE,
-			MaskShape.DISK,MaskShape.DIAMOND };
-	public static final Map<MaskShape,Integer> SPRITE_MASK_CODE;
-	static
-		{
-		EnumMap<MaskShape,Integer> m = new EnumMap<MaskShape,Integer>(MaskShape.class);
+	}
+
+	static {
+		EnumMap<MaskShape, Integer> m = new EnumMap<MaskShape, Integer>(MaskShape.class);
 		for (int i = 0; i < SPRITE_MASK_SHAPE.length; i++)
-			m.put(SPRITE_MASK_SHAPE[i],i);
-		m.put(MaskShape.POLYGON,m.get(MaskShape.RECTANGLE));
+			m.put(SPRITE_MASK_SHAPE[i], i);
+		m.put(MaskShape.POLYGON, m.get(MaskShape.RECTANGLE));
 		SPRITE_MASK_CODE = Collections.unmodifiableMap(m);
-		}
-
-	public String getPath()
-		{
-		return uri.getPath().replace("\\","/");
-		}
-
-	// This will return the top level folder path with name that the
-	// main project file is in.
-	public String getDirectory()
-		{
-		String path = "";
-		if (uri != null)
-			{
-			path = uri.getPath().replace("\\","/");
-			}
-		File f = new File(path);
-		if (f.exists())
-			{
-			return f.getParent();
-			}
-		return path;
-		}
-
-	public FormatFlavor format;
-	public URI uri;
-
-	public static interface ResourceHolder<T extends Resource<T,?>>
-		{
-		T getResource();
-		}
-
-	public static class SingletonResourceHolder<T extends Resource<T,?>> implements ResourceHolder<T>
-		{
-		T r;
-
-		public SingletonResourceHolder(T r)
-			{
-			this.r = r;
-			}
-
-		public T getResource()
-			{
-			return r;
-			}
-		}
-
-	@SuppressWarnings("unchecked")
-	public class ResourceMap extends HashMap<Class<?>,ResourceHolder<?>>
-		{
-		private static final long serialVersionUID = 1L;
-
-		public <R extends Resource<R,?>>ResourceHolder<R> put(Class<R> key, ResourceHolder<R> value)
-			{
-			return (ResourceHolder<R>) super.put(key,value);
-			}
-
-		public <R extends Resource<R,?>>ResourceHolder<R> get(Class<R> key)
-			{
-			return (ResourceHolder<R>) super.get(key);
-			}
-
-		public <R extends InstantiableResource<R,?>>ResourceList<R> getList(Class<R> key)
-			{
-			return (ResourceList<R>) super.get(key);
-			}
-
-		@SuppressWarnings("rawtypes")
-		public void addList(Class<?> kind)
-			{
-			put(kind,new ResourceList(kind));
-			}
-		}
+	}
 
 	public final ResourceMap resMap;
-
-	public SortedMap<Integer,Trigger> triggers = new TreeMap<Integer,Trigger>();
+	private final UpdateTrigger updateTrigger = new UpdateTrigger();
+	public final UpdateSource updateSource = new UpdateSource(this, updateTrigger);
+	public FormatFlavor format;
+	public URI uri;
+	public SortedMap<Integer, Trigger> triggers = new TreeMap<Integer, Trigger>();
 	public List<String> packages = new ArrayList<String>();
-
 	public Constants defaultConstants = new Constants();
 	public GameInformation gameInfo = new GameInformation();
 	public Vector<GameSettings> gameSettings = new Vector<GameSettings>();
 	public ExtensionPackages extPackages = new ExtensionPackages();
 	public int lastInstanceId = 100000;
 	public int lastTileId = 10000000;
+	public ProjectFile() {
+		resMap = new ResourceMap();
+		for (Class<?> kind : Resource.kinds)
+			if (InstantiableResource.class.isAssignableFrom(kind)) resMap.addList(kind);
 
-	private final UpdateTrigger updateTrigger = new UpdateTrigger();
-	public final UpdateSource updateSource = new UpdateSource(this,updateTrigger);
 
-	public static class FormatFlavor
-		{
+		// Default initial configuration
+		GameSettings gs = createDefaultConfig();
+		gs.setName("Default");
+		gameSettings.add(gs);
+
+		resMap.put(Constants.class, new SingletonResourceHolder<Constants>(defaultConstants));
+		resMap.put(GameInformation.class, new SingletonResourceHolder<GameInformation>(gameInfo));
+		// TODO: We don't need this anymore. It should however still be iteratable, perhaps we should
+		// make a Config resource to manage all game configurations? - Robert
+		//resMap.put(GameSettings.class,new SingletonResourceHolder<GameSettings>(gs));
+		resMap.put(ExtensionPackages.class, new SingletonResourceHolder<ExtensionPackages>(extPackages));
+		for (ResourceHolder<?> rl : resMap.values())
+			if (rl instanceof ResourceList<?>) ((ResourceList<?>) rl).updateSource.addListener(this);
+
+	}
+
+	public static GameSettings createDefaultConfig() {
+		GameSettings gs = new GameSettings();
+		Random random = new Random();
+		gs.put(PGameSettings.GAME_ID, random.nextInt(100000001));
+		random.nextBytes((byte[]) gs.get(PGameSettings.GAME_GUID));
+		try {
+			String loc = "org/lateralgm/file/default.ico";
+			InputStream filein;
+			File file = new File(loc);
+			if (!file.exists())
+				filein = LGM.class.getClassLoader().getResourceAsStream(loc);
+			else
+				filein = new FileInputStream(file);
+			gs.put(PGameSettings.GAME_ICON, new ICOFile(filein));
+		} catch (Exception ex) {
+			System.err.println(Messages.getString("GmFile.NOICON")); //$NON-NLS-1$
+			System.err.println(ex.getMessage());
+			ex.printStackTrace();
+		}
+		return gs;
+	}
+
+	public static Calendar gmBaseTime() {
+		Calendar res = Calendar.getInstance();
+		res.set(1899, 11, 29, 23, 59, 59);
+		return res;
+	}
+
+	public static double longTimeToGmTime(long time) {
+		return (time - gmBaseTime().getTimeInMillis()) / 86400000d;
+	}
+
+	public static String gmTimeToString(double time) {
+		Calendar base = gmBaseTime();
+		base.setTimeInMillis(base.getTimeInMillis() + ((long) (time * 86400000)));
+		return DateFormat.getDateTimeInstance().format(base.getTime());
+	}
+
+	public static List<Constant> copyConstants(List<Constant> source) {
+		List<Constant> dest = new ArrayList<Constant>(source.size());
+		for (Constant c : source)
+			dest.add(c.copy());
+		return dest;
+	}
+
+	public String getPath() {
+		return uri.getPath().replace("\\", "/");
+	}
+
+	// This will return the top level folder path with name that the
+	// main project file is in.
+	public String getDirectory() {
+		String path = "";
+		if (uri != null) {
+			path = uri.getPath().replace("\\", "/");
+		}
+		File f = new File(path);
+		if (f.exists()) {
+			return f.getParent();
+		}
+		return path;
+	}
+
+	public void defragIds() {
+		Iterator<ResourceHolder<?>> iter = resMap.values().iterator();
+		while (iter.hasNext()) {
+			ResourceHolder<?> rh = iter.next();
+			if (rh instanceof ResourceList<?>) ((ResourceList<?>) rh).defragIds();
+		}
+		lastInstanceId = 100000;
+		lastTileId = 10000000;
+		for (Room r : resMap.getList(Room.class)) {
+			for (Instance j : r.instances)
+				j.properties.put(PInstance.ID, ++lastInstanceId);
+			for (Tile j : r.tiles)
+				j.properties.put(PTile.ID, ++lastTileId);
+		}
+	}
+
+	public void updated(UpdateEvent e) {
+		updateTrigger.fire(e);
+	}
+
+	public static interface ResourceHolder<T extends Resource<T, ?>> {
+		T getResource();
+	}
+
+	public static class SingletonResourceHolder<T extends Resource<T, ?>> implements ResourceHolder<T> {
+		T r;
+
+		public SingletonResourceHolder(T r) {
+			this.r = r;
+		}
+
+		public T getResource() {
+			return r;
+		}
+	}
+
+	public static class FormatFlavor {
 		public static final String GM_OWNER = "GM";
-		public static final FormatFlavor GM_530 = new FormatFlavor(GM_OWNER,530);
-		public static final FormatFlavor GM_600 = new FormatFlavor(GM_OWNER,600);
-		public static final FormatFlavor GM_701 = new FormatFlavor(GM_OWNER,701);
-		public static final FormatFlavor GM_800 = new FormatFlavor(GM_OWNER,800);
-		public static final FormatFlavor GM_810 = new FormatFlavor(GM_OWNER,810);
-		public static final FormatFlavor GMX_1200 = new FormatFlavor(GM_OWNER,1200);
+		public static final FormatFlavor GM_530 = new FormatFlavor(GM_OWNER, 530);
+		public static final FormatFlavor GM_600 = new FormatFlavor(GM_OWNER, 600);
+		public static final FormatFlavor GM_701 = new FormatFlavor(GM_OWNER, 701);
+		public static final FormatFlavor GM_800 = new FormatFlavor(GM_OWNER, 800);
+		public static final FormatFlavor GM_810 = new FormatFlavor(GM_OWNER, 810);
+		public static final FormatFlavor GMX_1200 = new FormatFlavor(GM_OWNER, 1200);
 
 		protected Object owner;
 		protected int version;
 
-		public FormatFlavor(Object owner, int version)
-			{
+		public FormatFlavor(Object owner, int version) {
 			this.owner = owner;
 			this.version = version;
-			}
+		}
 
-		public static FormatFlavor getVersionFlavor(int ver)
-			{
-			switch (ver)
-				{
+		public static FormatFlavor getVersionFlavor(int ver) {
+			switch (ver) {
 				case 530:
 					return FormatFlavor.GM_530;
 				case 600:
@@ -327,116 +368,37 @@ public class ProjectFile implements UpdateListener
 					return FormatFlavor.GMX_1200;
 				default:
 					return null;
-				}
 			}
+		}
 
-		public Object getOwner()
-			{
+		public Object getOwner() {
 			return owner;
-			}
+		}
 
-		public int getVersion()
-			{
+		public int getVersion() {
 			return version;
-			}
-		}
-
-	public ProjectFile()
-		{
-		resMap = new ResourceMap();
-		for (Class<?> kind : Resource.kinds)
-			if (InstantiableResource.class.isAssignableFrom(kind)) resMap.addList(kind);
-
-
-		// Default initial configuration
-		GameSettings gs = createDefaultConfig();
-		gs.setName("Default");
-		gameSettings.add(gs);
-
-		resMap.put(Constants.class,new SingletonResourceHolder<Constants>(defaultConstants));
-		resMap.put(GameInformation.class,new SingletonResourceHolder<GameInformation>(gameInfo));
-		// TODO: We don't need this anymore. It should however still be iteratable, perhaps we should
-		// make a Config resource to manage all game configurations? - Robert
-		//resMap.put(GameSettings.class,new SingletonResourceHolder<GameSettings>(gs));
-		resMap.put(ExtensionPackages.class,new SingletonResourceHolder<ExtensionPackages>(extPackages));
-		for (ResourceHolder<?> rl : resMap.values())
-			if (rl instanceof ResourceList<?>) ((ResourceList<?>) rl).updateSource.addListener(this);
-
-		}
-
-	public static GameSettings createDefaultConfig() {
-		GameSettings gs = new GameSettings();
-		Random random = new Random();
-		gs.put(PGameSettings.GAME_ID,random.nextInt(100000001));
-		random.nextBytes((byte[]) gs.get(PGameSettings.GAME_GUID));
-		try
-			{
-			String loc = "org/lateralgm/file/default.ico";
-			InputStream filein;
-			File file = new File(loc);
-			if (!file.exists())
-				filein = LGM.class.getClassLoader().getResourceAsStream(loc);
-			else
-				filein = new FileInputStream(file);
-			gs.put(PGameSettings.GAME_ICON,new ICOFile(filein));
-			}
-		catch (Exception ex)
-			{
-			System.err.println(Messages.getString("GmFile.NOICON")); //$NON-NLS-1$
-			System.err.println(ex.getMessage());
-			ex.printStackTrace();
-			}
-		return gs;
-	}
-
-	public static Calendar gmBaseTime()
-		{
-		Calendar res = Calendar.getInstance();
-		res.set(1899,11,29,23,59,59);
-		return res;
-		}
-
-	public static double longTimeToGmTime(long time)
-		{
-		return (time - gmBaseTime().getTimeInMillis()) / 86400000d;
-		}
-
-	public static String gmTimeToString(double time)
-		{
-		Calendar base = gmBaseTime();
-		base.setTimeInMillis(base.getTimeInMillis() + ((long) (time * 86400000)));
-		return DateFormat.getDateTimeInstance().format(base.getTime());
-		}
-
-	public void defragIds()
-		{
-		Iterator<ResourceHolder<?>> iter = resMap.values().iterator();
-		while (iter.hasNext())
-			{
-			ResourceHolder<?> rh = iter.next();
-			if (rh instanceof ResourceList<?>) ((ResourceList<?>) rh).defragIds();
-			}
-		lastInstanceId = 100000;
-		lastTileId = 10000000;
-		for (Room r : resMap.getList(Room.class))
-			{
-			for (Instance j : r.instances)
-				j.properties.put(PInstance.ID,++lastInstanceId);
-			for (Tile j : r.tiles)
-				j.properties.put(PTile.ID,++lastTileId);
-			}
-		}
-
-	public static List<Constant> copyConstants(List<Constant> source)
-		{
-		List<Constant> dest = new ArrayList<Constant>(source.size());
-		for (Constant c : source)
-			dest.add(c.copy());
-		return dest;
-		}
-
-	public void updated(UpdateEvent e)
-		{
-		updateTrigger.fire(e);
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	public class ResourceMap extends HashMap<Class<?>, ResourceHolder<?>> {
+		private static final long serialVersionUID = 1L;
+
+		public <R extends Resource<R, ?>> ResourceHolder<R> put(Class<R> key, ResourceHolder<R> value) {
+			return (ResourceHolder<R>) super.put(key, value);
+		}
+
+		public <R extends Resource<R, ?>> ResourceHolder<R> get(Class<R> key) {
+			return (ResourceHolder<R>) super.get(key);
+		}
+
+		public <R extends InstantiableResource<R, ?>> ResourceList<R> getList(Class<R> key) {
+			return (ResourceList<R>) super.get(key);
+		}
+
+		@SuppressWarnings("rawtypes")
+		public void addList(Class<?> kind) {
+			put(kind, new ResourceList(kind));
+		}
+	}
+}

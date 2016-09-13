@@ -12,35 +12,30 @@ import org.lateralgm.main.Util;
 import org.lateralgm.main.Util.InherentlyUnique;
 import org.lateralgm.messages.Messages;
 
-public class Moment extends ActionContainer implements Comparable<Object>,InherentlyUnique<Moment>
-	{
+public class Moment extends ActionContainer implements Comparable<Object>, InherentlyUnique<Moment> {
 	public int stepNo = 0;
 
-	public Moment copy()
-		{
+	public Moment copy() {
 		Moment mom2 = new Moment();
 		mom2.stepNo = stepNo;
 		for (Action act : actions)
 			mom2.actions.add(act.copy());
 		return mom2;
-		}
+	}
 
-	public int compareTo(Object o)
-		{
+	public int compareTo(Object o) {
 		if (o instanceof Moment) return stepNo - ((Moment) o).stepNo;
 		if (o instanceof Integer) return stepNo - (Integer) o;
 		throw new ClassCastException();
-		}
+	}
 
-	public String toString()
-		{
+	public String toString() {
 		return Messages.getString("Moment.STEP") + " " + stepNo;
-		}
+	}
 
-	public boolean isEqual(Moment other)
-		{
+	public boolean isEqual(Moment other) {
 		if (this == other) return true;
 		if (other == null || stepNo != other.stepNo) return false;
-		return Util.areInherentlyUniquesEqual(actions,other.actions);
-		}
+		return Util.areInherentlyUniquesEqual(actions, other.actions);
 	}
+}

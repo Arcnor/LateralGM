@@ -8,14 +8,13 @@
 
 package org.lateralgm.resources.sub;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.lateralgm.main.Util;
 import org.lateralgm.main.Util.InherentlyUnique;
 
-public class MainEvent implements InherentlyUnique<MainEvent>
-	{
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainEvent implements InherentlyUnique<MainEvent> {
 	public static final byte EV_CREATE = 0;
 	public static final byte EV_DESTROY = 1;
 	public static final byte EV_ALARM = 2;
@@ -31,10 +30,9 @@ public class MainEvent implements InherentlyUnique<MainEvent>
 
 	public List<Event> events = new ArrayList<Event>();
 
-	public boolean isEqual(MainEvent other)
-		{
+	public boolean isEqual(MainEvent other) {
 		if (this == other) return true;
 		if (other == null) return false;
-		return Util.areInherentlyUniquesEqual(events,other.events);
-		}
+		return Util.areInherentlyUniquesEqual(events, other.events);
 	}
+}

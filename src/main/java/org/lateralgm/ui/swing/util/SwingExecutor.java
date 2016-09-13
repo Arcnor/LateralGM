@@ -8,20 +8,16 @@
 
 package org.lateralgm.ui.swing.util;
 
+import javax.swing.SwingUtilities;
 import java.util.concurrent.Executor;
 
-import javax.swing.SwingUtilities;
-
-public final class SwingExecutor implements Executor
-	{
+public final class SwingExecutor implements Executor {
 	public static final SwingExecutor INSTANCE = new SwingExecutor();
 
-	private SwingExecutor()
-		{
-		}
-
-	public void execute(Runnable command)
-		{
-		SwingUtilities.invokeLater(command);
-		}
+	private SwingExecutor() {
 	}
+
+	public void execute(Runnable command) {
+		SwingUtilities.invokeLater(command);
+	}
+}

@@ -8,16 +8,15 @@
 
 package org.lateralgm.resources.library;
 
-import java.awt.image.BufferedImage;
-
 import org.lateralgm.resources.sub.Action;
+
+import java.awt.image.BufferedImage;
 
 /**
  * If this Action was loaded from file, libAction is non-null.<br>
  * To determine if this is an unknown libAction, parent == null
  */
-public class LibAction
-	{
+public class LibAction {
 	public static final byte INTERFACE_NORMAL = 0;
 	public static final byte INTERFACE_NONE = 1;
 	public static final byte INTERFACE_ARROWS = 2;
@@ -45,31 +44,27 @@ public class LibAction
 	public LibArgument[] libArguments;
 
 	@Override
-	public int hashCode()
-		{
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
 		result = prime * result + ((parent == null) ? 0 : parent.hashCode());
 		result = prime * result + parentId;
 		return result;
-		}
+	}
 
 	@Override
-	public boolean equals(Object obj)
-		{
+	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (!(obj instanceof LibAction)) return false;
 		LibAction other = (LibAction) obj;
 		if (id != other.id) return false;
-		if (parent == null)
-			{
+		if (parent == null) {
 			if (other.parent != null) return false;
-			}
-		else if (!parent.equals(other.parent)) return false;
+		} else if (!parent.equals(other.parent)) return false;
 		if (parentId != other.parentId) return false;
 		return true;
-		}
-
 	}
+
+}

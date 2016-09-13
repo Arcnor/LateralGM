@@ -10,60 +10,50 @@
 
 package org.lateralgm.resources;
 
-import java.util.EnumMap;
-
 import org.lateralgm.resources.sub.PathPoint;
 import org.lateralgm.util.ActiveArrayList;
 import org.lateralgm.util.PropertyMap;
 
-public class Path extends InstantiableResource<Path,Path.PPath>
-	{
+import java.util.EnumMap;
+
+public class Path extends InstantiableResource<Path, Path.PPath> {
+	private static final EnumMap<PPath, Object> DEFS = PropertyMap.makeDefaultMap(PPath.class, false,
+			true, 4, null, 16, 16);
 	public final ActiveArrayList<PathPoint> points = new ActiveArrayList<PathPoint>();
 
-	public enum PPath
-		{
-		SMOOTH,CLOSED,PRECISION,BACKGROUND_ROOM,SNAP_X,SNAP_Y
-		}
-
-	private static final EnumMap<PPath,Object> DEFS = PropertyMap.makeDefaultMap(PPath.class,false,
-			true,4,null,16,16);
-
-	public Path()
-		{
+	public Path() {
 		this(null);
-		}
+	}
 
-	public Path(ResourceReference<Path> r)
-		{
+	public Path(ResourceReference<Path> r) {
 		super(r);
-		}
+	}
 
-	public Path makeInstance(ResourceReference<Path> r)
-		{
+	public Path makeInstance(ResourceReference<Path> r) {
 		return new Path(r);
-		}
+	}
 
-	public PathPoint addPoint()
-		{
+	public PathPoint addPoint() {
 		PathPoint point = new PathPoint();
 		points.add(point);
 		return point;
-		}
+	}
 
 	@Override
-	protected void postCopy(Path dest)
-		{
+	protected void postCopy(Path dest) {
 		super.postCopy(dest);
-		for (PathPoint point : points)
-			{
-			PathPoint point2 = new PathPoint(point.getX(),point.getY(),point.getSpeed());
+		for (PathPoint point : points) {
+			PathPoint point2 = new PathPoint(point.getX(), point.getY(), point.getSpeed());
 			dest.points.add(point2);
-			}
-		}
-
-	@Override
-	protected PropertyMap<PPath> makePropertyMap()
-		{
-		return new PropertyMap<PPath>(PPath.class,this,DEFS);
 		}
 	}
+
+	@Override
+	protected PropertyMap<PPath> makePropertyMap() {
+		return new PropertyMap<PPath>(PPath.class, this, DEFS);
+	}
+
+	public enum PPath {
+		SMOOTH, CLOSED, PRECISION, BACKGROUND_ROOM, SNAP_X, SNAP_Y
+	}
+}

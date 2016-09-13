@@ -10,7 +10,6 @@ package org.lateralgm.ui.swing.visuals;
 
 import java.awt.Rectangle;
 
-public interface BoundedVisual extends Visual
-	{
+public interface BoundedVisual extends Visual {
 	void extendBounds(Rectangle b);
-	}
+}

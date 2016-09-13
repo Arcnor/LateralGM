@@ -10,7 +10,6 @@ package org.lateralgm.ui.swing.visuals;
 
 import java.awt.Graphics;
 
-public interface Visual
-	{
+public interface Visual {
 	void paint(Graphics g);
-	}
+}

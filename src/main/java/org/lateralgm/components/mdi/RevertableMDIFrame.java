@@ -8,26 +8,23 @@
 
 package org.lateralgm.components.mdi;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-
 import org.lateralgm.main.LGM;
 import org.lateralgm.messages.Messages;
 
-public abstract class RevertableMDIFrame extends MDIFrame
-	{
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
+public abstract class RevertableMDIFrame extends MDIFrame {
 	private static final long serialVersionUID = 1L;
 
-	public RevertableMDIFrame(String title, boolean functional)
-		{
-		super(title,functional,functional,functional,functional);
-		}
+	public RevertableMDIFrame(String title, boolean functional) {
+		super(title, functional, functional, functional, functional);
+	}
 
 	public RevertableMDIFrame(String title, boolean resizable, boolean closable, boolean maximizable,
-			boolean iconifiable)
-		{
-		super(title,resizable,closable,maximizable,iconifiable);
-		}
+	                          boolean iconifiable) {
+		super(title, resizable, closable, maximizable, iconifiable);
+	}
 
 	public abstract boolean resourceChanged();
 
@@ -39,49 +36,40 @@ public abstract class RevertableMDIFrame extends MDIFrame
 
 	public abstract String getConfirmationName();
 
-	protected void close()
-		{
+	protected void close() {
 		super.doDefaultCloseAction();
-		}
+	}
 
-	public void doDefaultCloseAction(final Runnable runnable)
-		{
-		if (!resourceChanged())
-			{
+	public void doDefaultCloseAction(final Runnable runnable) {
+		if (!resourceChanged()) {
 			revertResource();
 			close();
 			if (runnable != null) runnable.run();
 			return;
-			}
+		}
 
 		// prevent a race condition from ConfirmDialog's buttons leading to NPE.
-		SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-					{
-					int ret = JOptionPane.showConfirmDialog(LGM.frame,
-							Messages.format("RevertableMDIFrame.KEEPCHANGES",getConfirmationName()), //$NON-NLS-1$
-							Messages.getString("RevertableMDIFrame.KEEPCHANGES_TITLE"), //$NON-NLS-1$
-							JOptionPane.YES_NO_CANCEL_OPTION);
-					if (ret == JOptionPane.YES_OPTION)
-						{
-						updateResource(false);
-						setResourceChanged();
-						close();
-						}
-					else if (ret == JOptionPane.NO_OPTION)
-						{
-						revertResource();
-						close();
-						}
-						if (runnable != null) runnable.run();
-					}
-			});
-		}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				int ret = JOptionPane.showConfirmDialog(LGM.frame,
+						Messages.format("RevertableMDIFrame.KEEPCHANGES", getConfirmationName()), //$NON-NLS-1$
+						Messages.getString("RevertableMDIFrame.KEEPCHANGES_TITLE"), //$NON-NLS-1$
+						JOptionPane.YES_NO_CANCEL_OPTION);
+				if (ret == JOptionPane.YES_OPTION) {
+					updateResource(false);
+					setResourceChanged();
+					close();
+				} else if (ret == JOptionPane.NO_OPTION) {
+					revertResource();
+					close();
+				}
+				if (runnable != null) runnable.run();
+			}
+		});
+	}
 
 	@Override
-	public void doDefaultCloseAction()
-		{
-			doDefaultCloseAction(null);
-		}
+	public void doDefaultCloseAction() {
+		doDefaultCloseAction(null);
 	}
+}

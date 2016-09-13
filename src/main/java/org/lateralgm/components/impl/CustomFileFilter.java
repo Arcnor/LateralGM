@@ -8,59 +8,52 @@
 
 package org.lateralgm.components.impl;
 
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import javax.swing.filechooser.FileFilter;
-
-public class CustomFileFilter extends FileFilter implements FilenameFilter
-	{
+public class CustomFileFilter extends FileFilter implements FilenameFilter {
 	private ArrayList<String> ext = new ArrayList<String>();
 	private String desc;
 
-	/**
-	 * Gets the extension part of the given filename, including the period
-	 * @param filename
-	 * @return the extension, including period
-	 */
-	public static String getExtension(String filename)
-		{
-		int p = filename.lastIndexOf(".");
-		if (p == -1) return null;
-		return filename.substring(p).toLowerCase(Locale.ENGLISH);
-		}
-
-	public CustomFileFilter(String desc, String...ext)
-		{
+	public CustomFileFilter(String desc, String... ext) {
 		this.desc = desc;
 		for (String element : ext)
 			this.ext.add(element);
-		}
+	}
 
-	public boolean accept(File f)
-		{
+	/**
+	 * Gets the extension part of the given filename, including the period
+	 *
+	 * @param filename
+	 * @return the extension, including period
+	 */
+	public static String getExtension(String filename) {
+		int p = filename.lastIndexOf(".");
+		if (p == -1) return null;
+		return filename.substring(p).toLowerCase(Locale.ENGLISH);
+	}
+
+	public boolean accept(File f) {
 		if (f.isDirectory()) return true;
-		return accept(f,f.getPath());
-		}
+		return accept(f, f.getPath());
+	}
 
-	public boolean accept(File dir, String name)
-		{
+	public boolean accept(File dir, String name) {
 		if (ext.size() == 0) return true;
 		//if (f.isDirectory()) return true;
 		String s = getExtension(name);
 		if (s == null) return false;
 		return ext.contains(s);
-		}
-
-	public String getDescription()
-		{
-		return desc;
-		}
-
-	public String[] getExtensions()
-		{
-		return ext.toArray(new String[0]);
-		}
 	}
+
+	public String getDescription() {
+		return desc;
+	}
+
+	public String[] getExtensions() {
+		return ext.toArray(new String[0]);
+	}
+}

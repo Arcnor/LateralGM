@@ -9,60 +9,52 @@
 
 package org.lateralgm.file;
 
-import java.util.Hashtable;
-
 import org.lateralgm.resources.InstantiableResource;
 import org.lateralgm.resources.ResourceReference;
 
-public class RefList<R extends InstantiableResource<R,?>>
-	{
-	private Hashtable<Integer,ResRef<R>> rrt = new Hashtable<Integer,ResRef<R>>();
+import java.util.Hashtable;
+
+public class RefList<R extends InstantiableResource<R, ?>> {
+	private Hashtable<Integer, ResRef<R>> rrt = new Hashtable<Integer, ResRef<R>>();
 	private Class<R> clazz;
 
-	public RefList(Class<R> clazz)
-		{
+	public RefList(Class<R> clazz) {
 		this.clazz = clazz;
-		}
+	}
 
-	public ResourceReference<R> get(int id)
-		{
+	public ResourceReference<R> get(int id) {
 		if (id < 0) return null;
 		ResRef<R> rr = rrt.get(id);
 		if (rr != null) return rr.reference;
 		R r = null;
-		try
-			{
+		try {
 			r = clazz.newInstance();
-			}
-		catch (Exception e)
-			{
+		} catch (Exception e) {
 			e.printStackTrace();
-			}
-		if (r != null)
-			{
+		}
+		if (r != null) {
 			rr = new ResRef<R>(r);
-			rrt.put(id,rr);
+			rrt.put(id, rr);
 			r.setId(id);
 			return rr.reference;
-			}
-		return null;
 		}
+		return null;
+	}
 
-	private static class ResRef<R extends InstantiableResource<R,?>>
-		{
+	private static class ResRef<R extends InstantiableResource<R, ?>> {
 		ResourceReference<R> reference;
 		/**
 		 * Keep a hard reference so it doesn't get lost/destroyed.<br />
 		 * At this time, the hard reference has no other purpose, so remains unused.
+		 *
 		 * @since r228
 		 */
 		@SuppressWarnings("unused")
 		R resource;
 
-		public ResRef(R res)
-			{
+		public ResRef(R res) {
 			resource = res;
 			reference = res.reference;
-			}
 		}
 	}
+}

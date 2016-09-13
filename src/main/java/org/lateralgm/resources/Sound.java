@@ -10,61 +10,51 @@
 
 package org.lateralgm.resources;
 
-import java.util.EnumMap;
-
 import org.lateralgm.util.PropertyMap;
 
-public class Sound extends InstantiableResource<Sound,Sound.PSound>
-	{
+import java.util.EnumMap;
+
+public class Sound extends InstantiableResource<Sound, Sound.PSound> {
+	private static final EnumMap<PSound, Object> DEFS = PropertyMap.makeDefaultMap(PSound.class,
+			SoundKind.NORMAL, "", "", false, false, false, false, false, 1.0, 0.0, true, 192, 44100, SoundType.MONO,
+			16, false, false, false);
 	public byte[] data = new byte[0];
 
-	public enum SoundKind
-		{
-		NORMAL,BACKGROUND,SPATIAL,MULTIMEDIA
-		}
-
-	public enum SoundType
-		{
-		MONO,STEREO,THREED
-		}
-
-	//NOTE: Kind is different than type in the GMX format
-	public enum PSound
-		{
-		KIND,FILE_TYPE,FILE_NAME,CHORUS,ECHO,FLANGER,GARGLE,REVERB,VOLUME,PAN,PRELOAD,BIT_RATE,
-		SAMPLE_RATE,TYPE,BIT_DEPTH,COMPRESSED,STREAMED,DECOMPRESS_ON_LOAD
-		}
-
-	private static final EnumMap<PSound,Object> DEFS = PropertyMap.makeDefaultMap(PSound.class,
-			SoundKind.NORMAL,"","",false,false,false,false,false,1.0,0.0,true,192,44100,SoundType.MONO,
-			16,false,false,false);
-
-	public Sound()
-		{
+	public Sound() {
 		this(null);
-		}
+	}
 
-	public Sound(ResourceReference<Sound> r)
-		{
+	public Sound(ResourceReference<Sound> r) {
 		super(r);
-		}
+	}
 
-	public Sound makeInstance(ResourceReference<Sound> r)
-		{
+	public Sound makeInstance(ResourceReference<Sound> r) {
 		return new Sound(r);
-		}
+	}
 
 	@Override
-	protected void postCopy(Sound dest)
-		{
+	protected void postCopy(Sound dest) {
 		super.postCopy(dest);
 		dest.data = new byte[data.length];
-		System.arraycopy(data,0,dest.data,0,data.length);
-		}
+		System.arraycopy(data, 0, dest.data, 0, data.length);
+	}
 
 	@Override
-	protected PropertyMap<PSound> makePropertyMap()
-		{
-		return new PropertyMap<PSound>(PSound.class,this,DEFS);
-		}
+	protected PropertyMap<PSound> makePropertyMap() {
+		return new PropertyMap<PSound>(PSound.class, this, DEFS);
 	}
+
+	public enum SoundKind {
+		NORMAL, BACKGROUND, SPATIAL, MULTIMEDIA
+	}
+
+	public enum SoundType {
+		MONO, STEREO, THREED
+	}
+
+	//NOTE: Kind is different than type in the GMX format
+	public enum PSound {
+		KIND, FILE_TYPE, FILE_NAME, CHORUS, ECHO, FLANGER, GARGLE, REVERB, VOLUME, PAN, PRELOAD, BIT_RATE,
+		SAMPLE_RATE, TYPE, BIT_DEPTH, COMPRESSED, STREAMED, DECOMPRESS_ON_LOAD
+	}
+}

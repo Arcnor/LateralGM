@@ -8,103 +8,83 @@
 
 package org.lateralgm.components.impl;
 
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import java.awt.Container;
 import java.awt.event.ActionListener;
 
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-
-public class IndexButtonGroup
-	{
-	private class But
-		{
-		AbstractButton b;
-		int i;
-
-		But(AbstractButton b, int i)
-			{
-			this.b = b;
-			this.i = i;
-			}
-		}
-
+public class IndexButtonGroup {
 	private But bm[];
 	private int bs;
 	private ButtonGroup g = null;
 	private boolean bitwise;
 	private ActionListener a;
-
-	public IndexButtonGroup(int s, boolean exclusive, boolean bitwise, ActionListener a)
-		{
+	public IndexButtonGroup(int s, boolean exclusive, boolean bitwise, ActionListener a) {
 		if (exclusive || !bitwise) g = new ButtonGroup();
 		bm = new But[s];
 		bs = 0;
 		this.bitwise = bitwise;
 		this.a = a;
-		}
+	}
 
-	public IndexButtonGroup(int s, boolean exclusive, boolean bitwise)
-		{
-		this(s,exclusive,bitwise,null);
-		}
+	public IndexButtonGroup(int s, boolean exclusive, boolean bitwise) {
+		this(s, exclusive, bitwise, null);
+	}
 
-	public IndexButtonGroup(int s, boolean exclusive)
-		{
-		this(s,exclusive,true,null);
-		}
+	public IndexButtonGroup(int s, boolean exclusive) {
+		this(s, exclusive, true, null);
+	}
 
-	public IndexButtonGroup(int s)
-		{
-		this(s,true,true,null);
-		}
+	public IndexButtonGroup(int s) {
+		this(s, true, true, null);
+	}
 
-	public void add(AbstractButton b, int value)
-		{
+	public void add(AbstractButton b, int value) {
 		if (g != null) g.add(b);
-		bm[bs++] = new But(b,value);
+		bm[bs++] = new But(b, value);
 		if (a != null) b.addActionListener(a);
-		}
+	}
 
-	public void add(AbstractButton b)
-		{
+	public void add(AbstractButton b) {
 		if (bitwise)
-			add(b,1 << bs);
+			add(b, 1 << bs);
 		else
-			add(b,bs);
-		}
+			add(b, bs);
+	}
 
-	public int getValue()
-		{
+	public int getValue() {
 		int value = 0;
-		for (But b : bm)
-			{
+		for (But b : bm) {
 			if (b.b.isSelected()) value |= b.i;
-			}
-		return value;
 		}
+		return value;
+	}
 
-	public void setValue(int value)
-		{
+	public void setValue(int value) {
 		for (But b : bm)
-			if (bitwise)
-				{
+			if (bitwise) {
 				if ((b.i & value) != 0) b.b.setSelected(true);
-				}
-			else
-				{
-				if (b.i == value)
-					{
+			} else {
+				if (b.i == value) {
 					b.b.setSelected(true);
 					return;
-					}
 				}
-		}
-
-	public void populate(Container c)
-		{
-		for (But b : bm)
-			{
-			c.add(b.b);
 			}
+	}
+
+	public void populate(Container c) {
+		for (But b : bm) {
+			c.add(b.b);
 		}
 	}
+
+	private class But {
+		AbstractButton b;
+		int i;
+
+		But(AbstractButton b, int i) {
+			this.b = b;
+			this.i = i;
+		}
+	}
+}

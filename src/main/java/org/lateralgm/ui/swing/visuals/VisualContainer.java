@@ -10,9 +10,8 @@ package org.lateralgm.ui.swing.visuals;
 
 import java.awt.Rectangle;
 
-public interface VisualContainer
-	{
+public interface VisualContainer {
 	void repaint(Rectangle r);
 
 	void updateBounds();
-	}
+}

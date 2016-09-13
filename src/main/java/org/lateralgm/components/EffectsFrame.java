@@ -1,28 +1,44 @@
 /**
-* @file  EffectsFrame.java
-* @brief Class implementing an effect chooser for sprites and backgrounds.
-*
-* @section License
-*
-* Copyright (C) 2013-2014 Robert B. Colton
-* This file is a part of the LateralGM IDE.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-**/
+ * @file EffectsFrame.java
+ * @brief Class implementing an effect chooser for sprites and backgrounds.
+ * @section License
+ * <p>
+ * Copyright (C) 2013-2014 Robert B. Colton
+ * This file is a part of the LateralGM IDE.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ **/
 
 package org.lateralgm.components;
 
+import org.lateralgm.components.ImageEffects.EffectOptionListener;
+import org.lateralgm.components.ImageEffects.ImageEffect;
+import org.lateralgm.main.LGM;
+import org.lateralgm.main.Util;
+import org.lateralgm.messages.Messages;
+
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -36,28 +52,9 @@ import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
-import javax.swing.GroupLayout.Alignment;
-
-import org.lateralgm.components.ImageEffects.EffectOptionListener;
-import org.lateralgm.components.ImageEffects.ImageEffect;
-import org.lateralgm.main.LGM;
-import org.lateralgm.main.Util;
-import org.lateralgm.messages.Messages;
-
 import static javax.swing.GroupLayout.PREFERRED_SIZE;
 
-public class EffectsFrame extends JFrame implements ActionListener, EffectOptionListener
-	{
+public class EffectsFrame extends JFrame implements ActionListener, EffectOptionListener {
 	/**
 	 * NOTE: Default UID generated, change if necessary.
 	 */
@@ -73,102 +70,10 @@ public class EffectsFrame extends JFrame implements ActionListener, EffectOption
 	private ImageEffectPreview beforePreview;
 	private ImageEffectPreview afterPreview;
 
-	public abstract interface EffectsFrameListener {
-		public abstract void applyEffects(List<BufferedImage> imgs);
-	}
-
-	public void setEffectsListener(EffectsFrameListener ln) {
-		listener = ln;
-	}
-
-	public static EffectsFrame getInstance(List<BufferedImage> imgs) {
-		if (INSTANCE == null) INSTANCE = new EffectsFrame();
-		INSTANCE.setImages(imgs);
-		return INSTANCE;
-	}
-
-	private class ImageEffectPreview extends JPanel {
-	/**
-	* NOTE: Default UID generated, change if necessary.
-	*/
-	private static final long serialVersionUID = -3708532748005061371L;
-	BufferedImage image = null;
-
-		public ImageEffectPreview() {
-
-			JPanel jp = new JPanel() {
-				/**
-				* NOTE: Default UID generated, change if necessary.
-				*/
-				private static final long serialVersionUID = 1760158377097010861L;
-
-				private BufferedImage transparentBackground;
-
-				@Override
-				public void paint(Graphics g) {
-					if (image == null) return;
-
-					Rectangle bounds = this.getBounds();
-
-					int swidth = image.getWidth();
-					int sheight = image.getHeight();
-					if (image.getWidth() > bounds.width) {
-						float factor = (float) (bounds.getWidth() / image.getWidth());
-						swidth = bounds.width;
-						sheight = (int) (factor * image.getHeight());
-					}
-					if (sheight > bounds.height) {
-						float factor = (float) (bounds.getHeight() / sheight);
-						swidth = (int) (factor * swidth);
-						sheight = bounds.height;
-					}
-
-					Graphics2D g2d = (Graphics2D) g;
-					g2d.translate((bounds.width - swidth) / 2,(bounds.height - sheight) / 2);
-
-					int width = (int)Math.ceil(swidth / 8f);
-					int height = (int)Math.ceil(sheight / 8f);
-					width = width < 1 ? 1 : width;
-					height = height < 1 ? 1 : height;
-					if (transparentBackground == null ||
-							transparentBackground.getWidth() != width ||
-							transparentBackground.getHeight() != height)
-						{
-						transparentBackground = Util.paintBackground(width, height);
-						}
-
-					Shape clip = g.getClip();
-					g.clipRect(0,0,swidth,sheight);
-
-					g.drawImage(transparentBackground,0,0,transparentBackground.getWidth() * 8,
-							transparentBackground.getHeight() * 8,null);
-
-					g.drawImage(image,0,0,swidth,sheight,null);
-
-					g.setClip(clip);
-				}
-
-			};
-
-			GroupLayout bl = new GroupLayout(this);
-			bl.setHorizontalGroup(bl.createParallelGroup().addComponent(jp));
-			bl.setVerticalGroup(bl.createParallelGroup().addComponent(jp));
-			this.setLayout(bl);
-		}
-
-		public void setImage(BufferedImage img)
-			{
-			image = img;
-			if (image != null) repaint();
-			}
-
-	}
-
-	public EffectsFrame()
-		{
+	public EffectsFrame() {
 		setAlwaysOnTop(false);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setSize(700,400);
+		setSize(700, 400);
 		setLocationRelativeTo(LGM.frame);
 		setTitle(Messages.getString("EffectsFrame.TITLE"));
 		setIconImage(LGM.getIconForKey("EffectsFrame.ICON").getImage());
@@ -197,7 +102,7 @@ public class EffectsFrame extends JFrame implements ActionListener, EffectOption
 		final JPanel effectsOptions = new JPanel(new CardLayout());
 		for (ImageEffect effect : effects) {
 			effect.addOptionUpdateListener(this);
-			effectsOptions.add(effect.getOptionsPanel(),effect.getKey());
+			effectsOptions.add(effect.getOptionsPanel(), effect.getKey());
 		}
 
 		effectsCombo = new JComboBox<ImageEffect>(effects);
@@ -205,29 +110,27 @@ public class EffectsFrame extends JFrame implements ActionListener, EffectOption
 
 			@Override
 			public Component getListCellRendererComponent(JList<? extends ImageEffect> list,
-					ImageEffect value, int index, boolean isSelected, boolean cellHasFocus)
-				{
-					return new JLabel(value.getName());
-				}
+			                                              ImageEffect value, int index, boolean isSelected, boolean cellHasFocus) {
+				return new JLabel(value.getName());
+			}
 
 		});
 		effectsCombo.addItemListener(new ItemListener() {
 
 			@Override
-			public void itemStateChanged(ItemEvent ie)
-				{
-					if (ie.getStateChange() != ItemEvent.SELECTED) return;
-					ImageEffect effect = (ImageEffect) ie.getItem();
-					if (effect == null) return;
+			public void itemStateChanged(ItemEvent ie) {
+				if (ie.getStateChange() != ItemEvent.SELECTED) return;
+				ImageEffect effect = (ImageEffect) ie.getItem();
+				if (effect == null) return;
 
-					CardLayout cl = (CardLayout)(effectsOptions.getLayout());
-					cl.show(effectsOptions, effect.getKey());
+				CardLayout cl = (CardLayout) (effectsOptions.getLayout());
+				cl.show(effectsOptions, effect.getKey());
 
-					if (images == null || images.size() <= 0) return;
-					BufferedImage img = images.get(0);
-					if (img == null) return;
-					afterPreview.setImage(effect.getAppliedImage(img));
-				}
+				if (images == null || images.size() <= 0) return;
+				BufferedImage img = images.get(0);
+				if (img == null) return;
+				afterPreview.setImage(effect.getAppliedImage(img));
+			}
 
 		});
 
@@ -261,8 +164,17 @@ public class EffectsFrame extends JFrame implements ActionListener, EffectOption
 		/**/.addComponent(effectsOptions, PREFERRED_SIZE, PREFERRED_SIZE, PREFERRED_SIZE));
 
 		this.setLayout(gl);
-		}
+	}
 
+	public static EffectsFrame getInstance(List<BufferedImage> imgs) {
+		if (INSTANCE == null) INSTANCE = new EffectsFrame();
+		INSTANCE.setImages(imgs);
+		return INSTANCE;
+	}
+
+	public void setEffectsListener(EffectsFrameListener ln) {
+		listener = ln;
+	}
 
 	public void setImages(List<BufferedImage> imgs) {
 		images = imgs;
@@ -271,12 +183,11 @@ public class EffectsFrame extends JFrame implements ActionListener, EffectOption
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e)
-		{
+	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == applyButton) {
-			for (int i = 0; i < images.size(); i++){
+			for (int i = 0; i < images.size(); i++) {
 				ImageEffect effect = (ImageEffect) effectsCombo.getSelectedItem();
-				images.set(i,effect.getAppliedImage(images.get(i)));
+				images.set(i, effect.getAppliedImage(images.get(i)));
 			}
 			if (listener != null) {
 				listener.applyEffects(images);
@@ -286,13 +197,12 @@ public class EffectsFrame extends JFrame implements ActionListener, EffectOption
 			this.setVisible(false);
 			listener = null;
 		}
-		}
+	}
 
 	@Override
-	public void optionsUpdated()
-		{
-			updatePreviews();
-		}
+	public void optionsUpdated() {
+		updatePreviews();
+	}
 
 	public void updatePreviews() {
 		ImageEffect effect = (ImageEffect) effectsCombo.getSelectedItem();
@@ -304,4 +214,83 @@ public class EffectsFrame extends JFrame implements ActionListener, EffectOption
 		afterPreview.setImage(effect.getAppliedImage(img));
 	}
 
+	public abstract interface EffectsFrameListener {
+		public abstract void applyEffects(List<BufferedImage> imgs);
 	}
+
+	private class ImageEffectPreview extends JPanel {
+		/**
+		 * NOTE: Default UID generated, change if necessary.
+		 */
+		private static final long serialVersionUID = -3708532748005061371L;
+		BufferedImage image = null;
+
+		public ImageEffectPreview() {
+
+			JPanel jp = new JPanel() {
+				/**
+				 * NOTE: Default UID generated, change if necessary.
+				 */
+				private static final long serialVersionUID = 1760158377097010861L;
+
+				private BufferedImage transparentBackground;
+
+				@Override
+				public void paint(Graphics g) {
+					if (image == null) return;
+
+					Rectangle bounds = this.getBounds();
+
+					int swidth = image.getWidth();
+					int sheight = image.getHeight();
+					if (image.getWidth() > bounds.width) {
+						float factor = (float) (bounds.getWidth() / image.getWidth());
+						swidth = bounds.width;
+						sheight = (int) (factor * image.getHeight());
+					}
+					if (sheight > bounds.height) {
+						float factor = (float) (bounds.getHeight() / sheight);
+						swidth = (int) (factor * swidth);
+						sheight = bounds.height;
+					}
+
+					Graphics2D g2d = (Graphics2D) g;
+					g2d.translate((bounds.width - swidth) / 2, (bounds.height - sheight) / 2);
+
+					int width = (int) Math.ceil(swidth / 8f);
+					int height = (int) Math.ceil(sheight / 8f);
+					width = width < 1 ? 1 : width;
+					height = height < 1 ? 1 : height;
+					if (transparentBackground == null ||
+							transparentBackground.getWidth() != width ||
+							transparentBackground.getHeight() != height) {
+						transparentBackground = Util.paintBackground(width, height);
+					}
+
+					Shape clip = g.getClip();
+					g.clipRect(0, 0, swidth, sheight);
+
+					g.drawImage(transparentBackground, 0, 0, transparentBackground.getWidth() * 8,
+							transparentBackground.getHeight() * 8, null);
+
+					g.drawImage(image, 0, 0, swidth, sheight, null);
+
+					g.setClip(clip);
+				}
+
+			};
+
+			GroupLayout bl = new GroupLayout(this);
+			bl.setHorizontalGroup(bl.createParallelGroup().addComponent(jp));
+			bl.setVerticalGroup(bl.createParallelGroup().addComponent(jp));
+			this.setLayout(bl);
+		}
+
+		public void setImage(BufferedImage img) {
+			image = img;
+			if (image != null) repaint();
+		}
+
+	}
+
+}

@@ -1,35 +1,29 @@
 /**
-* @file  OutputManager.java
-* @brief Class implementing the output log and symbolic message feedback.
-*
-* @section License
-*
-* Copyright (C) 2008, 2009 IsmAvatar <IsmAvatar@gmail.com>
-* Copyright (C) 2013, 2014 Robert B. Colton
-* This file is a part of the LateralGM IDE.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-**/
+ * @file OutputManager.java
+ * @brief Class implementing the output log and symbolic message feedback.
+ * @section License
+ * <p>
+ * Copyright (C) 2008, 2009 IsmAvatar <IsmAvatar@gmail.com>
+ * Copyright (C) 2013, 2014 Robert B. Colton
+ * This file is a part of the LateralGM IDE.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ **/
 
 package org.lateralgm.main;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.util.Date;
+import org.lateralgm.messages.Messages;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -46,28 +40,28 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.Date;
 
-import org.lateralgm.messages.Messages;
+public class OutputManager {
 
-public class OutputManager
-{
-
+	private static final SimpleAttributeSet ORANGE = new SimpleAttributeSet();
+	private static final SimpleAttributeSet RED = new SimpleAttributeSet();
 	public static JTabbedPane outputTabs;
 	private static JTextPane logPane;
 	private static JTable messageTable;
 
-	private static final SimpleAttributeSet ORANGE = new SimpleAttributeSet();
-	private static final SimpleAttributeSet RED = new SimpleAttributeSet();
-
-	static
-		{
+	static {
 		//because Color.ORANGE looks like it was done by Mark Rothko
-		StyleConstants.setForeground(ORANGE,new Color(255,128,0));
-		StyleConstants.setForeground(RED,Color.RED);
-		}
+		StyleConstants.setForeground(ORANGE, new Color(255, 128, 0));
+		StyleConstants.setForeground(RED, Color.RED);
+	}
 
-	private static JMenuItem makeContextButton(Action a)
-	{
+	private static JMenuItem makeContextButton(Action a) {
 		String key = "OutputManager." + a.getValue(Action.NAME);
 		JMenuItem b = new JMenuItem();
 		b.setIcon(LGM.getIconForKey(key));
@@ -94,26 +88,22 @@ public class OutputManager
 			}
 		});
 
-		AbstractAction aCopy = new AbstractAction("COPY")
-		{
+		AbstractAction aCopy = new AbstractAction("COPY") {
 			private static final long serialVersionUID = 1L;
 
 			/** @see AbstractAction#actionPerformed(ActionEvent) */
 			//r@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				logPane.copy();
 			}
 		};
 
-		AbstractAction aSelAll = new AbstractAction("SELALL")
-		{
+		AbstractAction aSelAll = new AbstractAction("SELALL") {
 			private static final long serialVersionUID = 1L;
 
 			/** @see AbstractAction#actionPerformed(ActionEvent) */
 			//r@Override
-			public void actionPerformed(ActionEvent e)
-			{
+			public void actionPerformed(ActionEvent e) {
 				logPane.selectAll();
 			}
 		};
@@ -127,7 +117,7 @@ public class OutputManager
 		JScrollPane logScroll = new JScrollPane(logPane);
 
 		outputTabs = new JTabbedPane();
-		outputTabs.addTab("Log",logScroll);
+		outputTabs.addTab("Log", logScroll);
 		DefaultTableModel model = new DefaultTableModel() {
 			/**
 			 * NOTE: Default UID generated, change if necessary.
@@ -144,15 +134,14 @@ public class OutputManager
 		model.addColumn("Origin");
 		model.addColumn("Description");
 
-    Object[] data = {LGM.getIconForKey("OutputManager.NOTICE"), "obj_0", "Lorem ipsum dollor sit amet..."};
+		Object[] data = {LGM.getIconForKey("OutputManager.NOTICE"), "obj_0", "Lorem ipsum dollor sit amet..."};
 		model.addRow(data);
-    Object[] data2 = {LGM.getIconForKey("OutputManager.WARNING"), "obj_0", "Lorem ipsum dollor sit amet..."};
+		Object[] data2 = {LGM.getIconForKey("OutputManager.WARNING"), "obj_0", "Lorem ipsum dollor sit amet..."};
 		model.addRow(data2);
-    Object[] data3 = {LGM.getIconForKey("OutputManager.ERROR"), "obj_0", "Lorem ipsum dollor sit amet..."};
+		Object[] data3 = {LGM.getIconForKey("OutputManager.ERROR"), "obj_0", "Lorem ipsum dollor sit amet..."};
 		model.addRow(data3);
 
-		messageTable = new JTable(model)
-    {
+		messageTable = new JTable(model) {
 			/**
 			 * NOTE: Default UID generated, change if necessary.
 			 */
@@ -160,12 +149,11 @@ public class OutputManager
 
 			// Returning the Class of each column will allow different
 			// renderers to be used based on Class
-			public Class<?> getColumnClass(int column)
-			{
+			public Class<?> getColumnClass(int column) {
 				return getValueAt(0, column).getClass();
 			}
-    };
-		outputTabs.addTab("Messages",new JScrollPane(messageTable));
+		};
+		outputTabs.addTab("Messages", new JScrollPane(messageTable));
 
 		messageTable.setRowHeight(24);
 		messageTable.getColumnModel().getColumn(0).setPreferredWidth(50);
@@ -175,56 +163,47 @@ public class OutputManager
 		outputTabs.setPreferredSize(new Dimension(100, 250));
 	}
 
-	public static void append(String text)
-		{
+	public static void append(String text) {
 		if (logPane == null) return;
 		StyledDocument doc = logPane.getStyledDocument();
 		//assuming they actually pass us a full
 		//warning/error string, this will highlight it
 		AttributeSet style = null;
 		String lower = text.toLowerCase();
-		if (lower.startsWith("warning:"))
-			{
+		if (lower.startsWith("warning:")) {
 			style = ORANGE;
 			postWarning(text);
-			}
-		if (lower.startsWith("error:"))
-			{
+		}
+		if (lower.startsWith("error:")) {
 			style = RED;
 			postError(text);
-			}
-		//do the actual append
-		try
-			{
-			doc.insertString(doc.getLength(),text,style);
-			}
-		catch (BadLocationException e)
-			{ //This can never happen (also, JTextArea does this)
-			}
-		logPane.setCaretPosition(doc.getLength());
 		}
+		//do the actual append
+		try {
+			doc.insertString(doc.getLength(), text, style);
+		} catch (BadLocationException e) { //This can never happen (also, JTextArea does this)
+		}
+		logPane.setCaretPosition(doc.getLength());
+	}
 
-	public static void postWarning(String text)
-		{
+	public static void postWarning(String text) {
 		Object[] data = {LGM.getIconForKey("OutputManager.WARNING"), "obj_0", text};
 		DefaultTableModel model = (DefaultTableModel) messageTable.getModel();
 		model.addRow(data);
-		}
+	}
 
-	public static void postError(String text)
-		{
+	public static void postError(String text) {
 		Object[] data = {LGM.getIconForKey("OutputManager.ERROR"), "obj_0", text};
 		DefaultTableModel model = (DefaultTableModel) messageTable.getModel();
 		model.addRow(data);
-		}
-
-	public void clearLog()
-		{
-			logPane.setText(null);
-		}
+	}
 
 	public static void setVisible(boolean visible) {
 		outputTabs.setVisible(visible);
+	}
+
+	public void clearLog() {
+		logPane.setText(null);
 	}
 
 }

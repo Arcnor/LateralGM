@@ -11,48 +11,40 @@
 
 package org.lateralgm.resources;
 
-import java.util.EnumMap;
-
 import org.lateralgm.subframes.CodeFrame.CodeHolder;
 import org.lateralgm.util.PropertyMap;
 
-public class Script extends InstantiableResource<Script,Script.PScript> implements CodeHolder
-	{
-	public enum PScript
-		{
-		CODE
-		}
+import java.util.EnumMap;
 
-	private static final EnumMap<PScript,Object> DEFS = PropertyMap.makeDefaultMap(PScript.class,"");
+public class Script extends InstantiableResource<Script, Script.PScript> implements CodeHolder {
+	private static final EnumMap<PScript, Object> DEFS = PropertyMap.makeDefaultMap(PScript.class, "");
 
-	public Script()
-		{
+	public Script() {
 		this(null);
-		}
+	}
 
-	public Script(ResourceReference<Script> r)
-		{
+	public Script(ResourceReference<Script> r) {
 		super(r);
-		}
+	}
 
-	public Script makeInstance(ResourceReference<Script> r)
-		{
+	public Script makeInstance(ResourceReference<Script> r) {
 		return new Script(r);
-		}
+	}
 
 	@Override
-	protected PropertyMap<PScript> makePropertyMap()
-		{
-		return new PropertyMap<PScript>(PScript.class,this,DEFS);
-		}
-
-	public String getCode()
-		{
-		return properties.get(PScript.CODE);
-		}
-
-	public void setCode(String s)
-		{
-		properties.put(PScript.CODE,s);
-		}
+	protected PropertyMap<PScript> makePropertyMap() {
+		return new PropertyMap<PScript>(PScript.class, this, DEFS);
 	}
+
+	public String getCode() {
+		return properties.get(PScript.CODE);
+	}
+
+	public void setCode(String s) {
+		properties.put(PScript.CODE, s);
+	}
+
+	public enum PScript {
+		CODE
+	}
+}

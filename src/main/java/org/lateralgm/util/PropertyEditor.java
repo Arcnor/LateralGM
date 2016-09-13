@@ -8,7 +8,6 @@
 
 package org.lateralgm.util;
 
-public interface PropertyEditor<V>
-	{
-	<K extends Enum<K>>PropertyLink<K,V> getLink(PropertyMap<K> m, K k);
-	}
+public interface PropertyEditor<V> {
+	<K extends Enum<K>> PropertyLink<K, V> getLink(PropertyMap<K> m, K k);
+}

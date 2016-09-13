@@ -1,9 +1,9 @@
 package org.lateralgm.file.iconio;
 
-import java.io.IOException;
-
 import org.lateralgm.file.StreamDecoder;
 import org.lateralgm.file.StreamEncoder;
+
+import java.io.IOException;
 
 /**
  * <p>
@@ -12,8 +12,7 @@ import org.lateralgm.file.StreamEncoder;
  *
  * @author &copy; Christian Treber, ct@ctreber.com
  */
-public abstract class AbstractBitmapRGB extends AbstractBitmap
-	{
+public abstract class AbstractBitmapRGB extends AbstractBitmap {
 	protected int[] samples;
 
 	/**
@@ -21,24 +20,21 @@ public abstract class AbstractBitmapRGB extends AbstractBitmap
 	 *
 	 * @param pDescriptor
 	 */
-	public AbstractBitmapRGB(final BitmapDescriptor pDescriptor)
-		{
+	public AbstractBitmapRGB(final BitmapDescriptor pDescriptor) {
 		super(pDescriptor);
 
 		samples = new int[getWidth() * getHeight()];
-		}
+	}
 
-	void read(final StreamDecoder in) throws IOException
-		{
+	void read(final StreamDecoder in) throws IOException {
 		readBitmap(in);
 		readMask(in);
-		}
+	}
 
-	void write(StreamEncoder out) throws IOException
-		{
+	void write(StreamEncoder out) throws IOException {
 		writeBitmap(out);
 		writeMask(out);
-		}
+	}
 
 	/**
 	 * This functions is needed b/c all classes read the bitmap, but not always a color table and a
@@ -50,4 +46,4 @@ public abstract class AbstractBitmapRGB extends AbstractBitmap
 	abstract void readBitmap(final StreamDecoder pDec) throws IOException;
 
 	abstract void writeBitmap(final StreamEncoder pDec) throws IOException;
-	}
+}

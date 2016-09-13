@@ -21,35 +21,29 @@ package org.lateralgm.resources;
 
 import org.lateralgm.main.Prefs;
 
-public abstract class InstantiableResource<R extends InstantiableResource<R,P>, P extends Enum<P>>
-		extends Resource<R,P>
-	{
+public abstract class InstantiableResource<R extends InstantiableResource<R, P>, P extends Enum<P>>
+		extends Resource<R, P> {
 	protected int id = -1; //indicates id not set
 
-	public InstantiableResource()
-		{
+	public InstantiableResource() {
 		this(null);
-		}
+	}
 
-	public InstantiableResource(ResourceReference<R> r)
-		{
+	public InstantiableResource(ResourceReference<R> r) {
 		super(r);
 		name = Prefs.prefixes.get(getClass());
-		}
+	}
 
-	public void setId(int id)
-		{
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
 		this.id = id;
 		fireUpdate();
-		}
+	}
 
-	public int getId()
-		{
-		return id;
-		}
-
-	protected void postCopy(R dest)
-		{
+	protected void postCopy(R dest) {
 		//Default implementation is to do nothing except copy ID if not set.
 		/*
 		 * Normally, ID copy would have been performed in clone,
@@ -59,17 +53,16 @@ public abstract class InstantiableResource<R extends InstantiableResource<R,P>, 
 		 * so as to avoid user-duplicated objects getting a duplicate ID.
 		 */
 		if (dest.id == -1) dest.id = id;
-		}
+	}
 
 	public abstract R makeInstance(ResourceReference<R> ref);
 
 	@Override
-	public boolean equals(Object obj)
-		{
+	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (obj == null || !(obj instanceof InstantiableResource<?,?>)) return false;
-		InstantiableResource<?,?> other = (InstantiableResource<?,?>) obj;
+		if (obj == null || !(obj instanceof InstantiableResource<?, ?>)) return false;
+		InstantiableResource<?, ?> other = (InstantiableResource<?, ?>) obj;
 		if (id != other.id || !name.equals(other.name) || reference != other.reference) return false;
 		return properties.equals(other.properties);
-		}
 	}
+}

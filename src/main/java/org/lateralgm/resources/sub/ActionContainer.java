@@ -8,25 +8,22 @@
 
 package org.lateralgm.resources.sub;
 
+import org.lateralgm.resources.library.LibAction;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lateralgm.resources.library.LibAction;
-
-public abstract class ActionContainer
-	{
+public abstract class ActionContainer {
 	public List<Action> actions = new ArrayList<Action>();
 
-	public Action addAction()
-		{
+	public Action addAction() {
 		return addAction(null);
-		}
+	}
 
 	// adds an action set to the properties of given LibAction
-	public Action addAction(LibAction libAction)
-		{
+	public Action addAction(LibAction libAction) {
 		Action act = new Action(libAction);
 		actions.add(act);
 		return act;
-		}
 	}
+}
