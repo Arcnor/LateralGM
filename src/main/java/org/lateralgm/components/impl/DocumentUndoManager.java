@@ -124,7 +124,7 @@ public class DocumentUndoManager extends UndoManager implements CaretListener {
 		addEdit(e.getEdit());
 	}
 
-	private class GroupEdit extends CompoundEdit {
+	private static class GroupEdit extends CompoundEdit {
 		private static final long serialVersionUID = 1L;
 
 		public GroupEdit() {
@@ -164,7 +164,7 @@ public class DocumentUndoManager extends UndoManager implements CaretListener {
 		}
 	}
 
-	private class MarkerEdit extends AbstractUndoableEdit {
+	private static class MarkerEdit extends AbstractUndoableEdit {
 		private static final long serialVersionUID = 1L;
 		protected boolean significant = false;
 

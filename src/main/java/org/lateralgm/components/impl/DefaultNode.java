@@ -124,7 +124,7 @@ public class DefaultNode extends DefaultMutableTreeNode {
 		// TODO Auto-generated method stub
 	}
 
-	public class EventNode extends DefaultNode {
+	public static class EventNode extends DefaultNode {
 		/**
 		 * NOTE: Default UID generated, change if necessary.
 		 */

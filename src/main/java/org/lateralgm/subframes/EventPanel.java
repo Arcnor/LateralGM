@@ -506,7 +506,7 @@ public class EventPanel extends CustomJToolBar implements ActionListener, TreeSe
 		}
 	}
 
-	private class EventNodeTransferHandler extends TransferHandler {
+	private static class EventNodeTransferHandler extends TransferHandler {
 		private static final long serialVersionUID = 1L;
 
 		public EventNodeTransferHandler() {

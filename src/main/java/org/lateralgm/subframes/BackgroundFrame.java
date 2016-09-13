@@ -644,7 +644,7 @@ public class BackgroundFrame extends InstantiableResourceFrame<Background, PBack
 		}
 	}
 
-	private class BackgroundPropertyListener extends PropertyUpdateListener<PBackground> {
+	private static class BackgroundPropertyListener extends PropertyUpdateListener<PBackground> {
 		public void updated(PropertyUpdateEvent<PBackground> e) {
 			//TODO: Maybe remove this
 			//USE_AS_TILESET

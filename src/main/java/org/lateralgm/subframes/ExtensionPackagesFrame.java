@@ -152,7 +152,7 @@ public class ExtensionPackagesFrame extends
 		//setComponents(res);
 	}
 
-	private class CheckBoxListRenderer implements ListCellRenderer<JCheckBox> {
+	private static class CheckBoxListRenderer implements ListCellRenderer<JCheckBox> {
 		public Component getListCellRendererComponent(JList<? extends JCheckBox> comp, JCheckBox value,
 		                                              int index, boolean isSelected, boolean hasFocus) {
 			JCheckBox item = new JCheckBox(value.getText());

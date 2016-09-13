@@ -238,7 +238,7 @@ public class ConfigurationManager extends JDialog implements ActionListener {
 	// The purpose of this internal class is because Vectors and ArrayLists are handled by reference for Java
 	// so instead of converting to an array and doing all kinds of crazy updating, we can just make a list model
 	// that handles the array by reference.
-	public class VectorListModel<T> extends AbstractListModel<T> {
+	public static class VectorListModel<T> extends AbstractListModel<T> {
 		/**
 		 * NOTE: Default UID generated, change if necessary.
 		 */

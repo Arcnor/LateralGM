@@ -218,7 +218,7 @@ public class EffectsFrame extends JFrame implements ActionListener, EffectOption
 		public abstract void applyEffects(List<BufferedImage> imgs);
 	}
 
-	private class ImageEffectPreview extends JPanel {
+	private static class ImageEffectPreview extends JPanel {
 		/**
 		 * NOTE: Default UID generated, change if necessary.
 		 */

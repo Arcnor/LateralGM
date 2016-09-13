@@ -686,7 +686,7 @@ public class FileChooser {
 		}
 	}
 
-	private class FileViewUnion extends FileView {
+	private static class FileViewUnion extends FileView {
 		@Override
 		public String getName(File f) {
 			for (FileView fv : fileViews) {
@@ -733,7 +733,7 @@ public class FileChooser {
 		}
 	}
 
-	protected class ProjectWriterFilter implements GroupFilter {
+	protected static class ProjectWriterFilter implements GroupFilter {
 		protected CustomFileFilter[] filters;
 		protected CustomFileFilter groupFilter;
 

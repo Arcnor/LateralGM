@@ -381,7 +381,7 @@ public class ProjectFile implements UpdateListener {
 	}
 
 	@SuppressWarnings("unchecked")
-	public class ResourceMap extends HashMap<Class<?>, ResourceHolder<?>> {
+	public static class ResourceMap extends HashMap<Class<?>, ResourceHolder<?>> {
 		private static final long serialVersionUID = 1L;
 
 		public <R extends Resource<R, ?>> ResourceHolder<R> put(Class<R> key, ResourceHolder<R> value) {

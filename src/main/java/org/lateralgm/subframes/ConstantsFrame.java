@@ -348,7 +348,7 @@ public class ConstantsFrame extends ResourceFrame<Constants, PConstants> {
 		super.updateResource(commit);
 	}
 
-	private class ConstantsTableModel extends AbstractTableModel {
+	private static class ConstantsTableModel extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
 		List<Constant> constants;
 

@@ -677,7 +677,7 @@ class RTFReaderExt extends RTFParserExt {
 	 * (e.g. {\*\blegga blah blah blah} )
 	 * It accepts all keywords and text but does nothing with them.
 	 */
-	class DiscardingDestination implements Destination {
+	static class DiscardingDestination implements Destination {
 		public void handleBinaryBlob(byte[] data) {
         /* Discard binary blobs. */
 		}

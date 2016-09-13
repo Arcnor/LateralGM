@@ -383,7 +383,7 @@ public class ActionFrame extends RevertableMDIFrame implements ActionListener {
 		}
 	}
 
-	public class ArrowsEditor extends JPanel {
+	public static class ArrowsEditor extends JPanel {
 		private static final long serialVersionUID = 1L;
 		private final Dimension btnSize = new Dimension(32, 32);
 		private final Dimension panelSize = new Dimension(96, 96);
@@ -422,7 +422,7 @@ public class ActionFrame extends RevertableMDIFrame implements ActionListener {
 		}
 	}
 
-	private class ArgumentComponent {
+	private static class ArgumentComponent {
 		private Argument arg;
 		private Component editor;
 

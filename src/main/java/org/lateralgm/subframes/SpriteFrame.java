@@ -1384,7 +1384,7 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 		}
 	}
 
-	public class ImageLabel extends JLabel {
+	public static class ImageLabel extends JLabel {
 		/**
 		 * NOTE: Default UID generated, change if necessary.
 		 */

@@ -3056,7 +3056,7 @@ public class RoomFrame extends InstantiableResourceFrame<Room, PRoom> implements
 		}
 	}
 
-	public class ObjectListTransferHandler extends TransferHandler {
+	public static class ObjectListTransferHandler extends TransferHandler {
 		/**
 		 * NOTE: Default UID generated, change if necessary.
 		 */

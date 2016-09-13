@@ -682,7 +682,7 @@ public class RoomVisual extends AbstractVisual implements BoundedVisual, UpdateL
 	}
 
 	// Apply a color filter to an image
-	class ColorFilter extends RGBImageFilter {
+	static class ColorFilter extends RGBImageFilter {
 		// The RGB components of the new color
 		byte newColorRed;
 		byte newColorGreen;

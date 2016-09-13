@@ -1229,11 +1229,11 @@ public class PreferencesFrame extends JDialog implements ActionListener {
 		}
 	}
 
-	private class ComboBoxItem {
+	private static class ComboBoxItem {
 
 	}
 
-	protected class PrefixList extends JPanel {
+	protected static class PrefixList extends JPanel {
 		/**
 		 * NOTE: Default UID generated, change if necessary.
 		 */

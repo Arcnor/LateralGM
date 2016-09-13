@@ -74,7 +74,7 @@ public class FileChangeMonitor implements Runnable {
 		CHANGED, DELETED
 	}
 
-	public class FileUpdateEvent extends UpdateEvent {
+	public static class FileUpdateEvent extends UpdateEvent {
 		public final Flag flag;
 
 		public FileUpdateEvent(UpdateSource s, Flag f) {

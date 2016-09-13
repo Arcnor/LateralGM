@@ -78,7 +78,7 @@ public class IndexButtonGroup {
 		}
 	}
 
-	private class But {
+	private static class But {
 		AbstractButton b;
 		int i;
 

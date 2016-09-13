@@ -24,7 +24,7 @@ public class ImageToolTip extends JToolTip {
 		});
 	}
 
-	public class ImageToolTipUI extends ToolTipUI {
+	public static class ImageToolTipUI extends ToolTipUI {
 		private AbstractImagePreview aip;
 
 		public ImageToolTipUI(AbstractImagePreview aip) {

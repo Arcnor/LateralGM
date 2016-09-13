@@ -97,14 +97,14 @@ public class UpdateSource {
 		}
 	}
 
-	private class HardListenerTraverser extends SetTraverser<UpdateListener, UpdateEvent> {
+	private static class HardListenerTraverser extends SetTraverser<UpdateListener, UpdateEvent> {
 		@Override
 		protected void visit(UpdateListener l, UpdateEvent e) {
 			l.updated(e);
 		}
 	}
 
-	private class WeakListenerTraverser extends
+	private static class WeakListenerTraverser extends
 			SetTraverser<WeakReference<UpdateListener>, UpdateEvent> {
 		@Override
 		protected void visit(WeakReference<UpdateListener> r, UpdateEvent e) {

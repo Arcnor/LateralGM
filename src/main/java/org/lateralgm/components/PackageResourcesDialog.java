@@ -206,7 +206,7 @@ public class PackageResourcesDialog extends JDialog {
 		}
 	}
 
-	public class TypeCheckBox extends JCheckBox {
+	public static class TypeCheckBox extends JCheckBox {
 		/**
 		 * NOTE: Default UID generated, change if necessary.
 		 */

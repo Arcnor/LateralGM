@@ -150,7 +150,7 @@ public class GridVisual implements Visual {
 			paintGrid(g, x0, y0, x1, y1);
 	}
 
-	class LineImageData {
+	static class LineImageData {
 		public final GraphicsConfiguration configuration;
 		private final BufferedImage horizSub, horizontal, vertical;
 
