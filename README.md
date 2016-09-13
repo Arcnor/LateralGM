@@ -1,9 +1,13 @@
-LateralGM
-=========
+LateralGM Fork
+==============
 A Java Swing based cross-platform editor for Game Maker project files.
 The source code is doxygen commented but more documentation of the internals including format specifications are available online at http://enigma-dev.org/docs/Wiki/LateralGM
 
 A C++11 compliant library for reading LGM's Action Library format is also available online at https://github.com/enigma-dev/ActionLibraryReader
+
+How to run
+----------
+`./gradlew run`
 
 License
 -------
