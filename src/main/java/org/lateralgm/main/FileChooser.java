@@ -21,7 +21,6 @@
 package org.lateralgm.main;
 
 import org.lateralgm.components.CustomFileChooser;
-import org.lateralgm.components.CustomFileChooser.FilterSet;
 import org.lateralgm.components.ErrorDialog;
 import org.lateralgm.components.GmMenuBar;
 import org.lateralgm.components.impl.CustomFileFilter;
@@ -72,15 +71,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class FileChooser {
-	public static List<FileReader> readers = new ArrayList<FileReader>();
-	public static List<FileWriter> writers = new ArrayList<FileWriter>();
-	public static List<FileView> fileViews = new ArrayList<FileView>();
-	static ProjectReader projectReader;
-	FileWriter selectedWriter;
-	CustomFileChooser fc = new CustomFileChooser("/org/lateralgm", "LAST_FILE_DIR"); //$NON-NLS-1$ //$NON-NLS-2$
-	FilterSet openFs = new FilterSet(), saveFs = new FilterSet();
-	FilterUnion openAllFilter = new FilterUnion(), saveAllFilter = new FilterUnion();
-	JCheckBox forceExt = new JCheckBox(Messages.getString("FileChooser.FORCE_EXT"), true); //$NON-NLS-1$
+	private static List<FileReader> readers = new ArrayList<FileReader>();
+	private static List<FileWriter> writers = new ArrayList<FileWriter>();
+	private static List<FileView> fileViews = new ArrayList<FileView>();
+	private static ProjectReader projectReader;
+	private FileWriter selectedWriter;
+	private CustomFileChooser fc = new CustomFileChooser("/org/lateralgm", "LAST_FILE_DIR"); //$NON-NLS-1$ //$NON-NLS-2$
+	private List<FileFilter> openFs = new ArrayList<>(), saveFs = new ArrayList<>();
+	private FilterUnion openAllFilter = new FilterUnion(), saveAllFilter = new FilterUnion();
+	private JCheckBox forceExt = new JCheckBox(Messages.getString("FileChooser.FORCE_EXT"), true); //$NON-NLS-1$
 
 	/**
 	 * Typically you construct a FileChooser when you want a graphical side of things.
@@ -106,7 +105,7 @@ public class FileChooser {
 			writers.add(new ProjectWriter(gmver));
 	}
 
-	public static void addFilters(FilterSet fs, FilterUnion all, GroupFilter gf) {
+	public static void addFilters(List<FileFilter> fs, FilterUnion all, GroupFilter gf) {
 		fs.add(gf.getGroupFilter());
 		all.add(gf.getGroupFilter());
 		Collections.addAll(fs, gf.getFilters());
@@ -604,8 +603,7 @@ public class FileChooser {
 		}
 
 		public void read(InputStream is, ProjectFile file, URI uri, ResNode root) throws ProjectFormatException {
-			// TODO: This should not be here. ProjectFile should always have its format set correctly so
-			// we known which one to delegate to.
+			// TODO: This should not be here. ProjectFile should always have its format set correctly so we known which one to delegate to.
 			if (uri.getPath().endsWith(".project.gmx")) {
 				GMXFileReader.readProjectFile(is, file, uri, root);
 			} else {

@@ -23,6 +23,7 @@
 
 package org.lateralgm.main;
 
+import javafx.embed.swing.JFXPanel;
 import org.lateralgm.components.ActionList;
 import org.lateralgm.components.CodeTextArea;
 import org.lateralgm.components.CustomJToolBar;
@@ -170,6 +171,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
@@ -1511,6 +1513,13 @@ public final class LGM {
 	}
 
 	public static void main(final String[] args) throws InvocationTargetException, InterruptedException {
+		final CountDownLatch latch = new CountDownLatch(1);
+		SwingUtilities.invokeLater(() -> {
+			new JFXPanel(); // initializes JavaFX environment
+			latch.countDown();
+		});
+		latch.await();
+
 		// Set the default uncaught exception handler.
 		LGM.setDefaultExceptionHandler();
 

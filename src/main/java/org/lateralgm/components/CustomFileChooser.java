@@ -9,7 +9,6 @@
 
 package org.lateralgm.components;
 
-import org.lateralgm.components.impl.CustomFileFilter;
 import org.lateralgm.messages.Messages;
 
 import javax.swing.JFileChooser;
@@ -17,29 +16,18 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 public class CustomFileChooser extends JFileChooser {
 	private static final long serialVersionUID = 1L;
 	private Preferences prefs;
 	private String propertyName;
-	// whether to warn the user that the file they entered does not exist and keep the dialog open
-	private boolean fileMustExist = true;
-	// whether to warn the user the file already exists when saving and ask whether to overwrite
-	private boolean confirmOverwrite = true;
 
 	public CustomFileChooser(String node, String propertyName) {
 		this.propertyName = propertyName;
 		prefs = Preferences.userRoot().node(node);
 		setCurrentDirectory(new File(prefs.get(propertyName, getCurrentDirectory().getAbsolutePath())));
-	}
-
-	public boolean getConfirmOverwrite() {
-		return confirmOverwrite;
-	}
-
-	public void setConfirmOverwrite(boolean enable) {
-		confirmOverwrite = enable;
 	}
 
 	public boolean getFileExists() {
@@ -59,7 +47,7 @@ public class CustomFileChooser extends JFileChooser {
 
 	@Override
 	public void approveSelection() {
-		if (fileMustExist && this.getDialogType() == JFileChooser.OPEN_DIALOG) {
+		if (this.getDialogType() == JFileChooser.OPEN_DIALOG) {
 			boolean fileExists = getFileExists();
 			if (!fileExists) {
 				JOptionPane.showMessageDialog(this,
@@ -68,7 +56,7 @@ public class CustomFileChooser extends JFileChooser {
 						JOptionPane.WARNING_MESSAGE);
 				return;
 			}
-		} else if (confirmOverwrite && this.getDialogType() == JFileChooser.SAVE_DIALOG) {
+		} else if (this.getDialogType() == JFileChooser.SAVE_DIALOG) {
 			boolean fileExists = getFileExists();
 			if (fileExists) {
 				if (JOptionPane.showConfirmDialog(this,
@@ -93,34 +81,17 @@ public class CustomFileChooser extends JFileChooser {
 		prefs.put(propertyName, getCurrentDirectory().getAbsolutePath());
 	}
 
-	public boolean getFileMustExist() {
-		return fileMustExist;
-	}
-
-	public void setFileMustExist(boolean enable) {
-		fileMustExist = enable;
-	}
-
 	/**
 	 * Sets the given <code>FilterSet</code> to be the current set
 	 * of chooseable file filters. The first item in the list will be set as
 	 * the currently selected filter.
 	 *
-	 * @param filters The list of filters to use
+	 * @param fs The list of filters to use
 	 */
-	public void setFilterSet(FilterSet fs) {
+	public void setFilterSet(List<FileFilter> fs) {
 		if (fs == null) throw new IllegalArgumentException("null FilterSet");
 		resetChoosableFileFilters();
-		for (FileFilter filt : fs)
-			addChoosableFileFilter(filt);
+		fs.forEach(this::addChoosableFileFilter);
 		if (fs.size() > 0) setFileFilter(fs.get(0));
-	}
-
-	public static class FilterSet extends ArrayList<FileFilter> {
-		private static final long serialVersionUID = 1L;
-
-		public void addFilter(String descKey, String... exts) {
-			add(new CustomFileFilter(Messages.getString(descKey), exts));
-		}
 	}
 }
