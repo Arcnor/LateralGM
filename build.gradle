@@ -19,6 +19,18 @@ apply plugin: 'application'
 
 mainClassName = 'org.lateralgm.main.LGM'
 
+jar {
+	manifest {
+		attributes("SplashScreen-Image": "org/lateralgm/main/lgm-splash.png")
+	}
+}
+
+sourceSets {
+	main {
+		output.resourcesDir = "build/classes/main"
+	}
+}
+
 repositories {
 	mavenLocal()
 	mavenCentral()
