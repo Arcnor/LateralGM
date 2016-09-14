@@ -33,7 +33,6 @@ import org.lateralgm.subframes.InstantiableResourceFrame;
 import org.lateralgm.subframes.ResourceFrame;
 import org.lateralgm.subframes.ResourceFrame.ResourceFrameFactory;
 import org.lateralgm.subframes.RoomFrame;
-import org.lateralgm.subframes.SubframeInformer;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -200,9 +199,8 @@ public class ResNode extends DefaultNode implements Transferable, UpdateListener
 		if (r != null) {
 			r.changed = newRes;
 		}
-		if (SubframeInformer.fireSubframeRequest(r, this)) return;
+
 		ResourceFrame<?, ?> rf = frame;
-		boolean wasVisible = false;
 		if (frame == null) {
 			ResourceFrameFactory factory = ResourceFrame.factories.get(kind);
 			rf = factory == null ? null : factory.makeFrame(r, this);
@@ -210,11 +208,8 @@ public class ResNode extends DefaultNode implements Transferable, UpdateListener
 				frame = rf;
 				if (rf instanceof InstantiableResourceFrame<?, ?>) LGM.mdi.add(rf);
 			}
-		} else {
-			wasVisible = frame.isVisible();
 		}
 		if (rf != null) {
-			SubframeInformer.fireSubframeAppear(rf, wasVisible);
 			rf.toTop();
 		}
 	}
