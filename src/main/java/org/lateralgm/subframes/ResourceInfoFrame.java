@@ -352,30 +352,26 @@ public class ResourceInfoFrame extends JFrame implements ActionListener {
 
 	public void actionPerformed(ActionEvent ev) {
 		String com = ev.getActionCommand();
-		if (com.equals("ResourceInfoFrame.FILESAVE")) //$NON-NLS-1$
-		{
-			saveToFile();
-			return;
-		} else if (com.equals("ResourceInfoFrame.COPY")) //$NON-NLS-1$
-		{
-			editor.copy();
-			return;
-		} else if (com.equals("ResourceInfoFrame.SELECTALL")) //$NON-NLS-1$
-		{
-			editor.selectAll();
-			return;
-		} else if (com.equals("ResourceInfoFrame.CONFIRM")) //$NON-NLS-1$
-		{
-			this.setVisible(false);
-			return;
-		} else if (com.equals("ResourceInfoFrame.PRINT")) //$NON-NLS-1$
-		{
-			try {
-				editor.print();
-			} catch (Exception pex) {
-				LGM.showDefaultExceptionHandler(pex);
-			}
-			return;
+		switch (com) {
+			case "ResourceInfoFrame.FILESAVE":
+				saveToFile();
+				return;
+			case "ResourceInfoFrame.COPY":
+				editor.copy();
+				return;
+			case "ResourceInfoFrame.SELECTALL":
+				editor.selectAll();
+				return;
+			case "ResourceInfoFrame.CONFIRM":
+				this.setVisible(false);
+				return;
+			case "ResourceInfoFrame.PRINT":
+				try {
+					editor.print();
+				} catch (Exception pex) {
+					LGM.showDefaultExceptionHandler(pex);
+				}
+				return;
 		}
 
 		editor.getCaret().setVisible(true); // make sure caret stays visible

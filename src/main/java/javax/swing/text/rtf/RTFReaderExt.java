@@ -819,14 +819,19 @@ class RTFReaderExt extends RTFParserExt {
 		}
 
 		public boolean handleKeyword(String keyword, int parameter) {
-			if (keyword.equals("red"))
-				red = parameter;
-			else if (keyword.equals("green"))
-				green = parameter;
-			else if (keyword.equals("blue"))
-				blue = parameter;
-			else
-				return false;
+			switch (keyword) {
+				case "red":
+					red = parameter;
+					break;
+				case "green":
+					green = parameter;
+					break;
+				case "blue":
+					blue = parameter;
+					break;
+				default:
+					return false;
+			}
 
 			return true;
 		}
@@ -879,12 +884,16 @@ class RTFReaderExt extends RTFParserExt {
 				warning("Style " + style.number + " (" + style.styleName + "): " + defined);
 				String stype = (String) defined.getAttribute(Constants.StyleType);
 				Vector<Style> toSet;
-				if (stype.equals(Constants.STSection)) {
-					toSet = secStyles;
-				} else if (stype.equals(Constants.STCharacter)) {
-					toSet = chrStyles;
-				} else {
-					toSet = pgfStyles;
+				switch (stype) {
+					case Constants.STSection:
+						toSet = secStyles;
+						break;
+					case Constants.STCharacter:
+						toSet = chrStyles;
+						break;
+					default:
+						toSet = pgfStyles;
+						break;
 				}
 				if (toSet.size() <= style.number)
 					toSet.setSize(style.number + 1);
@@ -983,24 +992,30 @@ class RTFReaderExt extends RTFParserExt {
 			}
 
 			public boolean handleKeyword(String keyword, int parameter) {
-				if (keyword.equals("s")) {
-					characterStyle = false;
-					sectionStyle = false;
-					number = parameter;
-				} else if (keyword.equals("cs")) {
-					characterStyle = true;
-					sectionStyle = false;
-					number = parameter;
-				} else if (keyword.equals("ds")) {
-					characterStyle = false;
-					sectionStyle = true;
-					number = parameter;
-				} else if (keyword.equals("sbasedon")) {
-					basedOn = parameter;
-				} else if (keyword.equals("snext")) {
-					nextStyle = parameter;
-				} else {
-					return super.handleKeyword(keyword, parameter);
+				switch (keyword) {
+					case "s":
+						characterStyle = false;
+						sectionStyle = false;
+						number = parameter;
+						break;
+					case "cs":
+						characterStyle = true;
+						sectionStyle = false;
+						number = parameter;
+						break;
+					case "ds":
+						characterStyle = false;
+						sectionStyle = true;
+						number = parameter;
+						break;
+					case "sbasedon":
+						basedOn = parameter;
+						break;
+					case "snext":
+						nextStyle = parameter;
+						break;
+					default:
+						return super.handleKeyword(keyword, parameter);
 				}
 				return true;
 			}

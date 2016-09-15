@@ -175,16 +175,22 @@ public class ShaderFrame extends InstantiableResourceFrame<Shader, PShader> {
 			return;
 		}
 		DefaultTokenMarker marker = null;
-		if (val.equals("GLSLES")) {
-			marker = new GLESTokenMarker();
-		} else if (val.equals("GLSL")) {
-			marker = new GLSLTokenMarker();
-		} else if (val.equals("HLSL9")) {
-			marker = new HLSLTokenMarker();
-		} else if (val.equals("HLSL11")) {
-			marker = new HLSLTokenMarker();
-		} else {
+		switch (val) {
+			case "GLSLES":
+				marker = new GLESTokenMarker();
+				break;
+			case "GLSL":
+				marker = new GLSLTokenMarker();
+				break;
+			case "HLSL9":
+				marker = new HLSLTokenMarker();
+				break;
+			case "HLSL11":
+				marker = new HLSLTokenMarker();
+				break;
+			default:
 
+				break;
 		}
 		//TODO: Both of these calls will utilize the same lexer, but they both
 		//will recompose the list of completions. Should possibly add an abstract
@@ -324,32 +330,44 @@ public class ShaderFrame extends InstantiableResourceFrame<Shader, PShader> {
 
 		CodeTextArea selectedCode = getSelectedCode();
 
-		if (com.equals("JoshText.LOAD")) {
-			selectedCode.text.Load();
-		} else if (com.equals("JoshText.SAVE")) {
-			selectedCode.text.Save();
-		} else if (com.equals("JoshText.PRINT")) {
-			try {
-				selectedCode.Print();
-			} catch (PrinterException e) {
-				LGM.showDefaultExceptionHandler(e);
-			}
-		} else if (com.equals("JoshText.UNDO")) {
-			selectedCode.text.Undo();
-		} else if (com.equals("JoshText.REDO")) {
-			selectedCode.text.Redo();
-		} else if (com.equals("JoshText.CUT")) {
-			selectedCode.text.Cut();
-		} else if (com.equals("JoshText.COPY")) {
-			selectedCode.text.Copy();
-		} else if (com.equals("JoshText.PASTE")) {
-			selectedCode.text.Paste();
-		} else if (com.equals("JoshText.FIND")) {
-			selectedCode.text.ShowFind();
-		} else if (com.equals("JoshText.GOTO")) {
-			selectedCode.aGoto();
-		} else if (com.equals("JoshText.SELALL")) {
-			selectedCode.text.SelectAll();
+		switch (com) {
+			case "JoshText.LOAD":
+				selectedCode.text.Load();
+				break;
+			case "JoshText.SAVE":
+				selectedCode.text.Save();
+				break;
+			case "JoshText.PRINT":
+				try {
+					selectedCode.Print();
+				} catch (PrinterException e) {
+					LGM.showDefaultExceptionHandler(e);
+				}
+				break;
+			case "JoshText.UNDO":
+				selectedCode.text.Undo();
+				break;
+			case "JoshText.REDO":
+				selectedCode.text.Redo();
+				break;
+			case "JoshText.CUT":
+				selectedCode.text.Cut();
+				break;
+			case "JoshText.COPY":
+				selectedCode.text.Copy();
+				break;
+			case "JoshText.PASTE":
+				selectedCode.text.Paste();
+				break;
+			case "JoshText.FIND":
+				selectedCode.text.ShowFind();
+				break;
+			case "JoshText.GOTO":
+				selectedCode.aGoto();
+				break;
+			case "JoshText.SELALL":
+				selectedCode.text.SelectAll();
+				break;
 		}
 	}
 

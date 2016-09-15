@@ -342,51 +342,63 @@ public final class LGM {
 		themename = LOOKANDFEEL;
 		String lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
 		if (LOOKANDFEEL != null) {
-			if (LOOKANDFEEL.equals("Swing")) {
-				lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
-				// This theme is also known as Metal - Ocean
-				lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
-				MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-			} else if (LOOKANDFEEL.equals("Native")) {
-				lookAndFeel = UIManager.getSystemLookAndFeelClassName();
-			} else if (LOOKANDFEEL.equals("Nimbus")) {
-				lookAndFeel = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
-			} else if (LOOKANDFEEL.equals("Windows")) {
-				lookAndFeel = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
-			} else if (LOOKANDFEEL.equals("Windows Classic")) {
-				lookAndFeel = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
-				// Fixes UI bug in the JDK where the buttons look way too big and get cut off.
-				// https://bugs.openjdk.java.net/browse/JDK-8140527
-				UIManager.put("InternalFrame.titleButtonWidth", 22);
-				UIManager.put("InternalFrame.titleButtonHeight", 22);
-			} else if (LOOKANDFEEL.equals("CDE/Motif")) {
-				lookAndFeel = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
-			} else if (LOOKANDFEEL.equals("Metal")) {
-				lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
-				MetalLookAndFeel.setCurrentTheme(new DefaultMetalTheme());
-			} else if (LOOKANDFEEL.equals("Ocean")) {
-				lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
-				MetalLookAndFeel.setCurrentTheme(new OceanTheme());
-			} else if (LOOKANDFEEL.equals("GTK+")) {
-				lookAndFeel = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
-			} else if (LOOKANDFEEL.equals("Custom")) {
-				lookAndFeel = Prefs.swingThemePath;
-			} else {
-				// Perhaps we did not get the name right, see if the theme is installed
-				// and attempt to use it.
-				boolean foundMatch = false;
-				LookAndFeelInfo lnfs[] = UIManager.getInstalledLookAndFeels();
-				for (int i = 0; i < lnfs.length; i++) {
-					if (LOOKANDFEEL.equals(lnfs[i].getName())) {
-						lookAndFeel = lnfs[i].getClassName();
-						foundMatch = true;
-					}
-				}
-
-				if (!foundMatch) {
-					System.err.println("Unexpected value of LOOKANDFEEL specified: " + LOOKANDFEEL);
+			switch (LOOKANDFEEL) {
+				case "Swing":
 					lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
-				}
+					// This theme is also known as Metal - Ocean
+					lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
+					MetalLookAndFeel.setCurrentTheme(new OceanTheme());
+					break;
+				case "Native":
+					lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+					break;
+				case "Nimbus":
+					lookAndFeel = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+					break;
+				case "Windows":
+					lookAndFeel = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+					break;
+				case "Windows Classic":
+					lookAndFeel = "com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel";
+					// Fixes UI bug in the JDK where the buttons look way too big and get cut off.
+					// https://bugs.openjdk.java.net/browse/JDK-8140527
+					UIManager.put("InternalFrame.titleButtonWidth", 22);
+					UIManager.put("InternalFrame.titleButtonHeight", 22);
+					break;
+				case "CDE/Motif":
+					lookAndFeel = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+					break;
+				case "Metal":
+					lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
+					MetalLookAndFeel.setCurrentTheme(new DefaultMetalTheme());
+					break;
+				case "Ocean":
+					lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
+					MetalLookAndFeel.setCurrentTheme(new OceanTheme());
+					break;
+				case "GTK+":
+					lookAndFeel = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+					break;
+				case "Custom":
+					lookAndFeel = Prefs.swingThemePath;
+					break;
+				default:
+					// Perhaps we did not get the name right, see if the theme is installed
+					// and attempt to use it.
+					boolean foundMatch = false;
+					LookAndFeelInfo lnfs[] = UIManager.getInstalledLookAndFeels();
+					for (int i = 0; i < lnfs.length; i++) {
+						if (LOOKANDFEEL.equals(lnfs[i].getName())) {
+							lookAndFeel = lnfs[i].getClassName();
+							foundMatch = true;
+						}
+					}
+
+					if (!foundMatch) {
+						System.err.println("Unexpected value of LOOKANDFEEL specified: " + LOOKANDFEEL);
+						lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+					}
+					break;
 			}
 
 			try {

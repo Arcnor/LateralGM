@@ -657,109 +657,99 @@ public class GameInformationFrame extends ResourceFrame<GameInformation, PGameIn
 		super.actionPerformed(ev);
 		String com = ev.getActionCommand();
 
-		if (com.equals("GameInformationFrame.LOAD")) //$NON-NLS-1$
-		{
-			loadFromFile();
-		} else if (com.equals("GameInformationFrame.PRINT")) //$NON-NLS-1$
-		{
-			try {
-				editor.print();
-			} catch (Exception pex) {
-				LGM.showDefaultExceptionHandler(pex);
+		switch (com) {
+			case "GameInformationFrame.LOAD":
+				loadFromFile();
+				break;
+			case "GameInformationFrame.PRINT":
+				try {
+					editor.print();
+				} catch (Exception pex) {
+					LGM.showDefaultExceptionHandler(pex);
+				}
+				return;
+			case "GameInformationFrame.SETTINGS":
+				if (settings == null) {
+					settings = new SettingsFrame();
+				}
+				settings.setVisible(true);
+				break;
+			case "GameInformationFrame.FILESAVE":
+				saveToFile();
+				return;
+			case "GameInformationFrame.FONTCOLOR":
+			{
+				String colorStr = Messages.getString("GameInformationFrame.FONTCOLOR"); //$NON-NLS-1$
+
+				Color c = JColorChooser.showDialog(this, colorStr, fgColor);
+				if (c != null) {
+					fgColor = c;
+					setSelectionAttribute(StyleConstants.Foreground, c);
+				}
+				return;
 			}
-			return;
-		} else if (com.equals("GameInformationFrame.SETTINGS")) //$NON-NLS-1$
-		{
-			if (settings == null) {
-				settings = new SettingsFrame();
+			case "GameInformationFrame.BOLD":
+				miBold.setSelected(tbBold.isSelected());
+				setSelectionAttribute(StyleConstants.Bold, tbBold.isSelected());
+				return;
+			case "GameInformationFrame.ITALIC":
+				miItalic.setSelected(tbItalic.isSelected());
+				setSelectionAttribute(StyleConstants.Italic, tbItalic.isSelected());
+				return;
+			case "GameInformationFrame.UNDERLINE":
+				miUnderline.setSelected(tbUnderline.isSelected());
+				setSelectionAttribute(StyleConstants.Underline, tbUnderline.isSelected());
+				return;
+			case "GameInformationFrame.MENU_BOLD":
+				miBold.setSelected(!miBold.isSelected());
+				tbBold.setSelected(miBold.isSelected());
+				setSelectionAttribute(StyleConstants.Bold, miBold.isSelected());
+				return;
+			case "GameInformationFrame.MENU_ITALIC":
+				miItalic.setSelected(!miItalic.isSelected());
+				tbItalic.setSelected(miItalic.isSelected());
+				setSelectionAttribute(StyleConstants.Italic, miItalic.isSelected());
+				return;
+			case "GameInformationFrame.MENU_UNDERLINE":
+				miUnderline.setSelected(!miUnderline.isSelected());
+				tbUnderline.setSelected(miUnderline.isSelected());
+				setSelectionAttribute(StyleConstants.Underline, miUnderline.isSelected());
+				return;
+			case "GameInformationFrame.ALIGN_LEFT":
+				setSelectionAlignment(StyleConstants.ALIGN_LEFT);
+				return;
+			case "GameInformationFrame.ALIGN_CENTER":
+				setSelectionAlignment(StyleConstants.ALIGN_CENTER);
+				return;
+			case "GameInformationFrame.ALIGN_RIGHT":
+				setSelectionAlignment(StyleConstants.ALIGN_RIGHT);
+				return;
+			case "GameInformationFrame.COLOR":
+			{
+				String colorStr = Messages.getString("GameInformationFrame.COLOR"); //$NON-NLS-1$
+
+				Color c = JColorChooser.showDialog(this, colorStr, editor.getBackground());
+				if (c != null) setEditorBackground(c);
+				return;
 			}
-			settings.setVisible(true);
-		} else if (com.equals("GameInformationFrame.FILESAVE")) //$NON-NLS-1$
-		{
-			saveToFile();
-			return;
-		} else if (com.equals("GameInformationFrame.FONTCOLOR")) //$NON-NLS-1$
-		{
-			String colorStr = Messages.getString("GameInformationFrame.FONTCOLOR"); //$NON-NLS-1$
-			Color c = JColorChooser.showDialog(this, colorStr, fgColor);
-			if (c != null) {
-				fgColor = c;
-				setSelectionAttribute(StyleConstants.Foreground, c);
-			}
-			return;
-		} else if (com.equals("GameInformationFrame.BOLD")) //$NON-NLS-1$
-		{
-			miBold.setSelected(tbBold.isSelected());
-			setSelectionAttribute(StyleConstants.Bold, tbBold.isSelected());
-			return;
-		} else if (com.equals("GameInformationFrame.ITALIC")) //$NON-NLS-1$
-		{
-			miItalic.setSelected(tbItalic.isSelected());
-			setSelectionAttribute(StyleConstants.Italic, tbItalic.isSelected());
-			return;
-		} else if (com.equals("GameInformationFrame.UNDERLINE")) //$NON-NLS-1$
-		{
-			miUnderline.setSelected(tbUnderline.isSelected());
-			setSelectionAttribute(StyleConstants.Underline, tbUnderline.isSelected());
-			return;
-		} else if (com.equals("GameInformationFrame.MENU_BOLD")) //$NON-NLS-1$
-		{
-			miBold.setSelected(!miBold.isSelected());
-			tbBold.setSelected(miBold.isSelected());
-			setSelectionAttribute(StyleConstants.Bold, miBold.isSelected());
-			return;
-		} else if (com.equals("GameInformationFrame.MENU_ITALIC")) //$NON-NLS-1$
-		{
-			miItalic.setSelected(!miItalic.isSelected());
-			tbItalic.setSelected(miItalic.isSelected());
-			setSelectionAttribute(StyleConstants.Italic, miItalic.isSelected());
-			return;
-		} else if (com.equals("GameInformationFrame.MENU_UNDERLINE")) //$NON-NLS-1$
-		{
-			miUnderline.setSelected(!miUnderline.isSelected());
-			tbUnderline.setSelected(miUnderline.isSelected());
-			setSelectionAttribute(StyleConstants.Underline, miUnderline.isSelected());
-			return;
-		} else if (com.equals("GameInformationFrame.ALIGN_LEFT")) //$NON-NLS-1$
-		{
-			setSelectionAlignment(StyleConstants.ALIGN_LEFT);
-			return;
-		} else if (com.equals("GameInformationFrame.ALIGN_CENTER")) //$NON-NLS-1$
-		{
-			setSelectionAlignment(StyleConstants.ALIGN_CENTER);
-			return;
-		} else if (com.equals("GameInformationFrame.ALIGN_RIGHT")) //$NON-NLS-1$
-		{
-			setSelectionAlignment(StyleConstants.ALIGN_RIGHT);
-			return;
-		} else if (com.equals("GameInformationFrame.COLOR")) //$NON-NLS-1$
-		{
-			String colorStr = Messages.getString("GameInformationFrame.COLOR"); //$NON-NLS-1$
-			Color c = JColorChooser.showDialog(this, colorStr, editor.getBackground());
-			if (c != null) setEditorBackground(c);
-			return;
-		} else if (com.equals("GameInformationFrame.CUT")) //$NON-NLS-1$
-		{
-			editor.cut();
-			return;
-		} else if (com.equals("GameInformationFrame.COPY")) //$NON-NLS-1$
-		{
-			editor.copy();
-			return;
-		} else if (com.equals("GameInformationFrame.PASTE")) //$NON-NLS-1$
-		{
-			editor.paste();
-			return;
-		} else if (com.equals("GameInformationFrame.SELECTALL")) //$NON-NLS-1$
-		{
-			editor.selectAll();
-			return;
-		} else if (com.equals("GameInformationFrame.CLOSESAVE")) //$NON-NLS-1$
-		{
-			this.doDefaultSaveAction();
-			return;
-		} else if (com.equals("GameInformationFrame.CLOSE")) { //$NON-NLS-1$
-			settings.setVisible(false);
+			case "GameInformationFrame.CUT":
+				editor.cut();
+				return;
+			case "GameInformationFrame.COPY":
+				editor.copy();
+				return;
+			case "GameInformationFrame.PASTE":
+				editor.paste();
+				return;
+			case "GameInformationFrame.SELECTALL":
+				editor.selectAll();
+				return;
+			case "GameInformationFrame.CLOSESAVE":
+				this.doDefaultSaveAction();
+				return;
+			case "GameInformationFrame.CLOSE":  //$NON-NLS-1$
+				settings.setVisible(false);
+				break;
 		}
 	}
 

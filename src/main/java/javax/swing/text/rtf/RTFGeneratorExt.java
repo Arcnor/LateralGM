@@ -410,14 +410,18 @@ class RTFGeneratorExt extends Object {
 				String styleType = (String) style.getAttribute(Constants.StyleType);
 				if (styleType == null)
 					styleType = Constants.STParagraph;
-				if (styleType.equals(Constants.STCharacter)) {
-					writeControlWord("*");
-					writeControlWord("cs", styleNumber);
-				} else if (styleType.equals(Constants.STSection)) {
-					writeControlWord("*");
-					writeControlWord("ds", styleNumber);
-				} else {
-					writeControlWord("s", styleNumber);
+				switch (styleType) {
+					case Constants.STCharacter:
+						writeControlWord("*");
+						writeControlWord("cs", styleNumber);
+						break;
+					case Constants.STSection:
+						writeControlWord("*");
+						writeControlWord("ds", styleNumber);
+						break;
+					default:
+						writeControlWord("s", styleNumber);
+						break;
 				}
 
 				AttributeSet basis = style.getResolveParent();

@@ -1184,48 +1184,49 @@ public class PreferencesFrame extends JDialog implements ActionListener {
 
 	public void actionPerformed(ActionEvent ev) {
 		String com = ev.getActionCommand();
-		if (com.equals("PreferencesFrame.APPLY_CHANGES")) //$NON-NLS-1$
-		{
-			LGM.filterPanel.setVisible(showTreeFilter.isSelected());
+		switch (com) {
+			case "PreferencesFrame.APPLY_CHANGES":
+				LGM.filterPanel.setVisible(showTreeFilter.isSelected());
 
-			savePreferences();
-			LGM.setLookAndFeel((String) themeCombo.getSelectedItem());
-			LGM.updateLookAndFeel();
-			// must be called after updating the look and feel so that laf can be asked if window borders
-			// should be decorated
-			LGM.applyPreferences();
-			// refocus the window in case a LAF change occurred
-			this.requestFocus();
+				savePreferences();
+				LGM.setLookAndFeel((String) themeCombo.getSelectedItem());
+				LGM.updateLookAndFeel();
+				// must be called after updating the look and feel so that laf can be asked if window borders
+				// should be decorated
+				LGM.applyPreferences();
+				// refocus the window in case a LAF change occurred
+				this.requestFocus();
 
-			// show the restart notice once we've applied the changes to indicate they have been saved
-			applyChangesLabel.setVisible(true);
-			if (blinkTimer == null) {
-				blinkTimer = new Timer(300, new ActionListener() {
-					int count = 0;
-					Icon icon = applyChangesLabel.getIcon();
+				// show the restart notice once we've applied the changes to indicate they have been saved
+				applyChangesLabel.setVisible(true);
+				if (blinkTimer == null) {
+					blinkTimer = new Timer(300, new ActionListener() {
+						int count = 0;
+						Icon icon = applyChangesLabel.getIcon();
 
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if (count % 2 > 0) {
-							applyChangesLabel.setIcon(icon);
-						} else {
-							applyChangesLabel.setIcon(null);
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							if (count % 2 > 0) {
+								applyChangesLabel.setIcon(icon);
+							} else {
+								applyChangesLabel.setIcon(null);
+							}
+							count++;
+							if (count > 7) {
+								count = 0;
+								blinkTimer.stop();
+							}
 						}
-						count++;
-						if (count > 7) {
-							count = 0;
-							blinkTimer.stop();
-						}
-					}
-				});
-			}
-			blinkTimer.start();
-		} else if (com.equals("PreferencesFrame.RESET_DEFAULTS")) //$NON-NLS-1$
-		{
-			PrefsStore.resetToDefaults();
-		} else if (com.equals("PreferencesFrame.CLOSE")) //$NON-NLS-1$
-		{
-			this.setVisible(false);
+					});
+				}
+				blinkTimer.start();
+				break;
+			case "PreferencesFrame.RESET_DEFAULTS":
+				PrefsStore.resetToDefaults();
+				break;
+			case "PreferencesFrame.CLOSE":
+				this.setVisible(false);
+				break;
 		}
 	}
 

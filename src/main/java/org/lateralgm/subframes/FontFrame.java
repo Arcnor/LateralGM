@@ -395,90 +395,88 @@ public class FontFrame extends InstantiableResourceFrame<Font, PFont> implements
 
 	public void actionPerformed(ActionEvent ev) {
 		String com = ev.getActionCommand();
-		if (com.equals("Normal")) //$NON-NLS-1$
-		{
-			CharacterRange cr = rangeList.getSelectedValue();
-			if (cr != null) {
-				cr.properties.put(PCharacterRange.RANGE_MIN, 32);
-				cr.properties.put(PCharacterRange.RANGE_MAX, 127);
+		switch (com) {
+			case "Normal":
+			{
+				CharacterRange cr = rangeList.getSelectedValue();
+				if (cr != null) {
+					cr.properties.put(PCharacterRange.RANGE_MIN, 32);
+					cr.properties.put(PCharacterRange.RANGE_MAX, 127);
+				}
+				return;
 			}
-			return;
-		} else if (com.equals("ASCII")) //$NON-NLS-1$
-		{
-			CharacterRange cr = rangeList.getSelectedValue();
-			if (cr != null) {
-				cr.properties.put(PCharacterRange.RANGE_MIN, 0);
-				cr.properties.put(PCharacterRange.RANGE_MAX, 255);
+			case "ASCII":
+			{
+				CharacterRange cr = rangeList.getSelectedValue();
+				if (cr != null) {
+					cr.properties.put(PCharacterRange.RANGE_MIN, 0);
+					cr.properties.put(PCharacterRange.RANGE_MAX, 255);
+				}
+				return;
 			}
-			return;
-		} else if (com.equals("Digits")) //$NON-NLS-1$
-		{
-			CharacterRange cr = rangeList.getSelectedValue();
-			if (cr != null) {
-				cr.properties.put(PCharacterRange.RANGE_MIN, 48);
-				cr.properties.put(PCharacterRange.RANGE_MAX, 57);
+			case "Digits":
+			{
+				CharacterRange cr = rangeList.getSelectedValue();
+				if (cr != null) {
+					cr.properties.put(PCharacterRange.RANGE_MIN, 48);
+					cr.properties.put(PCharacterRange.RANGE_MAX, 57);
+				}
+				return;
 			}
-			return;
-		} else if (com.equals("Letters")) //$NON-NLS-1$
-		{
-			CharacterRange cr = rangeList.getSelectedValue();
-			if (cr != null) {
-				cr.properties.put(PCharacterRange.RANGE_MIN, 65);
-				cr.properties.put(PCharacterRange.RANGE_MAX, 122);
+			case "Letters":
+			{
+				CharacterRange cr = rangeList.getSelectedValue();
+				if (cr != null) {
+					cr.properties.put(PCharacterRange.RANGE_MIN, 65);
+					cr.properties.put(PCharacterRange.RANGE_MAX, 122);
+				}
+				return;
 			}
-			return;
-		} else if (com.equals("FromPreview")) {
-			res.addRangesFromString(previewText.getText());
-			return;
-		} else if (com.equals("FromString")) {
-			String result = JOptionPane.showInputDialog(this, "", "Character Sequence",
-					JOptionPane.PLAIN_MESSAGE);
-			if (result != null) {
-				res.addRangesFromString(result);
-			}
-			return;
-		} else if (com.equals("FromFile")) {
-			CustomFileChooser fc = new CustomFileChooser("/org/lateralgm", "LAST_FILE_DIR");
-			fc.setMultiSelectionEnabled(false);
-			if (fc.showOpenDialog(LGM.frame) == JFileChooser.APPROVE_OPTION)
-				res.addRangesFromFile(fc.getSelectedFile());
-			return;
-		} else if (com.equals("Add")) {
-			res.addRange();
-			return;
-		} else if (com.equals("Remove")) {
-			int sel = rangeList.getSelectedIndex();
-			if (rangeList.getSelectedValue() != null) {
-				res.characterRanges.remove(sel);
-			}
-			return;
-		} else if (com.equals("Clear")) {
-			res.characterRanges.clear();
-			return;
-		} else if (com.equals("FontFrame.CUT")) //$NON-NLS-1$
-		{
-			previewText.cut();
-			return;
-		} else if (com.equals("FontFrame.COPY")) //$NON-NLS-1$
-		{
-			previewText.copy();
-			return;
-		} else if (com.equals("FontFrame.PASTE")) //$NON-NLS-1$
-		{
-			previewText.paste();
-			return;
-		} else if (com.equals("FontFrame.SELECTALL")) //$NON-NLS-1$
-		{
-			previewText.selectAll();
-			return;
-		} else if (com.equals("SELECTALLRANGE")) //$NON-NLS-1$
-		{
-			previewRange.selectAll();
-			return;
-		} else if (com.equals("COPYRANGE")) //$NON-NLS-1$
-		{
-			previewRange.copy();
-			return;
+			case "FromPreview":
+				res.addRangesFromString(previewText.getText());
+				return;
+			case "FromString":
+				String result = JOptionPane.showInputDialog(this, "", "Character Sequence", JOptionPane.PLAIN_MESSAGE);
+				if (result != null) {
+					res.addRangesFromString(result);
+				}
+				return;
+			case "FromFile":
+				CustomFileChooser fc = new CustomFileChooser("/org/lateralgm", "LAST_FILE_DIR");
+				fc.setMultiSelectionEnabled(false);
+				if (fc.showOpenDialog(LGM.frame) == JFileChooser.APPROVE_OPTION)
+					res.addRangesFromFile(fc.getSelectedFile());
+				return;
+			case "Add":
+				res.addRange();
+				return;
+			case "Remove":
+				int sel = rangeList.getSelectedIndex();
+				if (rangeList.getSelectedValue() != null) {
+					res.characterRanges.remove(sel);
+				}
+				return;
+			case "Clear":
+				res.characterRanges.clear();
+				return;
+			case "FontFrame.CUT":
+				previewText.cut();
+				return;
+			case "FontFrame.COPY":
+				previewText.copy();
+				return;
+			case "FontFrame.PASTE":
+				previewText.paste();
+				return;
+			case "FontFrame.SELECTALL":
+				previewText.selectAll();
+				return;
+			case "SELECTALLRANGE":
+				previewRange.selectAll();
+				return;
+			case "COPYRANGE":
+				previewRange.copy();
+				return;
 		}
 		super.actionPerformed(ev);
 	}

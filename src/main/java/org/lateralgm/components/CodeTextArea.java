@@ -392,32 +392,44 @@ public class CodeTextArea extends JoshTextPanel implements UpdateListener, Actio
 
 	public void actionPerformed(ActionEvent ev) {
 		String com = ev.getActionCommand();
-		if (com.equals("JoshText.LOAD")) {
-			text.Load();
-		} else if (com.equals("JoshText.SAVE")) {
-			text.Save();
-		} else if (com.equals("JoshText.PRINT")) {
-			try {
-				this.Print();
-			} catch (PrinterException e) {
-				LGM.showDefaultExceptionHandler(e);
-			}
-		} else if (com.equals("JoshText.UNDO")) {
-			text.Undo();
-		} else if (com.equals("JoshText.REDO")) {
-			text.Redo();
-		} else if (com.equals("JoshText.CUT")) {
-			text.Cut();
-		} else if (com.equals("JoshText.COPY")) {
-			text.Copy();
-		} else if (com.equals("JoshText.PASTE")) {
-			text.Paste();
-		} else if (com.equals("JoshText.FIND")) {
-			text.ShowFind();
-		} else if (com.equals("JoshText.GOTO")) {
-			this.aGoto();
-		} else if (com.equals("JoshText.SELALL")) {
-			text.SelectAll();
+		switch (com) {
+			case "JoshText.LOAD":
+				text.Load();
+				break;
+			case "JoshText.SAVE":
+				text.Save();
+				break;
+			case "JoshText.PRINT":
+				try {
+					this.Print();
+				} catch (PrinterException e) {
+					LGM.showDefaultExceptionHandler(e);
+				}
+				break;
+			case "JoshText.UNDO":
+				text.Undo();
+				break;
+			case "JoshText.REDO":
+				text.Redo();
+				break;
+			case "JoshText.CUT":
+				text.Cut();
+				break;
+			case "JoshText.COPY":
+				text.Copy();
+				break;
+			case "JoshText.PASTE":
+				text.Paste();
+				break;
+			case "JoshText.FIND":
+				text.ShowFind();
+				break;
+			case "JoshText.GOTO":
+				this.aGoto();
+				break;
+			case "JoshText.SELALL":
+				text.SelectAll();
+				break;
 		}
 	}
 
