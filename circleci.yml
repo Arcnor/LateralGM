@@ -1,0 +1,4 @@
+test:
+   post:
+      - mv build/distributions/*.zip $CIRCLE_ARTIFACTS/
+      - mv build/reports $CIRCLE_ARTIFACTS/

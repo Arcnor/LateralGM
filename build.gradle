@@ -46,3 +46,17 @@ dependencies {
 task wrapper(type: Wrapper) {
 	gradleVersion = "3.0"
 }
+
+apply plugin: 'findbugs'
+
+tasks.withType(FindBugs) {
+	reports {
+		xml.enabled = false
+		html.enabled = true
+	}
+}
+
+findbugs {
+	ignoreFailures = true
+	effort = "max"
+}
