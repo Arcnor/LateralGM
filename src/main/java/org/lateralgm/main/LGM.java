@@ -23,6 +23,7 @@
 
 package org.lateralgm.main;
 
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import org.lateralgm.components.ActionList;
 import org.lateralgm.components.CodeTextArea;
@@ -1531,6 +1532,8 @@ public final class LGM {
 			latch.countDown();
 		});
 		latch.await();
+		// FIXME: We need this as long as we're using Swing (otherwise, opening a dialog & closing it will shutdown JavaFX!)
+		Platform.setImplicitExit(false);
 
 		// Set the default uncaught exception handler.
 		LGM.setDefaultExceptionHandler();

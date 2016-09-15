@@ -20,6 +20,7 @@ import org.lateralgm.messages.Messages;
 import org.lateralgm.resources.Resource;
 import org.lateralgm.resources.ResourceReference;
 import org.lateralgm.subframes.ConfigurationManager;
+import org.lateralgm.util.UIHelper;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -259,197 +260,213 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 			node = (ResNode) treepath.getLastPathComponent();
 		}
 
-		String[] args = e.getActionCommand().split(" "); //$NON-NLS-1$
+		String[] args = e.getActionCommand().split(" ");
 		String com = args[0];
-		if (com.endsWith(".NEW")) //$NON-NLS-1$
-		{
-			String title = Messages.getString("Listener.CONFIRM_NEW_TITLE"); //$NON-NLS-1$
-			String message = Messages.getString("Listener.CONFIRM_NEW"); //$NON-NLS-1$
-			int opt = JOptionPane.showConfirmDialog(LGM.frame, message, title, JOptionPane.YES_NO_OPTION);
-			//I'd love to default to "No", but apparently that's not an option.
-			if (opt == JOptionPane.YES_OPTION) fc.newFile();
-			return;
-		} else if (com.endsWith(".OPEN")) { //$NON-NLS-1$
-			try {
-				fc.open(args.length > 1 ? new URI(args[1]) : null);
-			} catch (URISyntaxException e1) {
-				e1.printStackTrace();
-			}
-			return;
-		} else if (com.endsWith(".CLEARRECENT")) { //$NON-NLS-1$
-			PrefsStore.clearRecentFiles();
-			return;
-		} else if (com.endsWith(".OPENRECENT")) { //$NON-NLS-1$
-			try {
-				fc.open(new File(new URI(args[1])));
-			} catch (URISyntaxException e1) {
-				LGM.showDefaultExceptionHandler(e1);
-			}
-			return;
-		} else if (com.endsWith(".SAVE")) { //$NON-NLS-1$
-			fc.save(LGM.currentFile.uri, LGM.currentFile.format);
-			return;
-		} else if (com.endsWith(".EXPLORELATERALGM")) {
-			String userDir = System.getProperty("user.dir");
-			if (userDir == null) {
-				return;
-			}
-			Desktop dt = Desktop.getDesktop();
-			try {
-				dt.open(new File(userDir));
-			} catch (IOException e1) {
-				LGM.showDefaultExceptionHandler(e1);
-			}
-		} else if (com.endsWith(".EXPLOREPROJECT")) {
-			String userDir = LGM.currentFile.getDirectory();
-			if (userDir == null) {
-				return;
-			}
-			Desktop dt = Desktop.getDesktop();
-			File f = new File(userDir);
-			if (!f.exists()) {
-				f = new File(System.getProperty("user.dir"));
-			}
-			try {
-				dt.open(f);
-			} catch (IOException e1) {
-				LGM.showDefaultExceptionHandler(e1);
-			}
-		} else if (com.endsWith(".PREFERENCES")) { //$NON-NLS-1$
-			LGM.showPreferences();
-			return;
-		} else if (com.endsWith(".CST")) { //$NON-NLS-1$
-			LGM.showConstantsFrame(LGM.currentFile.defaultConstants);
-			return;
-		} else if (com.endsWith(".GMI")) { //$NON-NLS-1$
-			LGM.showGameInformation();
-			return;
-		} else if (com.endsWith(".GMS")) { //$NON-NLS-1$
-			LGM.showGameSettings(LGM.getSelectedConfig());
-			return;
-		} else if (com.endsWith(".PKG")) { //$NON-NLS-1$
-			LGM.showExtensionPackages();
-			return;
-		} else if (com.endsWith(".SAVEAS")) { //$NON-NLS-1$
-			fc.saveNewFile();
-			return;
-		} else if (com.endsWith(".EVENT_BUTTON")) { //$NON-NLS-1$
-			Object o = e.getSource();
-			if (o instanceof JToggleButton) LGM.showEventPanel();
-			return;
-		} else if (com.endsWith(".EXIT")) { //$NON-NLS-1$
-			LGM.onMainFrameClosed();
+		String[] parts = com.split("\\.");
+		final String command = parts[1];
+		switch (command) {
+			case "NEW":
+				String title = Messages.getString("Listener.CONFIRM_NEW_TITLE");
 
-			return;
-		} else if (com.contains(".INSERT_") || com.contains(".ADD_")) { //$NON-NLS-1$ //$NON-NLS-2$
-			if (com.endsWith("GROUP")) //$NON-NLS-1$
-			{
-				if (com.contains(".INSERT_"))
-					insertResource(tree, null);
-				else
-					addResource(tree, null);
-				return;
-			}
-			//we no longer do it this way for resources
-			throw new UnsupportedOperationException(com);
-		} else if (com.endsWith(".RENAME")) { //$NON-NLS-1$
-			if (tree.getCellEditor().isCellEditable(null))
-				tree.startEditingAtPath(tree.getLeadSelectionPath());
-			return;
-		} else if (com.endsWith(".DELETE")) { //$NON-NLS-1$
-			deleteSelectedResources(tree);
-			return;
-		} else if (com.endsWith(".PACKAGE")) { //$NON-NLS-1$
-			PackageResourcesDialog.getInstance().setVisible(true);
-		} else if (com.endsWith(".DEFRAGIDS")) { //$NON-NLS-1$
-			String msg = Messages.getString("Listener.CONFIRM_DEFRAGIDS"); //$NON-NLS-1$
-			if (JOptionPane.showConfirmDialog(LGM.frame, msg,
-					Messages.getString("Listener.CONFIRM_DEFRAGIDS_TITLE"), //$NON-NLS-1$
-					JOptionPane.YES_NO_OPTION) == 0) LGM.currentFile.defragIds();
-		} else if (com.endsWith(".EXPAND")) { //$NON-NLS-1$
-			for (int m = 0; m < tree.getRowCount(); m++)
-				tree.expandRow(m);
-			return;
-		} else if (com.endsWith(".COLLAPSE")) { //$NON-NLS-1$
-			for (int m = tree.getRowCount() - 1; m >= 0; m--)
-				tree.collapseRow(m);
-			return;
-		} else if (com.endsWith(".SORT")) { //$NON-NLS-1$
-			if (node == null) {
-				return;
-			}
-			sortNodeChildrenAlphabetically(node, false);
-			LGM.tree.expandPath(new TreePath(node.getPath()));
-			LGM.tree.updateUI();
-			return;
-		} else if (com.endsWith(".DOCUMENTATION") || com.endsWith(".WEBSITE") //$NON-NLS-1$ //$NON-NLS-2$
-				|| com.endsWith(".COMMUNITY") || com.endsWith(".ISSUE")) { //$NON-NLS-1$ //$NON-NLS-2$
-			String uri = Prefs.documentationURI;
-			if (com.endsWith(".WEBSITE")) {
-				uri = Prefs.websiteURI;
-			} else if (com.endsWith(".COMMUNITY")) {
-				uri = Prefs.communityURI;
-			} else if (com.endsWith(".ISSUE")) {
-				uri = Prefs.issueURI;
-			}
-			//uri = uri.replace('\\','/').replace(" ","%20");
-			try {
-				Desktop.getDesktop().browse(new URI(uri));
-			} catch (URISyntaxException e1) {
-				JOptionPane.showMessageDialog(LGM.frame,
-						Messages.format("HelpDialog.MALFORMED_MESSAGE", uri),
-						Messages.getString("HelpDialog.MALFORMED_TITLE"),
-						JOptionPane.ERROR_MESSAGE);
-			} catch (java.io.IOException ioe) {
-				JOptionPane.showMessageDialog(LGM.frame,
-						Messages.format("HelpDialog.UNAVAILABLE_MESSAGE", uri),
-						Messages.getString("HelpDialog.UNAVAILABLE_TITLE"),
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-			return;
-		} else if (com.endsWith(".CONFIG_MANAGE")) { //$NON-NLS-1$
-			ConfigurationManager.getInstance().setVisible(true);
-			return;
-		} else if (com.endsWith(".ABOUT")) { //$NON-NLS-1$
-			new AboutBox(LGM.frame).setVisible(true);
-			return;
-		} else if (com.endsWith(".DUPLICATE")) { //$NON-NLS-1$
-			if (node == null) {
-				return;
-			}
-			//NOTE: This check is needed because the user may select some non-instantiable resource in the tree
-			//then mistakenly hit the Duplicate option under the Edit menu.
-			if (!node.isInstantiable()) return;
-			ResourceList<?> rl = (ResourceList<?>) LGM.currentFile.resMap.get(node.kind);
-			if (node.frame != null) node.frame.commitChanges();
-			Resource<?, ?> resource = rl.duplicate(node.getRes().get());
-			Listener.insertResource(tree, node.kind, resource, node, 1);
-			return;
-		} else if (com.endsWith(".PROPERTIES")) { //$NON-NLS-1$
-			if (node == null) {
-				return;
-			}
-			if (node.status == ResNode.STATUS_SECONDARY) node.openFrame();
-			return;
-		} else if (com.endsWith(".FIND")) {
-			String name = JOptionPane.showInputDialog(LGM.frame,
-					Messages.getString("FindResourceDialog.MESSAGE"),
-					Messages.getString("FindResourceDialog.TITLE"),
-					JOptionPane.PLAIN_MESSAGE);
-			if (name != null) {
-				// find the resource with the name
-				DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
-				ResNode resn = (ResNode) findNode(root, name, true);
-				if (resn != null) {
-					tree.expandPath(new TreePath(resn.getPath()));
-					tree.setSelectionPath(new TreePath(resn.getPath()));
-					tree.updateUI();
-					if (resn.status == ResNode.STATUS_SECONDARY) resn.openFrame();
-				} else {
-					JOptionPane.showMessageDialog(LGM.frame, "Resource not found: " + name);
+				String message = Messages.getString("Listener.CONFIRM_NEW");
+
+				final UIHelper.DialogAction opt = UIHelper.showConfirmationDialog(LGM.frame, UIHelper.DialogAction.getYES_NO(), title, message, null, UIHelper.DialogAction.NO);
+				if (opt == UIHelper.DialogAction.YES) {
+					fc.newFile();
 				}
+				return;
+			case "OPEN":
+				try {
+					fc.open(args.length > 1 ? new URI(args[1]) : null);
+				} catch (URISyntaxException e1) {
+					e1.printStackTrace();
+				}
+				return;
+			case "CLEARRECENT":
+				PrefsStore.clearRecentFiles();
+				return;
+			case "OPENRECENT":
+				try {
+					fc.open(new File(new URI(args[1])));
+				} catch (URISyntaxException e1) {
+					LGM.showDefaultExceptionHandler(e1);
+				}
+				return;
+			case "SAVE":
+				fc.save(LGM.currentFile.uri, LGM.currentFile.format);
+				return;
+			case "EXPLORELATERALGM": {
+				String userDir = System.getProperty("user.dir");
+				if (userDir == null) {
+					return;
+				}
+				Desktop dt = Desktop.getDesktop();
+				try {
+					dt.open(new File(userDir));
+				} catch (IOException e1) {
+					LGM.showDefaultExceptionHandler(e1);
+				}
+				break;
 			}
-			return;
+			case "EXPLOREPROJECT": {
+				String userDir = LGM.currentFile.getDirectory();
+				if (userDir == null) {
+					return;
+				}
+				Desktop dt = Desktop.getDesktop();
+				File f = new File(userDir);
+				if (!f.exists()) {
+					f = new File(System.getProperty("user.dir"));
+				}
+				try {
+					dt.open(f);
+				} catch (IOException e1) {
+					LGM.showDefaultExceptionHandler(e1);
+				}
+				break;
+			}
+			case "PREFERENCES":
+				LGM.showPreferences();
+				return;
+			case "CST":
+				LGM.showConstantsFrame(LGM.currentFile.defaultConstants);
+				return;
+			case "GMI":
+				LGM.showGameInformation();
+				return;
+			case "GMS":
+				LGM.showGameSettings(LGM.getSelectedConfig());
+				return;
+			case "PKG":
+				LGM.showExtensionPackages();
+				return;
+			case "SAVEAS":
+				fc.saveNewFile();
+				return;
+			case "EVENT_BUTTON":
+				Object o = e.getSource();
+				if (o instanceof JToggleButton) LGM.showEventPanel();
+				return;
+			case "EXIT":
+				LGM.onMainFrameClosed();
+
+				return;
+			case "RENAME":
+				if (tree.getCellEditor().isCellEditable(null))
+					tree.startEditingAtPath(tree.getLeadSelectionPath());
+				return;
+			case "DELETE":
+				deleteSelectedResources(tree);
+				return;
+			case "PACKAGE":
+				PackageResourcesDialog.getInstance().setVisible(true);
+				break;
+			case "DEFRAGIDS":
+				String msg = Messages.getString("Listener.CONFIRM_DEFRAGIDS");
+
+				if (JOptionPane.showConfirmDialog(LGM.frame, msg,
+						Messages.getString("Listener.CONFIRM_DEFRAGIDS_TITLE"),
+						JOptionPane.YES_NO_OPTION) == 0) LGM.currentFile.defragIds();
+				break;
+			case "EXPAND":
+				for (int m = 0; m < tree.getRowCount(); m++)
+					tree.expandRow(m);
+				return;
+			case "COLLAPSE":
+				for (int m = tree.getRowCount() - 1; m >= 0; m--)
+					tree.collapseRow(m);
+				return;
+			case "SORT":
+				if (node == null) {
+					return;
+				}
+				sortNodeChildrenAlphabetically(node, false);
+				LGM.tree.expandPath(new TreePath(node.getPath()));
+				LGM.tree.updateUI();
+				return;
+			case "DOCUMENTATION":
+			case "WEBSITE":
+			case "COMMUNITY":
+			case "ISSUE":   //$NON-NLS-2$
+				String uri = Prefs.documentationURI;
+				if (command.equals("WEBSITE")) {
+					uri = Prefs.websiteURI;
+				} else if (command.equals("COMMUNITY")) {
+					uri = Prefs.communityURI;
+				} else if (command.equals("ISSUE")) {
+					uri = Prefs.issueURI;
+				}
+				//uri = uri.replace('\\','/').replace(" ","%20");
+				try {
+					Desktop.getDesktop().browse(new URI(uri));
+				} catch (URISyntaxException e1) {
+					JOptionPane.showMessageDialog(LGM.frame,
+							Messages.format("HelpDialog.MALFORMED_MESSAGE", uri),
+							Messages.getString("HelpDialog.MALFORMED_TITLE"),
+							JOptionPane.ERROR_MESSAGE);
+				} catch (IOException ioe) {
+					JOptionPane.showMessageDialog(LGM.frame,
+							Messages.format("HelpDialog.UNAVAILABLE_MESSAGE", uri),
+							Messages.getString("HelpDialog.UNAVAILABLE_TITLE"),
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+				return;
+			case "CONFIG_MANAGE":
+				ConfigurationManager.getInstance().setVisible(true);
+				return;
+			case "ABOUT":
+				new AboutBox(LGM.frame).setVisible(true);
+				return;
+			case "DUPLICATE":
+				if (node == null) {
+					return;
+				}
+				//NOTE: This check is needed because the user may select some non-instantiable resource in the tree
+				//then mistakenly hit the Duplicate option under the Edit menu.
+				if (!node.isInstantiable()) return;
+				ResourceList<?> rl = (ResourceList<?>) LGM.currentFile.resMap.get(node.kind);
+				if (node.frame != null) node.frame.commitChanges();
+				Resource<?, ?> resource = rl.duplicate(node.getRes().get());
+				Listener.insertResource(tree, node.kind, resource, node, 1);
+				return;
+			case "PROPERTIES":
+				if (node == null) {
+					return;
+				}
+				if (node.status == ResNode.STATUS_SECONDARY) node.openFrame();
+				return;
+			case "FIND":
+				String name = JOptionPane.showInputDialog(LGM.frame,
+						Messages.getString("FindResourceDialog.MESSAGE"),
+						Messages.getString("FindResourceDialog.TITLE"),
+						JOptionPane.PLAIN_MESSAGE);
+				if (name != null) {
+					// find the resource with the name
+					DefaultMutableTreeNode root = (DefaultMutableTreeNode) tree.getModel().getRoot();
+					ResNode resn = (ResNode) findNode(root, name, true);
+					if (resn != null) {
+						tree.expandPath(new TreePath(resn.getPath()));
+						tree.setSelectionPath(new TreePath(resn.getPath()));
+						tree.updateUI();
+						if (resn.status == ResNode.STATUS_SECONDARY) resn.openFrame();
+					} else {
+						JOptionPane.showMessageDialog(LGM.frame, "Resource not found: " + name);
+					}
+				}
+				return;
+			default:
+				if (com.contains(".INSERT_") || com.contains(".ADD_")) {  //$NON-NLS-2$
+					if (com.endsWith("GROUP")) {
+						if (com.contains(".INSERT_"))
+							insertResource(tree, null);
+						else
+							addResource(tree, null);
+						return;
+					}
+					//we no longer do it this way for resources
+					throw new UnsupportedOperationException(com);
+				}
+				break;
 		}
 	}
 
@@ -541,7 +558,7 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 	public void editingStopped(ChangeEvent e) {
 		ResNode node = (ResNode) LGM.tree.getLastSelectedPathComponent();
 		if (node.status == ResNode.STATUS_SECONDARY && node.isEditable()) {
-			String txt = ((String) node.getUserObject()).replaceAll("\\W", "").replaceAll("^([0-9]+)", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			String txt = ((String) node.getUserObject()).replaceAll("\\W", "").replaceAll("^([0-9]+)", "");  //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			Resource<?, ?> r = deRef((ResourceReference<?>) node.getRes());
 			if (r != null) r.setName(txt);
 		}
