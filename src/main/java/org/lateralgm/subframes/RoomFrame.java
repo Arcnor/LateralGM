@@ -2801,7 +2801,7 @@ public class RoomFrame extends InstantiableResourceFrame<Room, PRoom> implements
 				Double objectNewRotation = new Double(selectedPiece.getRotation());
 
 				// If the rotation of the object has been changed
-				if (objectNewRotation != pieceOriginalRotation) {
+				if (!Objects.equals(objectNewRotation, pieceOriginalRotation)) {
 					// Record the effect of rotating an object for the undo
 					UndoableEdit edit = new ModifyPieceInstance(this, selectedPiece, pieceOriginalRotation,
 							objectNewRotation);
@@ -2816,7 +2816,7 @@ public class RoomFrame extends InstantiableResourceFrame<Room, PRoom> implements
 				Integer objectNewAlpha = new Integer(selectedPiece.getAlpha());
 
 				// If the alpha value of the object has been changed
-				if (objectNewAlpha != pieceOriginalAlpha) {
+				if (!Objects.equals(objectNewAlpha, pieceOriginalAlpha)) {
 					// Record the effect of modifying the alpha value of an object for the undo
 					UndoableEdit edit = new ModifyPieceInstance(this, selectedPiece, pieceOriginalAlpha,
 							objectNewAlpha);

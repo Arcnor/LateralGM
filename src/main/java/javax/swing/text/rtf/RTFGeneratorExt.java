@@ -41,6 +41,7 @@ import java.io.OutputStream;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -298,7 +299,7 @@ class RTFGeneratorExt extends Object {
 	private void tallyStyles(AttributeSet a) {
 		while (a != null) {
 			if (a instanceof Style) {
-				Integer aNum = (Integer) styleTable.get(a);
+				Integer aNum = styleTable.get(a);
 				if (aNum == null) {
 					styleCount = styleCount + 1;
 					aNum = new Integer(styleCount);
@@ -324,7 +325,7 @@ class RTFGeneratorExt extends Object {
 	private Integer findStyleNumber(AttributeSet a, String domain) {
 		while (a != null) {
 			if (a instanceof Style) {
-				Integer aNum = (Integer) styleTable.get(a);
+				Integer aNum = styleTable.get(a);
 				if (aNum != null) {
 					if (domain == null ||
 							domain.equals(a.getAttribute(Constants.StyleType)))
@@ -365,9 +366,9 @@ class RTFGeneratorExt extends Object {
 		Enumeration<String> fonts = fontTable.keys();
 		String font;
 		while (fonts.hasMoreElements()) {
-			font = (String) fonts.nextElement();
-			Integer num = (Integer) (fontTable.get(font));
-			sortedFontTable[num.intValue()] = font;
+			font = fonts.nextElement();
+			Integer num = fontTable.get(font);
+			sortedFontTable[num] = font;
 		}
 		writeBegingroup();
 		writeControlWord("fonttbl");
@@ -387,8 +388,8 @@ class RTFGeneratorExt extends Object {
 			Color color;
 			while (colors.hasMoreElements()) {
 				color = (Color) colors.nextElement();
-				Integer num = (Integer) (colorTable.get(color));
-				sortedColorTable[num.intValue()] = color;
+				Integer num = colorTable.get(color);
+				sortedColorTable[num] = color;
 			}
 			writeBegingroup();
 			writeControlWord("colortbl");
@@ -412,7 +413,7 @@ class RTFGeneratorExt extends Object {
 			Enumeration<AttributeSet> styles = styleTable.keys();
 			while (styles.hasMoreElements()) {
 				Style style = (Style) styles.nextElement();
-				int styleNumber = ((Integer) styleTable.get(style)).intValue();
+				int styleNumber = styleTable.get(style);
 				writeBegingroup();
 				String styleType = (String) style.getAttribute(Constants.StyleType);
 				if (styleType == null)
@@ -441,26 +442,26 @@ class RTFGeneratorExt extends Object {
 
 				basis = style.getResolveParent();
 				if (basis != null && basis instanceof Style) {
-					Integer basedOn = (Integer) styleTable.get(basis);
+					Integer basedOn = styleTable.get(basis);
 					if (basedOn != null) {
-						writeControlWord("sbasedon", basedOn.intValue());
+						writeControlWord("sbasedon", basedOn);
 					}
 				}
 
 				Style nextStyle = (Style) style.getAttribute(Constants.StyleNext);
 				if (nextStyle != null) {
-					Integer nextNum = (Integer) styleTable.get(nextStyle);
+					Integer nextNum = styleTable.get(nextStyle);
 					if (nextNum != null) {
-						writeControlWord("snext", nextNum.intValue());
+						writeControlWord("snext", nextNum);
 					}
 				}
 
 				Boolean hidden = (Boolean) style.getAttribute(Constants.StyleHidden);
-				if (hidden != null && hidden.booleanValue())
+				if (hidden != null && hidden)
 					writeControlWord("shidden");
 
 				Boolean additive = (Boolean) style.getAttribute(Constants.StyleAdditive);
-				if (additive != null && additive.booleanValue())
+				if (additive != null && additive)
 					writeControlWord("additive");
 
 
@@ -557,13 +558,13 @@ class RTFGeneratorExt extends Object {
 			throws IOException {
 		if (emitStyleChanges) {
 			Object oldStyle = current.getAttribute("sectionStyle");
-			Object newStyle = findStyleNumber(newAttributes, Constants.STSection);
-			if (oldStyle != newStyle) {
+			Integer newStyle = findStyleNumber(newAttributes, Constants.STSection);
+			if (!Objects.equals(oldStyle, newStyle)) {
 				if (oldStyle != null) {
 					resetSectionAttributes(current);
 				}
 				if (newStyle != null) {
-					writeControlWord("ds", ((Integer) newStyle).intValue());
+					writeControlWord("ds", newStyle);
 					current.addAttribute("sectionStyle", newStyle);
 				} else {
 					current.removeAttribute("sectionStyle");
@@ -615,7 +616,8 @@ private static String tabdump(Object tso)
 	                               AttributeSet newAttributes,
 	                               boolean emitStyleChanges)
 			throws IOException {
-		Object oldStyle, newStyle;
+		Object oldStyle;
+		final Integer newStyle;
 
     /* The only way to get rid of tabs or styles is with the \pard keyword,
        emitted by resetParagraphAttributes(). Ideally we should avoid
@@ -625,7 +627,7 @@ private static String tabdump(Object tso)
 		if (emitStyleChanges) {
 			oldStyle = current.getAttribute("paragraphStyle");
 			newStyle = findStyleNumber(newAttributes, Constants.STParagraph);
-			if (oldStyle != newStyle) {
+			if (!Objects.equals(oldStyle, newStyle)) {
 				if (oldStyle != null) {
 					resetParagraphAttributes(current);
 					oldStyle = null;
@@ -647,7 +649,7 @@ private static String tabdump(Object tso)
 		}
 
 		if (oldStyle != newStyle && newStyle != null) {
-			writeControlWord("s", ((Integer) newStyle).intValue());
+			writeControlWord("s", newStyle);
 			current.addAttribute("paragraphStyle", newStyle);
 		}
 
@@ -742,14 +744,14 @@ private static String tabdump(Object tso)
 
 		if (updateStyleChanges) {
 			Object oldStyle = current.getAttribute("characterStyle");
-			Object newStyle = findStyleNumber(newAttributes,
+			Integer newStyle = findStyleNumber(newAttributes,
 					Constants.STCharacter);
-			if (oldStyle != newStyle) {
+			if (!Objects.equals(oldStyle, newStyle)) {
 				if (oldStyle != null) {
 					resetCharacterAttributes(current);
 				}
 				if (newStyle != null) {
-					writeControlWord("cs", ((Integer) newStyle).intValue());
+					writeControlWord("cs", newStyle);
 					current.addAttribute("characterStyle", newStyle);
 				} else {
 					current.removeAttribute("characterStyle");
@@ -759,8 +761,8 @@ private static String tabdump(Object tso)
 
 		if ((parm = attrDiff(current, newAttributes,
 				StyleConstants.FontFamily, null, null)) != null) {
-			Number fontNum = (Number) fontTable.get(parm);
-			writeControlWord("f", fontNum.intValue());
+			Integer fontNum = fontTable.get(parm);
+			writeControlWord("f", fontNum);
 		}
 
 		checkNumericControlWord(current, newAttributes,
@@ -780,7 +782,7 @@ private static String tabdump(Object tso)
 			if (parm == MagicToken)
 				colorNum = 0;
 			else
-				colorNum = ((Number) colorTable.get(parm)).intValue();
+				colorNum = colorTable.get(parm);
 			writeControlWord("cb", colorNum);
 		}
 
@@ -790,7 +792,7 @@ private static String tabdump(Object tso)
 			if (parm == MagicToken)
 				colorNum = 0;
 			else
-				colorNum = ((Number) colorTable.get(parm)).intValue();
+				colorNum = colorTable.get(parm);
 			writeControlWord("cf", colorNum);
 		}
 	}
