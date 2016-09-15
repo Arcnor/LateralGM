@@ -23,13 +23,13 @@ import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
 import org.lateralgm.util.PropertyMap.PropertyUpdateListener;
 import org.lateralgm.util.PropertyMap.PropertyValidationException;
 import org.lateralgm.util.PropertyMap.PropertyValidator;
+import org.lateralgm.util.Randomness;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.EnumMap;
-import java.util.Random;
 
 public class Tile implements Room.Piece, UpdateListener, PropertyValidator<Tile.PTile> {
 	private static final EnumMap<PTile, Object> DEFS = PropertyMap.makeDefaultMap(PTile.class, 0, 0, 0, 0,
@@ -52,7 +52,7 @@ public class Tile implements Room.Piece, UpdateListener, PropertyValidator<Tile.
 		properties = new PropertyMap<PTile>(PTile.class, this, DEFS);
 		properties.getUpdateSource(PTile.BACKGROUND).addListener(tpl);
 		properties.getUpdateSource(PTile.SELECTED).addListener(tpl);
-		properties.put(PTile.NAME, "tile_" + String.format("%08X", new Random().nextInt()));
+		properties.put(PTile.NAME, "tile_" + String.format("%08X", Randomness.nextInt()));
 	}
 
 	public Tile(Room r, int id) {

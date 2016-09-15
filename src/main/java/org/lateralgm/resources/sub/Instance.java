@@ -23,6 +23,7 @@ import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
 import org.lateralgm.util.PropertyMap.PropertyUpdateListener;
 import org.lateralgm.util.PropertyMap.PropertyValidationException;
 import org.lateralgm.util.PropertyMap.PropertyValidator;
+import org.lateralgm.util.Randomness;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -54,7 +55,7 @@ public class Instance implements Room.Piece, UpdateListener, CodeHolder,
 		properties.getUpdateSource(PInstance.ROTATION).addListener(ipl);
 		properties.getUpdateSource(PInstance.COLOR).addListener(ipl);
 		properties.getUpdateSource(PInstance.ALPHA).addListener(ipl);
-		properties.put(PInstance.NAME, "inst_" + String.format("%08X", new Random().nextInt()));
+		properties.put(PInstance.NAME, "inst_" + String.format("%08X", Randomness.nextInt()));
 	}
 
 	protected void fireUpdate(UpdateEvent e) {
