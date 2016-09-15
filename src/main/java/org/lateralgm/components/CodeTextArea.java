@@ -515,14 +515,15 @@ public class CodeTextArea extends JoshTextPanel implements UpdateListener, Actio
 		}
 
 		public String getArguments() {
-			String s = "";
-			for (int i = 0; i < function.arguments.length; i++)
-				s += (i > 0 ? "," : "") + getArgument(i);
-			return s;
+			final StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < function.arguments.length; i++) {
+				sb.append(i > 0 ? "," : "").append(getArgument(i));
+			}
+			return sb.toString();
 		}
 
 		public String toString() {
-			return name + "(" + getArguments() + ")";
+			return String.format("%s(%s)", name, getArguments());
 		}
 	}
 

@@ -255,8 +255,7 @@ public final class GMXFileReader {
 				PropertyMap<PGameSettings> pSet = gSet.properties;
 
 				String path = c.f.getPath();
-				path = path.substring(0, path.lastIndexOf('/') + 1)
-						+ Util.getPOSIXPath(cNode.getTextContent());
+				path = path.substring(0, path.lastIndexOf('/') + 1) + Util.getPOSIXPath(cNode.getTextContent());
 
 				Document setdoc = documentBuilder.parse(path + ".config.gmx");
 				if (setdoc == null) {
@@ -806,35 +805,38 @@ public final class GMXFileReader {
 
 			ResNode rnode = null;
 
-			if (cname.equals("scripts")) {
-				rnode = new ResNode(cNode.getAttributes().item(0).getTextContent(), ResNode.STATUS_GROUP,
-						Script.class, null);
-				node.add(rnode);
-				iterateScripts(c, cNode.getChildNodes(), rnode);
-			} else if (cname.equals("script")) {
-				Script scr = f.resMap.getList(Script.class).add();
-				String fileName = new File(Util.getPOSIXPath(cNode.getTextContent())).getName();
-				scr.setName(fileName.substring(0, fileName.lastIndexOf(".")));
-				scr.setNode(rnode);
-				rnode = new ResNode(scr.getName(), ResNode.STATUS_SECONDARY, Script.class, scr.reference);
-				node.add(rnode);
-				String code = "";
-				String path = f.getPath();
-				path = path.substring(0, path.lastIndexOf('/') + 1)
-						+ Util.getPOSIXPath(cNode.getTextContent());
-				FileInputStream ins = new FileInputStream(path);
-				BufferedReader reader = null;
-				try {
-					reader = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
-					String line = "";
-					while ((line = reader.readLine()) != null) {
-						code += line + "\n";
+			switch (cname) {
+				case "scripts":
+					rnode = new ResNode(cNode.getAttributes().item(0).getTextContent(), ResNode.STATUS_GROUP,
+							Script.class, null);
+					node.add(rnode);
+					iterateScripts(c, cNode.getChildNodes(), rnode);
+					break;
+				case "script":
+					Script scr = f.resMap.getList(Script.class).add();
+					String fileName = new File(Util.getPOSIXPath(cNode.getTextContent())).getName();
+					scr.setName(fileName.substring(0, fileName.lastIndexOf(".")));
+					scr.setNode(rnode);
+					rnode = new ResNode(scr.getName(), ResNode.STATUS_SECONDARY, Script.class, scr.reference);
+					node.add(rnode);
+					String path = f.getPath();
+					path = path.substring(0, path.lastIndexOf('/') + 1)
+							+ Util.getPOSIXPath(cNode.getTextContent());
+					FileInputStream ins = new FileInputStream(path);
+					BufferedReader reader = null;
+					final StringBuilder sbCode = new StringBuilder();
+					try {
+						reader = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
+						String line;
+						while ((line = reader.readLine()) != null) {
+							sbCode.append(line).append("\n");
+						}
+					} finally {
+						reader.close();
+						ins.close();
 					}
-				} finally {
-					reader.close();
-					ins.close();
-				}
-				scr.put(PScript.CODE, code);
+					scr.put(PScript.CODE, sbCode.toString());
+					break;
 			}
 		}
 
@@ -870,38 +872,41 @@ public final class GMXFileReader {
 
 			ResNode rnode = null;
 
-			if (cname.equals("shaders")) {
-				rnode = new ResNode(cNode.getAttributes().item(0).getTextContent(), ResNode.STATUS_GROUP,
-						Shader.class, null);
-				node.add(rnode);
-				iterateScripts(c, cNode.getChildNodes(), rnode);
-			} else if (cname.equals("shader")) {
-				Shader shr = f.resMap.getList(Shader.class).add();
-				String fileName = new File(Util.getPOSIXPath(cNode.getTextContent())).getName();
-				shr.setName(fileName.substring(0, fileName.lastIndexOf(".")));
-				shr.setNode(rnode);
-				rnode = new ResNode(shr.getName(), ResNode.STATUS_SECONDARY, Shader.class, shr.reference);
-				node.add(rnode);
-				shr.put(PShader.TYPE, cNode.getAttributes().item(0).getTextContent());
-				String code = "";
-				String path = f.getPath();
-				path = path.substring(0, path.lastIndexOf('/') + 1)
-						+ Util.getPOSIXPath(cNode.getTextContent());
-				FileInputStream ins = new FileInputStream(path);
-				BufferedReader reader = null;
-				try {
-					reader = new BufferedReader(new InputStreamReader(ins));
-					String line = "";
-					while ((line = reader.readLine()) != null) {
-						code += line + "\n";
+			switch (cname) {
+				case "shaders":
+					rnode = new ResNode(cNode.getAttributes().item(0).getTextContent(), ResNode.STATUS_GROUP,
+							Shader.class, null);
+					node.add(rnode);
+					iterateScripts(c, cNode.getChildNodes(), rnode);
+					break;
+				case "shader":
+					Shader shr = f.resMap.getList(Shader.class).add();
+					String fileName = new File(Util.getPOSIXPath(cNode.getTextContent())).getName();
+					shr.setName(fileName.substring(0, fileName.lastIndexOf(".")));
+					shr.setNode(rnode);
+					rnode = new ResNode(shr.getName(), ResNode.STATUS_SECONDARY, Shader.class, shr.reference);
+					node.add(rnode);
+					shr.put(PShader.TYPE, cNode.getAttributes().item(0).getTextContent());
+					String path = f.getPath();
+					path = path.substring(0, path.lastIndexOf('/') + 1)
+							+ Util.getPOSIXPath(cNode.getTextContent());
+					FileInputStream ins = new FileInputStream(path);
+					BufferedReader reader = null;
+					StringBuilder sbCode = new StringBuilder();
+					try {
+						reader = new BufferedReader(new InputStreamReader(ins));
+						String line = "";
+						while ((line = reader.readLine()) != null) {
+							sbCode.append(line).append("\n");
+						}
+					} finally {
+						ins.close();
+						reader.close();
 					}
-				} finally {
-					ins.close();
-					reader.close();
-				}
-				String[] splitcode = code.split("//######################_==_YOYO_SHADER_MARKER_==_######################@~");
-				shr.put(PShader.VERTEX, splitcode[0]);
-				shr.put(PShader.FRAGMENT, splitcode[1]);
+					String[] splitcode = sbCode.toString().split("//######################_==_YOYO_SHADER_MARKER_==_######################@~");
+					shr.put(PShader.VERTEX, splitcode[0]);
+					shr.put(PShader.FRAGMENT, splitcode[1]);
+					break;
 			}
 		}
 
@@ -1779,22 +1784,22 @@ public final class GMXFileReader {
 		String path = c.f.getPath();
 		path = path.substring(0, path.lastIndexOf('/') + 1) + Util.getPOSIXPath(rtfNode.getTextContent());
 
-		String text = "";
 
 		FileInputStream ins = new FileInputStream(path);
 		BufferedReader reader = null;
+		StringBuilder sb = new StringBuilder();
 		try {
 			reader = new BufferedReader(new InputStreamReader(ins));
-			String line = "";
+			String line;
 			while ((line = reader.readLine()) != null) {
-				text += line + "\n";
+				sb.append(line).append("\n");
 			}
 		} finally {
 			ins.close();
 			reader.close();
 		}
 
-		gameInfo.put(PGameInformation.TEXT, text);
+		gameInfo.put(PGameInformation.TEXT, sb.toString());
 
 		ResNode node = new ResNode(Resource.kindNamesPlural.get(GameInformation.class),
 				ResNode.STATUS_SECONDARY, GameInformation.class, gameInfo.reference);

@@ -486,7 +486,7 @@ public class FontFrame extends InstantiableResourceFrame<Font, PFont> implements
 	}
 
 	public void updatePreviewRange() {
-		String text = "";
+		final StringBuilder sb = new StringBuilder();
 		for (CharacterRange cr : res.characterRanges) {
 			int min = cr.properties.get(PCharacterRange.RANGE_MIN);
 			int max = cr.properties.get(PCharacterRange.RANGE_MAX);
@@ -499,14 +499,14 @@ public class FontFrame extends InstantiableResourceFrame<Font, PFont> implements
 				// TODO: Replace new line character with just an empty space,
 				// otherwise it will screw up word wrapping in the preview area.
 				if (i == '\n') {
-					text += ' ';
+					sb.append(' ');
 					continue;
 				}
-				text += new String(Character.toChars(i));
+				sb.append(Character.toChars(i));
 			}
-			text += "\n";
+			sb.append("\n");
 		}
-		previewRange.setText(text);
+		previewRange.setText(sb.toString());
 		previewRange.setFont(res.getAWTFont());
 	}
 
