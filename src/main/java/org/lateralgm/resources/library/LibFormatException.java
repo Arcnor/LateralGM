@@ -14,14 +14,4 @@ public class LibFormatException extends Exception {
 	public LibFormatException(String message) {
 		super(message);
 	}
-
-	public String stackAsString() {
-		StackTraceElement[] els = getStackTrace();
-		String res = ""; //$NON-NLS-1$
-		for (int i = 0; i < els.length; i++) {
-			res += els[i].toString();
-			if (i != els.length - 1) res += "\n"; //$NON-NLS-1$
-		}
-		return res;
-	}
 }
