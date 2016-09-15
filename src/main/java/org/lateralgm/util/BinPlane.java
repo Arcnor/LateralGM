@@ -242,7 +242,7 @@ public class BinPlane {
 	public static enum Edge {
 		LEFT(null) {
 			public int compareBin(int i0, int i1) {
-				return Integer.valueOf(i1 << 16 >> 16).compareTo(i0 << 16 >> 16);
+				return Integer.compare(i1 << 16 >> 16, i0 << 16 >> 16);
 			}
 
 			public int getValue(int left, int right, int top, int bottom) {
@@ -251,7 +251,7 @@ public class BinPlane {
 		},
 		RIGHT(LEFT), TOP(null) {
 			public int compareBin(int i0, int i1) {
-				return Integer.valueOf(i1 >> 16).compareTo(i0 >> 16);
+				return Integer.compare(i1 >> 16, i0 >> 16);
 			}
 
 			public int getValue(int left, int right, int top, int bottom) {
