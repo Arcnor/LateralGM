@@ -265,16 +265,19 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 		String[] parts = com.split("\\.");
 		final String command = parts[1];
 		switch (command) {
-			case "NEW":
-				String title = Messages.getString("Listener.CONFIRM_NEW_TITLE");
+			case "NEW": {
+				final String title = Messages.getString("Listener.CONFIRM_NEW_TITLE");
+				final String message = Messages.getString("Listener.CONFIRM_NEW");
 
-				String message = Messages.getString("Listener.CONFIRM_NEW");
-
-				final UIHelper.DialogAction opt = UIHelper.showConfirmationDialog(LGM.frame, UIHelper.DialogAction.getYES_NO(), title, message, null, UIHelper.DialogAction.NO);
-				if (opt == UIHelper.DialogAction.YES) {
+				final UIHelper.DialogAction result = UIHelper.showConfirmationDialog(
+						LGM.frame, UIHelper.DialogType.CONFIRMATION, UIHelper.DialogAction.getYES_NO(),
+						title, message, null, UIHelper.DialogAction.NO
+				);
+				if (result == UIHelper.DialogAction.YES) {
 					fc.newFile();
 				}
 				return;
+			}
 			case "OPEN":
 				try {
 					fc.open(args.length > 1 ? new URI(args[1]) : null);
@@ -362,11 +365,16 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				PackageResourcesDialog.getInstance().setVisible(true);
 				break;
 			case "DEFRAGIDS":
-				String msg = Messages.getString("Listener.CONFIRM_DEFRAGIDS");
+				final String title = Messages.getString("Listener.CONFIRM_DEFRAGIDS_TITLE");
+				final String message = Messages.getString("Listener.CONFIRM_DEFRAGIDS");
 
-				if (JOptionPane.showConfirmDialog(LGM.frame, msg,
-						Messages.getString("Listener.CONFIRM_DEFRAGIDS_TITLE"),
-						JOptionPane.YES_NO_OPTION) == 0) LGM.currentFile.defragIds();
+				final UIHelper.DialogAction result = UIHelper.showConfirmationDialog(
+						LGM.frame, UIHelper.DialogType.WARNING, UIHelper.DialogAction.getYES_NO(),
+						title, message, null, UIHelper.DialogAction.NO
+				);
+				if (result == UIHelper.DialogAction.YES) {
+					LGM.currentFile.defragIds();
+				}
 				break;
 			case "EXPAND":
 				for (int m = 0; m < tree.getRowCount(); m++)

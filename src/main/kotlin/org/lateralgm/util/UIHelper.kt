@@ -76,12 +76,26 @@ object UIHelper {
 		}
 	}
 
+	enum class DialogType {
+		CONFIRMATION, ERROR, INFORMATION, NONE, WARNING;
+
+		fun toJavaFX(): Alert.AlertType {
+			return when(this) {
+				CONFIRMATION -> Alert.AlertType.CONFIRMATION
+				ERROR -> Alert.AlertType.ERROR
+				INFORMATION -> Alert.AlertType.INFORMATION
+				NONE -> Alert.AlertType.NONE
+				WARNING -> Alert.AlertType.WARNING
+			}
+		}
+	}
+
 	@JvmStatic
 	@JvmOverloads
-	fun showConfirmationDialog(parent: Component, actions: EnumSet<DialogAction>, title: String, message: String, header: String? = null, defaultAction: DialogAction? = null): DialogAction {
+	fun showConfirmationDialog(parent: Component, dialogType: DialogType = DialogType.INFORMATION, actions: EnumSet<DialogAction>, title: String, message: String, header: String? = null, defaultAction: DialogAction? = null): DialogAction {
 		// FIXME: We need to set the dialog as modal, but it's impossible as long as we have an AWT component as parent (added that parameter just to not lose the information about who's the parent)
 		return callJavaFX(Callable<Optional<ButtonType>> {
-			val alert = Alert(Alert.AlertType.CONFIRMATION)
+			val alert = Alert(dialogType.toJavaFX())
 			alert.title = title
 			alert.contentText = message
 			alert.buttonTypes.clear()
