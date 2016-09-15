@@ -71,18 +71,11 @@ class RTFGeneratorExt extends Object {
 			'8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 	/* constants so we can avoid allocating objects in inner loops */
 	/* these should all be final, but javac seems to be a bit buggy */
-	static protected Integer One, Zero;
-	static protected Boolean False;
-	static protected Float ZeroPointZero;
 	static protected CharacterKeywordPair[] textKeywords;
 	static private Object MagicToken;
 
 	static {
-		One = new Integer(1);
-		Zero = new Integer(0);
-		False = Boolean.valueOf(false);
 		MagicToken = new Object();
-		ZeroPointZero = new Float(0);
 
 		Dictionary<?, ?> textKeywordDictionary = RTFReaderExt.textKeywords;
 		Enumeration<?> keys = textKeywordDictionary.keys();
@@ -119,7 +112,7 @@ class RTFGeneratorExt extends Object {
 
 	public RTFGeneratorExt(OutputStream to) {
 		colorTable = new Hashtable<Object, Integer>();
-		colorTable.put(defaultRTFColor, new Integer(0));
+		colorTable.put(defaultRTFColor, 0);
 		colorCount = 1;
 
 		fontTable = new Hashtable<String, Integer>();
@@ -267,14 +260,14 @@ class RTFGeneratorExt extends Object {
 			foregroundColor = StyleConstants.getForeground(a);
 			if (foregroundColor != null &&
 					colorTable.get(foregroundColor) == null) {
-				colorTable.put(foregroundColor, new Integer(colorCount));
+				colorTable.put(foregroundColor, colorCount);
 				colorCount++;
 			}
 
 			backgroundColor = a.getAttribute(StyleConstants.Background);
 			if (backgroundColor != null &&
 					colorTable.get(backgroundColor) == null) {
-				colorTable.put(backgroundColor, new Integer(colorCount));
+				colorTable.put(backgroundColor, colorCount);
 				colorCount++;
 			}
 
@@ -283,9 +276,8 @@ class RTFGeneratorExt extends Object {
 			if (fontName == null)
 				fontName = defaultFontFamily;
 
-			if (fontName != null &&
-					fontTable.get(fontName) == null) {
-				fontTable.put(fontName, new Integer(fontCount));
+			if (fontTable.get(fontName) == null) {
+				fontTable.put(fontName, fontCount);
 				fontCount++;
 			}
 		}
@@ -302,7 +294,7 @@ class RTFGeneratorExt extends Object {
 				Integer aNum = styleTable.get(a);
 				if (aNum == null) {
 					styleCount = styleCount + 1;
-					aNum = new Integer(styleCount);
+					aNum = styleCount;
 					styleTable.put(a, aNum);
 				}
 			}
@@ -722,7 +714,7 @@ private static String tabdump(Object tso)
 			throws IOException {
 		writeControlWord("pard");
 
-		currentAttributes.addAttribute(StyleConstants.Alignment, Zero);
+		currentAttributes.addAttribute(StyleConstants.Alignment, 0);
 
 		int wordIndex;
 		int wordCount = RTFAttributesExt.attributes.length;

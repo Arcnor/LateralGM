@@ -573,7 +573,7 @@ class RTFReaderExt extends RTFParserExt {
 
 		if (keyword.equals("uc")) {
         /* count of characters to skip after a unicode character */
-			parserState.put("UnicodeSkip", Integer.valueOf(parameter));
+			parserState.put("UnicodeSkip", parameter);
 			return true;
 		}
 		if (keyword.equals("u")) {
@@ -738,7 +738,7 @@ class RTFReaderExt extends RTFParserExt {
 				//font name might be broken across multiple calls
 				fontName = fontTable.get(fontNumberKey) + fontName;
 			} else {
-				fontNumberKey = Integer.valueOf(nextFontNumber);
+				fontNumberKey = nextFontNumber;
 			}
 			fontTable.put(fontNumberKey, fontName);
 
@@ -966,7 +966,7 @@ class RTFReaderExt extends RTFParserExt {
 				int semicolon = (styleName == null) ? 0 : styleName.indexOf(';');
 				if (semicolon > 0)
 					styleName = styleName.substring(0, semicolon);
-				definedStyles.put(Integer.valueOf(number), this);
+				definedStyles.put(number, this);
 				super.close();
 			}
 
@@ -1014,7 +1014,7 @@ class RTFReaderExt extends RTFParserExt {
 
 				if (basedOn != STYLENUMBER_NONE) {
 					StyleDefiningDestination styleDest;
-					styleDest = (StyleDefiningDestination) definedStyles.get(Integer.valueOf(basedOn));
+					styleDest = definedStyles.get(basedOn);
 					if (styleDest != null && styleDest != this) {
 						basis = styleDest.realize();
 					}
@@ -1041,7 +1041,7 @@ class RTFReaderExt extends RTFParserExt {
 
 				if (nextStyle != STYLENUMBER_NONE) {
 					StyleDefiningDestination styleDest;
-					styleDest = (StyleDefiningDestination) definedStyles.get(Integer.valueOf(nextStyle));
+					styleDest = (StyleDefiningDestination) definedStyles.get(nextStyle);
 					if (styleDest != null) {
 						next = styleDest.realize();
 					}
@@ -1049,10 +1049,8 @@ class RTFReaderExt extends RTFParserExt {
 
 				if (next != null)
 					realizedStyle.addAttribute(Constants.StyleNext, next);
-				realizedStyle.addAttribute(Constants.StyleAdditive,
-						Boolean.valueOf(additive));
-				realizedStyle.addAttribute(Constants.StyleHidden,
-						Boolean.valueOf(hidden));
+				realizedStyle.addAttribute(Constants.StyleAdditive, additive);
+				realizedStyle.addAttribute(Constants.StyleHidden, hidden);
 
 				return realizedStyle;
 			}
@@ -1208,11 +1206,11 @@ class RTFReaderExt extends RTFParserExt {
 				keyword = "cf"; /* whatEVER, dude. */
 
 			if (keyword.equals("f")) {
-				parserState.put(keyword, Integer.valueOf(parameter));
+				parserState.put(keyword, parameter);
 				return true;
 			}
 			if (keyword.equals("cf")) {
-				parserState.put(keyword, Integer.valueOf(parameter));
+				parserState.put(keyword, parameter);
 				return true;
 			}
 
@@ -1300,10 +1298,10 @@ class RTFReaderExt extends RTFParserExt {
 				if (tabs == null) {
 					tabs = new Hashtable<Comparable, Serializable>();
 					parserState.put("_tabs", tabs);
-					stopCount = Integer.valueOf(1);
+					stopCount = 1;
 				} else {
 					stopCount = (Integer) tabs.get("stop count");
-					stopCount = Integer.valueOf(1 + stopCount.intValue());
+					stopCount = 1 + stopCount.intValue();
 				}
 				tabs.put(stopCount, newStop);
 				tabs.put("stop count", stopCount);
@@ -1408,7 +1406,7 @@ class RTFReaderExt extends RTFParserExt {
 			if (colorTable != null) {
 				stateItem = (Integer) parserState.get("cf");
 				if (stateItem != null) {
-					Color fg = colorTable[stateItem.intValue()];
+					Color fg = colorTable[stateItem];
 					StyleConstants.setForeground(attributes, fg);
 				} else {
                 /* AttributeSet dies if you set a value to null */
@@ -1419,7 +1417,7 @@ class RTFReaderExt extends RTFParserExt {
 			if (colorTable != null) {
 				stateItem = (Integer) parserState.get("cb");
 				if (stateItem != null) {
-					Color bg = colorTable[stateItem.intValue()];
+					Color bg = colorTable[stateItem];
 					attributes.addAttribute(StyleConstants.Background,
 							bg);
 				} else {
@@ -1457,10 +1455,10 @@ class RTFReaderExt extends RTFParserExt {
 			if (tabs == null) {
 				Dictionary<?, ?> workingTabs = (Dictionary<?, ?>) parserState.get("_tabs");
 				if (workingTabs != null) {
-					int count = ((Integer) workingTabs.get("stop count")).intValue();
+					int count = (Integer) workingTabs.get("stop count");
 					tabs = new TabStop[count];
 					for (int ix = 1; ix <= count; ix++)
-						tabs[ix - 1] = (TabStop) workingTabs.get(Integer.valueOf(ix));
+						tabs[ix - 1] = (TabStop) workingTabs.get(ix);
 					parserState.put("_tabs_immutable", tabs);
 				}
 			}

@@ -2710,13 +2710,13 @@ public class RoomFrame extends InstantiableResourceFrame<Room, PRoom> implements
 
 			// If we are modifying the rotation, save it for the undo
 			if (event.getSource() == objectRotation) {
-				pieceOriginalRotation = new Double(selectedPiece.getRotation());
+				pieceOriginalRotation = selectedPiece.getRotation();
 				return;
 			}
 
 			// If we are modifying the alpha, save it for the undo
 			if (event.getSource() == objectAlpha) {
-				pieceOriginalAlpha = new Integer(selectedPiece.getAlpha());
+				pieceOriginalAlpha = selectedPiece.getAlpha();
 				return;
 			}
 
@@ -2798,7 +2798,7 @@ public class RoomFrame extends InstantiableResourceFrame<Room, PRoom> implements
 			// If we have changed the rotation
 			if (pieceOriginalRotation != null) {
 				// Get the new rotation of the object
-				Double objectNewRotation = new Double(selectedPiece.getRotation());
+				Double objectNewRotation = selectedPiece.getRotation();
 
 				// If the rotation of the object has been changed
 				if (!Objects.equals(objectNewRotation, pieceOriginalRotation)) {
@@ -2813,7 +2813,7 @@ public class RoomFrame extends InstantiableResourceFrame<Room, PRoom> implements
 			// If we have changed the alpha value
 			if (pieceOriginalAlpha != null) {
 				// Get the new alpha of the object
-				Integer objectNewAlpha = new Integer(selectedPiece.getAlpha());
+				Integer objectNewAlpha = selectedPiece.getAlpha();
 
 				// If the alpha value of the object has been changed
 				if (!Objects.equals(objectNewAlpha, pieceOriginalAlpha)) {

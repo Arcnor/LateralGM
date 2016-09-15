@@ -43,8 +43,6 @@ class RTFAttributesExt {
 		int SEC = RTFAttributeExt.D_SECTION;
 		int DOC = RTFAttributeExt.D_DOCUMENT;
 		int PST = RTFAttributeExt.D_META;
-		Boolean True = Boolean.valueOf(true);
-		Boolean False = Boolean.valueOf(false);
 
 		a.addElement(new BooleanAttribute(CHR, StyleConstants.Italic, "i"));
 		a.addElement(new BooleanAttribute(CHR, StyleConstants.Bold, "b"));
@@ -119,11 +117,11 @@ class RTFAttributesExt {
 				"gutter", 0));
 
 		a.addElement(new AssertiveAttribute(PGF, Constants.WidowControl,
-				"nowidctlpar", False));
+				"nowidctlpar", Boolean.FALSE));
 		a.addElement(new AssertiveAttribute(PGF, Constants.WidowControl,
-				"widctlpar", True));
+				"widctlpar", Boolean.TRUE));
 		a.addElement(new AssertiveAttribute(DOC, Constants.WidowControl,
-				"widowctrl", True));
+				"widowctrl", Boolean.TRUE));
 
 
 		RTFAttributeExt[] attrs = new RTFAttributeExt[a.size()];
@@ -191,8 +189,6 @@ class RTFAttributesExt {
 	static class BooleanAttribute
 			extends GenericAttribute
 			implements RTFAttributeExt {
-		protected static final Boolean True = Boolean.valueOf(true);
-		protected static final Boolean False = Boolean.valueOf(false);
 		boolean rtfDefault;
 		boolean swingDefault;
 
@@ -213,14 +209,14 @@ class RTFAttributesExt {
 		public boolean set(MutableAttributeSet target) {
 	        /* TODO: There's some ambiguity about whether this should
                *set* or *toggle* the attribute. */
-			target.addAttribute(swingName, True);
+			target.addAttribute(swingName, Boolean.TRUE);
 
 			return true;  /* true indicates we were successful */
 		}
 
 		public boolean set(MutableAttributeSet target, int parameter) {
             /* See above note in the case that parameter==1 */
-			Boolean value = (parameter != 0 ? True : False);
+			Boolean value = (parameter != 0 ? Boolean.TRUE : Boolean.FALSE);
 
 			target.addAttribute(swingName, value);
 
@@ -230,7 +226,7 @@ class RTFAttributesExt {
 		public boolean setDefault(MutableAttributeSet target) {
 			if (swingDefault != rtfDefault ||
 					(target.getAttribute(swingName) != null))
-				target.addAttribute(swingName, Boolean.valueOf(rtfDefault));
+				target.addAttribute(swingName, rtfDefault);
 			return true;
 		}
 
@@ -238,15 +234,15 @@ class RTFAttributesExt {
 		                          RTFGeneratorExt target,
 		                          boolean force)
 				throws IOException {
-			Boolean val;
+			boolean val;
 
 			if (o_value == null)
-				val = Boolean.valueOf(swingDefault);
+				val = swingDefault;
 			else
 				val = (Boolean) o_value;
 
-			if (force || (val.booleanValue() != rtfDefault)) {
-				if (val.booleanValue()) {
+			if (force || (val != rtfDefault)) {
+				if (val) {
 					target.writeControlWord(rtfName);
 				} else {
 					target.writeControlWord(rtfName, 0);
@@ -264,7 +260,7 @@ class RTFAttributesExt {
 
 		public AssertiveAttribute(int d, Object s, String r) {
 			super(d, s, r);
-			swingValue = Boolean.valueOf(true);
+			swingValue = Boolean.TRUE;
 		}
 
 		public AssertiveAttribute(int d, Object s, String r, Object v) {
@@ -274,7 +270,7 @@ class RTFAttributesExt {
 
 		public AssertiveAttribute(int d, Object s, String r, int v) {
 			super(d, s, r);
-			swingValue = new Integer(v);
+			swingValue = v;
 		}
 
 		public boolean set(MutableAttributeSet target) {
@@ -329,7 +325,7 @@ class RTFAttributesExt {
 
 		public NumericAttribute(int d, Object s,
 		                        String r, int ds, int dr) {
-			this(d, s, r, new Integer(ds), dr, 1f);
+			this(d, s, r, ds, dr, 1f);
 		}
 
 		public NumericAttribute(int d, Object s,
@@ -342,7 +338,7 @@ class RTFAttributesExt {
 
 		public static NumericAttribute NewTwips(int d, Object s, String r,
 		                                        float ds, int dr) {
-			return new NumericAttribute(d, s, r, new Float(ds), dr, 20f);
+			return new NumericAttribute(d, s, r, ds, dr, 20f);
 		}
 
 		public static NumericAttribute NewTwips(int d, Object s, String r,
@@ -358,9 +354,9 @@ class RTFAttributesExt {
 			Number swingValue;
 
 			if (scale == 1f)
-				swingValue = new Integer(parameter);
+				swingValue = parameter;
 			else
-				swingValue = new Float(parameter / scale);
+				swingValue = parameter / scale;
 			target.addAttribute(swingName, swingValue);
 			return true;
 		}
