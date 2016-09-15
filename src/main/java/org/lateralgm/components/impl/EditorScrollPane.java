@@ -63,7 +63,7 @@ public class EditorScrollPane extends JScrollPane implements PropertyEditor<Inte
 				width = width < 1 ? 1 : width;
 				height = height < 1 ? 1 : height;
 
-				if (componentBackground == null || componentBackground.getWidth() != width |
+				if (componentBackground == null || componentBackground.getWidth() != width ||
 						componentBackground.getHeight() != height) {
 					componentBackground = Util.paintBackground(width, height);
 				}
