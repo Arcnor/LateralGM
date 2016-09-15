@@ -880,7 +880,7 @@ public final class Util {
 	 * @param <E> The other class to compare fields with. Typically, this
 	 *            is the implementing class.
 	 */
-	public static interface InherentlyUnique<E extends InherentlyUnique<E>> {
+	public interface InherentlyUnique<E extends InherentlyUnique<E>> {
 		/**
 		 * Objects which are inherently unique (when not cloned for modification)
 		 * can't compare fields in their equals() method. As such, we instead

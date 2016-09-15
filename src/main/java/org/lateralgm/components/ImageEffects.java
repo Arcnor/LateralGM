@@ -80,8 +80,8 @@ public class ImageEffects {
 		return val;
 	}
 
-	public abstract interface EffectOptionListener {
-		public abstract void optionsUpdated();
+	public interface EffectOptionListener {
+		void optionsUpdated();
 	}
 
 	public static abstract class ImageEffect {

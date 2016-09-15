@@ -479,19 +479,19 @@ public class FileChooser {
 		return r;
 	}
 
-	public static interface GroupFilter {
+	public interface GroupFilter {
 		CustomFileFilter getGroupFilter();
 
 		CustomFileFilter[] getFilters();
 	}
 
-	public static interface FileReader {
+	public interface FileReader {
 		boolean canRead(URI uri);
 
 		void read(InputStream is, ProjectFile file, URI pathname, ResNode root) throws ProjectFormatException;
 	}
 
-	public static interface FileWriter {
+	public interface FileWriter {
 		void write(OutputStream out, ProjectFile f, ResNode root) throws ProjectFormatException,
 				IOException;
 

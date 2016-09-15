@@ -1199,7 +1199,7 @@ public final class GmFileReader {
 		}
 	}
 
-	static interface PostponedRef {
+	interface PostponedRef {
 		boolean invoke();
 	}
 

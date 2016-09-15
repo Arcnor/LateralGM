@@ -115,7 +115,7 @@ public class PropertyMap<K extends Enum<K>> extends EnumMap<K, Object> {
 		return Collections.unmodifiableCollection(super.values());
 	}
 
-	public static interface PropertyValidator<K extends Enum<K>> {
+	public interface PropertyValidator<K extends Enum<K>> {
 		Object validate(K k, Object v);
 	}
 

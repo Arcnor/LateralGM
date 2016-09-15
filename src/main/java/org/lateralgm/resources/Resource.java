@@ -171,7 +171,7 @@ public abstract class Resource<R extends Resource<R, P>, P extends Enum<P>> impl
 		return name;
 	}
 
-	public static interface Viewable {
+	public interface Viewable {
 		BufferedImage getDisplayImage();
 	}
 }

@@ -159,7 +159,7 @@ public class NumberField extends JFormattedTextField {
 			super.processFocusEvent(e);
 	}
 
-	public static interface ValueChangeListener extends java.util.EventListener {
+	public interface ValueChangeListener extends java.util.EventListener {
 		void valueChange(ValueChangeEvent evt);
 	}
 

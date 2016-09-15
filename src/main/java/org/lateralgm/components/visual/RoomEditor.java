@@ -833,7 +833,7 @@ public class RoomEditor extends VisualPanel {
 		}
 	}
 
-	public static interface CommandHandler {
+	public interface CommandHandler {
 		CodeFrame openInstanceCodeFrame(Instance i);
 	}
 

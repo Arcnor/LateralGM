@@ -2000,7 +2000,7 @@ public final class GMXFileReader {
 
 	}
 
-	static interface PostponedRef {
+	interface PostponedRef {
 		boolean invoke();
 	}
 

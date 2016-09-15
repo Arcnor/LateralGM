@@ -75,15 +75,15 @@ public class ComboBoxLink<K extends Enum<K>, V> extends PropertyLink<K, V> imple
 		editProperty(i);
 	}
 
-	public static interface ComboBoxConversion<T> {
+	public interface ComboBoxConversion<T> {
 		/**
 		 * Converts a JComboBox selectable item into its backend equivalent.
 		 */
-		public T convertItem(int index, Object o);
+		T convertItem(int index, Object o);
 	}
 
-	public static interface ComboBoxSelectable<V> {
-		public void select(JComboBox<?> b, V o);
+	public interface ComboBoxSelectable<V> {
+		void select(JComboBox<?> b, V o);
 	}
 
 	public static class DefaultComboBoxConversion<V> implements ComboBoxConversion<V>,

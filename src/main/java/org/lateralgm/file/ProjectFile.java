@@ -319,7 +319,7 @@ public class ProjectFile implements UpdateListener {
 		updateTrigger.fire(e);
 	}
 
-	public static interface ResourceHolder<T extends Resource<T, ?>> {
+	public interface ResourceHolder<T extends Resource<T, ?>> {
 		T getResource();
 	}
 

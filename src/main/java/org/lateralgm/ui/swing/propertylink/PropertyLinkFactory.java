@@ -126,7 +126,7 @@ public class PropertyLinkFactory<K extends Enum<K>> {
 		return init(ButtonIncrementLink.make(ab, i, l, map, k));
 	}
 
-	public abstract interface PropertyLinkMapListener<K extends Enum<K>> {
-		public abstract void mapChanged(PropertyMap<K> m);
+	public interface PropertyLinkMapListener<K extends Enum<K>> {
+		void mapChanged(PropertyMap<K> m);
 	}
 }

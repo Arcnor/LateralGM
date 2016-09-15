@@ -207,22 +207,22 @@ public abstract class ResourceFrame<R extends Resource<R, P>, P extends Enum<P>>
 		super.setVisible(visible);
 	}
 
-	public static interface ResourceFrameFactory {
-		public ResourceFrame<?, ?> makeFrame(Resource<?, ?> r, ResNode node);
+	public interface ResourceFrameFactory {
+		ResourceFrame<?, ?> makeFrame(Resource<?, ?> r, ResNode node);
 	}
 
-	public abstract interface ResourceFrameListener {
-		public abstract void dispose();
+	public interface ResourceFrameListener {
+		void dispose();
 
-		public abstract void setVisible(boolean visible);
+		void setVisible(boolean visible);
 
-		public abstract void updateResource(boolean commit);
+		void updateResource(boolean commit);
 
-		public abstract void revertResource();
+		void revertResource();
 
-		public abstract boolean resourceChanged();
+		boolean resourceChanged();
 
-		public abstract void setResourceChanged();
+		void setResourceChanged();
 	}
 
 	private static class DefaultResourceFrameFactory implements ResourceFrameFactory {

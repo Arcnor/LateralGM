@@ -2261,7 +2261,7 @@ public final class LGM {
 		return (GameSettings) configsCombo.getSelectedItem();
 	}
 
-	public static interface ReloadListener {
+	public interface ReloadListener {
 		/**
 		 * Called after LGM performs a reload, e.g. when a new file is created or loaded.
 		 * A reload causes the MDI to be flushed, the tree to refresh
@@ -2277,7 +2277,7 @@ public final class LGM {
 		void reloadPerformed(boolean newRoot);
 	}
 
-	public static interface PluginResource {
+	public interface PluginResource {
 		Class<? extends Resource<?, ?>> getKind();
 
 		/**

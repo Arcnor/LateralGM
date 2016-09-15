@@ -57,7 +57,7 @@ public class ButtonIncrementLink<K extends Enum<K>, V extends Number & Comparabl
 		editProperty(n);
 	}
 
-	public static interface Incrementor<V extends Number & Comparable<V>> {
+	public interface Incrementor<V extends Number & Comparable<V>> {
 		V increment(V v);
 	}
 

@@ -33,37 +33,37 @@ import java.io.IOException;
  * an RTF keyword and a SwingText attribute.
  */
 interface RTFAttributeExt {
-	static final int D_CHARACTER = 0;
-	static final int D_PARAGRAPH = 1;
-	static final int D_SECTION = 2;
-	static final int D_DOCUMENT = 3;
-	static final int D_META = 4;
+	int D_CHARACTER = 0;
+	int D_PARAGRAPH = 1;
+	int D_SECTION = 2;
+	int D_DOCUMENT = 3;
+	int D_META = 4;
 
 	/* These next three should really be public variables,
 	   but you can't declare public variables in an interface... */
 	/* int domain; */
-	public int domain();
+	int domain();
 
 	/* String swingName; */
-	public Object swingName();
+	Object swingName();
 
 	/* String rtfName; */
-	public String rtfName();
+	String rtfName();
 
-	public boolean set(MutableAttributeSet target);
+	boolean set(MutableAttributeSet target);
 
-	public boolean set(MutableAttributeSet target, int parameter);
+	boolean set(MutableAttributeSet target, int parameter);
 
-	public boolean setDefault(MutableAttributeSet target);
+	boolean setDefault(MutableAttributeSet target);
 
 	/* TODO: This method is poorly thought out */
-	public boolean write(AttributeSet source,
-	                     RTFGeneratorExt target,
-	                     boolean force)
+	boolean write(AttributeSet source,
+	              RTFGeneratorExt target,
+	              boolean force)
 			throws IOException;
 
-	public boolean writeValue(Object value,
-	                          RTFGeneratorExt target,
-	                          boolean force)
+	boolean writeValue(Object value,
+	                   RTFGeneratorExt target,
+	                   boolean force)
 			throws IOException;
 }

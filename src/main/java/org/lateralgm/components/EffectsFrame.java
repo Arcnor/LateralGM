@@ -214,8 +214,8 @@ public class EffectsFrame extends JFrame implements ActionListener, EffectOption
 		afterPreview.setImage(effect.getAppliedImage(img));
 	}
 
-	public abstract interface EffectsFrameListener {
-		public abstract void applyEffects(List<BufferedImage> imgs);
+	public interface EffectsFrameListener {
+		void applyEffects(List<BufferedImage> imgs);
 	}
 
 	private static class ImageEffectPreview extends JPanel {

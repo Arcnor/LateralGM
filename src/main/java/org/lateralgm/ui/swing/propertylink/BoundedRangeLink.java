@@ -53,7 +53,7 @@ public class BoundedRangeLink<K extends Enum<K>, V extends Number> extends Prope
 		editProperty(v);
 	}
 
-	public abstract static interface Converter<V extends Number> {
+	public interface Converter<V extends Number> {
 		V toProperty(int v);
 
 		int fromProperty(V v);
