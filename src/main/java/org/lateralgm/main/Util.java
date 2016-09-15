@@ -596,8 +596,8 @@ public final class Util {
 					Node nodeItem = children.item(nodeIndex);
 					if (nodeItem.getNodeName().equals("ImageDescriptor")) {
 						NamedNodeMap map = nodeItem.getAttributes();
-						x = Integer.valueOf(map.getNamedItem("imageLeftPosition").getNodeValue());
-						y = Integer.valueOf(map.getNamedItem("imageTopPosition").getNodeValue());
+						x = Integer.parseInt(map.getNamedItem("imageLeftPosition").getNodeValue());
+						y = Integer.parseInt(map.getNamedItem("imageTopPosition").getNodeValue());
 					}
 				}
 			}

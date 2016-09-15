@@ -1715,7 +1715,7 @@ public final class GMXFileReader {
 
 	private static void readConstants(Constants cnsts, Node node) {
 		if (node == null) return;
-		int count = Integer.valueOf(node.getAttributes().getNamedItem("number").getNodeValue());
+		final int count = Integer.parseInt(node.getAttributes().getNamedItem("number").getNodeValue());
 		List<Constant> newList = new ArrayList<Constant>(count);
 		NodeList cnstNodes = node.getChildNodes();
 		for (int i = 0; i < cnstNodes.getLength(); i++) {
