@@ -256,7 +256,7 @@ public class CodeTextArea extends JoshTextPanel implements UpdateListener, Actio
 	private static String find(String input, Pattern p) {
 		Matcher m = p.matcher(input);
 		if (m.find()) return m.group();
-		return new String();
+		return "";
 	}
 
 	private JButton makeToolbarButton(String name) {

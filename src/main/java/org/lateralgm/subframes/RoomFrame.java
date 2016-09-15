@@ -2753,7 +2753,7 @@ public class RoomFrame extends InstantiableResourceFrame<Room, PRoom> implements
 			// If we have changed the name
 			if (pieceOriginalName != null) {
 				// Get the new name of the object
-				String objectNewName = new String(selectedPiece.getName());
+				String objectNewName = selectedPiece.getName();
 
 				// If the rotation of the object has been changed
 				if (!Objects.equals(objectNewName, pieceOriginalName)) {

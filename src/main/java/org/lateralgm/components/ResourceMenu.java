@@ -260,7 +260,7 @@ public class ResourceMenu<R extends Resource<R, ?>> extends JPanel implements Ac
 
 		public Preview() {
 			//Must be set or else toolTip won't show
-			setToolTipText(new String());
+			setToolTipText("");
 		}
 
 		public <R extends Resource<R, ?>> void setResource(ResourceReference<R> r) {

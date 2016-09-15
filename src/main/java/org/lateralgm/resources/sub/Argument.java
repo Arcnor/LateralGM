@@ -56,7 +56,7 @@ public class Argument {
 	}
 
 	public Argument(byte kind) {
-		this(kind, new String(), null);
+		this(kind, "", null);
 	}
 
 	public static Class<? extends Resource<?, ?>> getResourceKind(byte argumentKind) {
