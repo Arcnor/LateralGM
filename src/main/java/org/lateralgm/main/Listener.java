@@ -269,7 +269,7 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				final String title = Messages.getString("Listener.CONFIRM_NEW_TITLE");
 				final String message = Messages.getString("Listener.CONFIRM_NEW");
 
-				final UIHelper.DialogAction result = UIHelper.showConfirmationDialog(
+				final UIHelper.DialogAction result = UIHelper.showMessageDialog(
 						LGM.frame, UIHelper.DialogType.CONFIRMATION, UIHelper.DialogAction.getYES_NO(),
 						title, message, null, UIHelper.DialogAction.NO
 				);
@@ -368,7 +368,7 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				final String title = Messages.getString("Listener.CONFIRM_DEFRAGIDS_TITLE");
 				final String message = Messages.getString("Listener.CONFIRM_DEFRAGIDS");
 
-				final UIHelper.DialogAction result = UIHelper.showConfirmationDialog(
+				final UIHelper.DialogAction result = UIHelper.showMessageDialog(
 						LGM.frame, UIHelper.DialogType.WARNING, UIHelper.DialogAction.getYES_NO(),
 						title, message, null, UIHelper.DialogAction.NO
 				);
@@ -406,17 +406,19 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				}
 				//uri = uri.replace('\\','/').replace(" ","%20");
 				try {
-					Desktop.getDesktop().browse(new URI(uri));
+					UIHelper.showDocumentation(new URI(uri));
 				} catch (URISyntaxException e1) {
-					JOptionPane.showMessageDialog(LGM.frame,
-							Messages.format("HelpDialog.MALFORMED_MESSAGE", uri),
+					UIHelper.showMessageDialog(LGM.frame,
+							UIHelper.DialogType.ERROR,
+							UIHelper.DialogAction.getOK(),
 							Messages.getString("HelpDialog.MALFORMED_TITLE"),
-							JOptionPane.ERROR_MESSAGE);
+							Messages.format("HelpDialog.MALFORMED_MESSAGE", uri));
 				} catch (IOException ioe) {
-					JOptionPane.showMessageDialog(LGM.frame,
-							Messages.format("HelpDialog.UNAVAILABLE_MESSAGE", uri),
+					UIHelper.showMessageDialog(LGM.frame,
+							UIHelper.DialogType.ERROR,
+							UIHelper.DialogAction.getOK(),
 							Messages.getString("HelpDialog.UNAVAILABLE_TITLE"),
-							JOptionPane.INFORMATION_MESSAGE);
+							Messages.format("HelpDialog.UNAVAILABLE_MESSAGE", uri));
 				}
 				return;
 			case "CONFIG_MANAGE":

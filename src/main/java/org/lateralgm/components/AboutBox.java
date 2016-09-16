@@ -11,6 +11,7 @@ package org.lateralgm.components;
 
 import org.lateralgm.main.LGM;
 import org.lateralgm.messages.Messages;
+import org.lateralgm.util.UIHelper;
 
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -71,13 +72,10 @@ public class AboutBox extends JDialog implements PropertyChangeListener {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED
 								&& Desktop.isDesktopSupported()) {
-							Desktop desktop = Desktop.getDesktop();
 							try {
-								desktop.browse(e.getURL().toURI());
-							} catch (URISyntaxException use) {
+								UIHelper.showDocumentation(e.getURL().toURI());
+							} catch (URISyntaxException | IOException use) {
 								LGM.showDefaultExceptionHandler(use);
-							} catch (IOException ioe) {
-								LGM.showDefaultExceptionHandler(ioe);
 							}
 						}
 					}

@@ -13,13 +13,13 @@ package org.lateralgm.components;
 import org.lateralgm.main.LGM;
 import org.lateralgm.main.Prefs;
 import org.lateralgm.messages.Messages;
+import org.lateralgm.util.UIHelper;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -181,11 +181,13 @@ public class ErrorDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == submit) {
 			try {
-				Desktop.getDesktop().browse(java.net.URI.create(submitURI));
+				UIHelper.showDocumentation(java.net.URI.create(submitURI));
 			} catch (IOException e1) {
-				JOptionPane.showMessageDialog(this,
-						Messages.format("ErrorDialog.DESKTOP_MESSAGE", submitURI),
-						Messages.getString("ErrorDialog.DESKTOP_TITLE"), JOptionPane.ERROR_MESSAGE);
+				UIHelper.showMessageDialog(this,
+						UIHelper.DialogType.ERROR,
+						UIHelper.DialogAction.getOK(),
+						Messages.getString("ErrorDialog.DESKTOP_TITLE"),
+						Messages.format("ErrorDialog.DESKTOP_MESSAGE", submitURI));
 			}
 		} else if (e.getSource() == copy) {
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(

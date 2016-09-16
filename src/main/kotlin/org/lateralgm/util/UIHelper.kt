@@ -18,6 +18,7 @@
  */
 package org.lateralgm.util
 
+import javafx.application.HostServices
 import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
@@ -25,6 +26,10 @@ import javafx.scene.control.Alert
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonType
 import java.awt.Component
+import java.awt.Desktop
+import java.io.IOException
+import java.net.URI
+import java.net.URL
 import java.util.EnumSet
 import java.util.Optional
 import java.util.concurrent.Callable
@@ -58,6 +63,8 @@ object UIHelper {
 		companion object {
 			@JvmStatic
 			val YES_NO = EnumSet.of(YES, NO)
+			@JvmStatic
+			val OK = EnumSet.of(DialogAction.OK)
 		}
 
 		fun toJavaFX(): ButtonType {
@@ -92,7 +99,7 @@ object UIHelper {
 
 	@JvmStatic
 	@JvmOverloads
-	fun showConfirmationDialog(parent: Component, dialogType: DialogType = DialogType.INFORMATION, actions: EnumSet<DialogAction>, title: String, message: String, header: String? = null, defaultAction: DialogAction? = null): DialogAction {
+	fun showMessageDialog(parent: Component, dialogType: DialogType = DialogType.INFORMATION, actions: EnumSet<DialogAction>, title: String, message: String, header: String? = null, defaultAction: DialogAction? = null): DialogAction {
 		// FIXME: We need to set the dialog as modal, but it's impossible as long as we have an AWT component as parent (added that parameter just to not lose the information about who's the parent)
 		return callJavaFX(Callable<Optional<ButtonType>> {
 			val alert = Alert(dialogType.toJavaFX())
@@ -109,6 +116,12 @@ object UIHelper {
 
 			alert.showAndWait()
 		})
+	}
+
+	@JvmStatic
+	@Throws(IOException::class)
+	fun showDocumentation(location: URI) {
+		Desktop.getDesktop().browse(location)
 	}
 
 	private fun callJavaFX(callable: Callable<Optional<ButtonType>>): DialogAction {
