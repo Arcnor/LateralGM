@@ -354,6 +354,8 @@ public class FileChooser {
 	public boolean saveNewFile() {
 		fc.setFilterSet(saveFs);
 		//Populated fresh each time to ensure an up-to-date list of writers
+		// FIXME: We're not using the accessory here, but calling just for the side effect of having a writer...
+		makeSelectionAccessory();
 //		fc.setAccessory(makeSelectionAccessory());
 		URI uri = LGM.currentFile.uri;
 		File file = uri == null ? null : new File(uri);
@@ -361,7 +363,7 @@ public class FileChooser {
 		uri = null;
 		do //repeatedly display dialog until a valid response is given
 		{
-			file = fc.showSaveDialog(LGM.frame);
+			file = fc.showSaveDialog(LGM.frame, file);
 			if (file == null) return false;
 			if (forceExt.isSelected()) {
 				String ext = selectedWriter.getExtension();
@@ -737,7 +739,7 @@ public class FileChooser {
 		protected CustomFileFilter groupFilter;
 
 		protected ProjectWriterFilter() {
-			final String exts[] = {".gm81", ".gmk", ".gm6", ".gmx"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			final String exts[] = {"*.gm81", "*.gmk", "*.gm6", "*.gmx"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			final String[] descs = {"GM81", "GMK", "GM6", "GMX"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			groupFilter = new CustomFileFilter(Messages.getString("FileChooser.FORMAT_WRITERS_GM"), exts); //$NON-NLS-1$
 			filters = new CustomFileFilter[exts.length];

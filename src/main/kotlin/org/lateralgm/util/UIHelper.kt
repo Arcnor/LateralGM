@@ -107,15 +107,15 @@ object UIHelper {
 			}
 
 			alert.showAndWait()
-		})
+		}).toLGMDialogResult()
 	}
 
-	private fun callJavaFX(callable: Callable<Optional<ButtonType>>): DialogAction {
+	internal fun <T> callJavaFX(callable: Callable<T>): T {
 		// FIXME: The FutureTask doesn't work twice for some reason...
 		val task = FutureTask(callable)
 
 		Platform.runLater(task)
-		return task.get().toLGMDialogResult()
+		return task.get()
 	}
 }
 

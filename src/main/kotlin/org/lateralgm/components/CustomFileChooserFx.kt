@@ -7,11 +7,11 @@
  */
 package org.lateralgm.components
 
-import javafx.application.Platform
 import javafx.stage.FileChooser
 import org.lateralgm.components.impl.CustomFileFilter
+import org.lateralgm.util.UIHelper
 import java.io.File
-import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Callable
 import java.util.prefs.Preferences
 import javax.swing.JFrame
 
@@ -24,22 +24,14 @@ class CustomFileChooserFx(node: String, private val propertyName: String) {
 		fc.initialDirectory = File(prefs.get(propertyName, fc.initialDirectory?.absolutePath))
 	}
 
-	fun showOpenDialog(frame: JFrame): File? {
-		val fixmeResult: Array<File?> = kotlin.arrayOfNulls(1)
-		val countdownLatch = CountDownLatch(1)
-		Platform.runLater({
-			// FIXME: Parent window should be set
-			fixmeResult[0] = fc.showOpenDialog(null)
-			countdownLatch.countDown()
-		})
-		countdownLatch.await()
-		return fixmeResult[0]
-	}
+	// FIXME: Parent window should be set
+	fun showOpenDialog(frame: JFrame) = UIHelper.callJavaFX(Callable { fc.showOpenDialog(null) })
 
-	fun showSaveDialog(frame: JFrame): File? {
-		// FIXME: Parent window should be set
-		return fc.showSaveDialog(null)
-	}
+	// FIXME: Parent window should be set
+	fun showSaveDialog(frame: JFrame, initialDir: File?): File? = UIHelper.callJavaFX(Callable {
+		fc.initialDirectory = initialDir
+		fc.showSaveDialog(null)
+	})
 
 	fun setFilterSet(filterSet: Iterable<CustomFileFilter>) {
 		val filters = fc.extensionFilters
