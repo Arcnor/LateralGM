@@ -34,7 +34,6 @@ import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.awt.Desktop;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
@@ -304,9 +303,8 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				if (userDir == null) {
 					return;
 				}
-				Desktop dt = Desktop.getDesktop();
 				try {
-					dt.open(new File(userDir));
+					PlatformHelper.openFile(new File(userDir));
 				} catch (IOException e1) {
 					LGM.showDefaultExceptionHandler(e1);
 				}
@@ -317,13 +315,12 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				if (userDir == null) {
 					return;
 				}
-				Desktop dt = Desktop.getDesktop();
 				File f = new File(userDir);
 				if (!f.exists()) {
 					f = new File(System.getProperty("user.dir"));
 				}
 				try {
-					dt.open(f);
+					PlatformHelper.openFile(f);
 				} catch (IOException e1) {
 					LGM.showDefaultExceptionHandler(e1);
 				}

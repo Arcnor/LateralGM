@@ -32,9 +32,24 @@ object PlatformHelper {
 		desktop.browse(location)
 	}
 
+	/**
+	 * Launches the associated editor application and opens a file for
+	 * editing.
+	 */
 	@JvmStatic
 	@Throws(IOException::class)
 	fun openEditor(file: File) {
 		desktop.edit(file)
+	}
+
+	/**
+	 * Launches the associated application to open the file.
+	 *
+	 * If the specified file is a directory, the file manager of the current platform is launched to open it.
+	 */
+	@JvmStatic
+	@Throws(IOException::class)
+	fun openFile(file: File) {
+		desktop.open(file)
 	}
 }
