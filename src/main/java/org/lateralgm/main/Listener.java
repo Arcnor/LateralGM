@@ -603,56 +603,40 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 		public void actionPerformed(ActionEvent e) {
 			JTree tree = LGM.tree;
 			String com = e.getActionCommand();
-			if (com.endsWith("PROPERTIES")) //$NON-NLS-1$
-			{
-				if (node.status == ResNode.STATUS_SECONDARY) node.openFrame();
-				return;
-			}
-			if (com.endsWith("SORT")) //$NON-NLS-1$
-			{
-				sortNodeChildrenAlphabetically(node, false);
-				LGM.tree.expandPath(new TreePath(node.getPath()));
-				LGM.tree.updateUI();
-				return;
-			}
-			if (com.endsWith("DELETE")) //$NON-NLS-1$
-			{
-				deleteSelectedResources(tree);
-				return;
-			}
-			if (com.endsWith("RENAME")) //$NON-NLS-1$
-			{
-				if (tree.getCellEditor().isCellEditable(null))
-					tree.startEditingAtPath(tree.getLeadSelectionPath());
-				return;
-			}
-			if (com.endsWith("CREATE_RESOURCE")) //$NON-NLS-1$
-			{
-				addResource(tree, node.kind, node);
-				return;
-			}
-			if (com.endsWith("CREATE_GROUP")) //$NON-NLS-1$
-			{
-				addResource(tree, null, node);
-				return;
-			}
-			if (com.endsWith("INSERT_RESOURCE")) //$NON-NLS-1$
-			{
-				insertResource(tree, node.kind, node);
-				return;
-			}
-			if (com.endsWith("INSERT_GROUP")) //$NON-NLS-1$
-			{
-				insertResource(tree, null, node);
-				return;
-			}
-			if (com.endsWith("DUPLICATE_RESOURCE")) //$NON-NLS-1$
-			{
-				ResourceList<?> rl = (ResourceList<?>) LGM.currentFile.resMap.get(node.kind);
-				if (node.frame != null) node.frame.commitChanges();
-				Resource<?, ?> resource = rl.duplicate(node.getRes().get());
-				Listener.insertResource(tree, node.kind, resource, node, 1);
-				return;
+			switch (com) {
+				case "Listener.TREE_PROPERTIES":
+					if (node.status == ResNode.STATUS_SECONDARY) node.openFrame();
+					return;
+				case "Listener.TREE_SORT":
+					sortNodeChildrenAlphabetically(node, false);
+					LGM.tree.expandPath(new TreePath(node.getPath()));
+					LGM.tree.updateUI();
+					return;
+				case "Listener.TREE_DELETE":
+					deleteSelectedResources(tree);
+					return;
+				case "Listener.TREE_RENAME":
+					if (tree.getCellEditor().isCellEditable(null))
+						tree.startEditingAtPath(tree.getLeadSelectionPath());
+					return;
+				case "Listener.TREE_CREATE_RESOURCE":
+					addResource(tree, node.kind, node);
+					return;
+				case "Listener.TREE_CREATE_GROUP":
+					addResource(tree, null, node);
+					return;
+				case "Listener.TREE_INSERT_RESOURCE":
+					insertResource(tree, node.kind, node);
+					return;
+				case "Listener.TREE_INSERT_GROUP":
+					insertResource(tree, null, node);
+					return;
+				case "Listener.TREE_DUPLICATE_RESOURCE":
+					ResourceList<?> rl = (ResourceList<?>) LGM.currentFile.resMap.get(node.kind);
+					if (node.frame != null) node.frame.commitChanges();
+					Resource<?, ?> resource = rl.duplicate(node.getRes().get());
+					Listener.insertResource(tree, node.kind, resource, node, 1);
+					return;
 			}
 		}
 	}
