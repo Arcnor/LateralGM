@@ -928,8 +928,8 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 		} else if (cmd.endsWith(".COPY")) {
 			int[] selections = subList.getSelectedIndices();
 			List<BufferedImage> images = new ArrayList<BufferedImage>(selections.length);
-			for (int i = 0; i < selections.length; i++) {
-				images.add(res.subImages.get(selections[i]));
+			for (int selection : selections) {
+				images.add(res.subImages.get(selection));
 			}
 
 			PlatformHelper.clipboardPut(imgClipFormat, new ClipboardImages(images));
@@ -956,8 +956,8 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 		} else if (cmd.endsWith(".EDIT")) //$NON-NLS-1$
 		{
 			int[] selections = subList.getSelectedIndices();
-			for (int i = 0; i < selections.length; i++) {
-				editSubimage(res.subImages.get(selections[i]));
+			for (int selection : selections) {
+				editSubimage(res.subImages.get(selection));
 			}
 			return;
 		} else if (cmd.endsWith(".EFFECT")) {
@@ -1044,8 +1044,8 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 				//TODO: This may be firing an event causing you not to be able
 				//to shift multiple images at a time.
 				int[] selections = subList.getSelectedIndices();
-				for (int i = 0; i < selections.length; i++) {
-					pos = selections[i];
+				for (int selection : selections) {
+					pos = selection;
 					BufferedImage bi = res.subImages.remove(pos);
 					if (pos <= 0 && wrapBox.isSelected()) {
 						pos = res.subImages.size() + 1;
@@ -1069,8 +1069,8 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 				//TODO: This may be firing an event causing you not to be able
 				//to shift multiple images at a time.
 				int[] selections = subList.getSelectedIndices();
-				for (int i = 0; i < selections.length; i++) {
-					pos = selections[i];
+				for (int selection : selections) {
+					pos = selection;
 					preview.setIndex(pos);
 					BufferedImage bi = res.subImages.remove(pos);
 					if (pos > res.subImages.size() - 1 && wrapBox.isSelected()) {

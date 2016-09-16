@@ -650,19 +650,19 @@ public final class Util {
 		try {
 			ArrayList<BufferedImage> subframes = new ArrayList<BufferedImage>(0);
 
-			for (int i = 0; i < f.length; i++) {
-				if (!f[i].exists()) continue;
-				if (f[i].getName().endsWith(".gif")) {
-					subframes.addAll(readGIF(f[i]));
-				} else if (f[i].getName().endsWith(".apng")) {
-					FileInputStream is = new FileInputStream(f[i]);
+			for (File aF : f) {
+				if (!aF.exists()) continue;
+				if (aF.getName().endsWith(".gif")) {
+					subframes.addAll(readGIF(aF));
+				} else if (aF.getName().endsWith(".apng")) {
+					FileInputStream is = new FileInputStream(aF);
 					subframes.addAll(ApngIO.apngToBufferedImages(is));
 					is.close();
-				} else if (f[i].getName().endsWith(".ico")) {
-					List<BufferedImage> imgs = new ICOFile(readBinaryFile(f[i].getPath())).getImages();
+				} else if (aF.getName().endsWith(".ico")) {
+					List<BufferedImage> imgs = new ICOFile(readBinaryFile(aF.getPath())).getImages();
 					return imgs.toArray(new BufferedImage[imgs.size()]);
 				} else {
-					subframes.add(ImageIO.read(f[i]));
+					subframes.add(ImageIO.read(aF));
 				}
 			}
 			return subframes.toArray(new BufferedImage[0]);

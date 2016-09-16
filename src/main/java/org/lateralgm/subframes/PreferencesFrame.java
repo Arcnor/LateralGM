@@ -445,8 +445,8 @@ public class PreferencesFrame extends JDialog implements ActionListener {
 		//TODO: Finish backup preferences.
 		backupsPanel.setEnabled(false);
 		Component[] coms = backupsPanel.getComponents();
-		for (int i = 0; i < coms.length; i++) {
-			coms[i].setEnabled(false);
+		for (Component com : coms) {
+			com.setEnabled(false);
 		}
 
 		return p;
@@ -470,8 +470,8 @@ public class PreferencesFrame extends JDialog implements ActionListener {
 		themeComboItems.add("Swing");
 		themeComboItems.add("Native");
 		LookAndFeelInfo lnfs[] = UIManager.getInstalledLookAndFeels();
-		for (int i = 0; i < lnfs.length; ++i) {
-			themeComboItems.add(lnfs[i].getName());
+		for (LookAndFeelInfo lnf : lnfs) {
+			themeComboItems.add(lnf.getName());
 		}
 		themeComboItems.add("Custom");
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(themeComboItems);

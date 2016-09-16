@@ -230,8 +230,8 @@ public final class Prefs {
 	public static void createPrefixes(String pref) {
 		String[] p = pref.split("\\t+");
 		prefixes = new HashMap<Class<? extends Resource<?, ?>>, String>();
-		for (int i = 0; i < p.length; i++) {
-			String[] kv = p[i].split(">", 2);
+		for (String aP : p) {
+			String[] kv = aP.split(">", 2);
 			try {
 				Class<? extends Resource<?, ?>> k = Resource.kindsByName3.get(kv[0]);
 				if (k != null) prefixes.put(k, kv[1]);

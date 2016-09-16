@@ -382,9 +382,9 @@ public final class LGM {
 					// and attempt to use it.
 					boolean foundMatch = false;
 					LookAndFeelInfo lnfs[] = UIManager.getInstalledLookAndFeels();
-					for (int i = 0; i < lnfs.length; i++) {
-						if (LOOKANDFEEL.equals(lnfs[i].getName())) {
-							lookAndFeel = lnfs[i].getClassName();
+					for (LookAndFeelInfo lnf : lnfs) {
+						if (LOOKANDFEEL.equals(lnf.getName())) {
+							lookAndFeel = lnf.getClassName();
 							foundMatch = true;
 						}
 					}
@@ -1618,8 +1618,8 @@ public final class LGM {
 					TreePath[] paths = LGM.searchTree.getSelectionPaths();
 
 					if (paths != null) {
-						for (int i = 0; i < paths.length; i++) {
-							if (paths[i].equals(path)) {
+						for (TreePath path1 : paths) {
+							if (path1.equals(path)) {
 								inpath = true;
 							}
 						}

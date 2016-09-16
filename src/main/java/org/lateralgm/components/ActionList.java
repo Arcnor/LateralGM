@@ -520,9 +520,9 @@ public class ActionList extends JList<Action> implements ActionListener, Clipboa
 				ActionListModel model = (ActionListModel) list.getModel();
 				List<Integer> inds = new ArrayList<Integer>(indices.length);
 				int index = addIndex;
-				for (int i = 0; i < indices.length; i++) {
-					inds.add(indices[i]);
-					if (indices[i] < addIndex) index--;
+				for (int idx : indices) {
+					inds.add(idx);
+					if (idx < addIndex) index--;
 				}
 				if (action == MOVE) {
 					if (addIndex != -1) {
@@ -1111,13 +1111,12 @@ public class ActionList extends JList<Action> implements ActionListener, Clipboa
 				}
 			});
 			// collect the removed ones in order
-			for (int i = 0; i < indices.size(); i++) {
-				int ind = indices.get(i);
-				removed.add(list.get(ind));
+			for (Integer index : indices) {
+				removed.add(list.get(index));
 			}
 			// now remove them in sorted order
-			for (int i = 0; i < copy.size(); i++) {
-				int ind = copy.get(i);
+			for (Integer aCopy : copy) {
+				int ind = aCopy;
 				list.remove(ind).updateSource.removeListener(this);
 				fireIntervalRemoved(this, ind, ind);
 			}

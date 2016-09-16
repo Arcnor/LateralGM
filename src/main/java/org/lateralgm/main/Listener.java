@@ -51,6 +51,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Vector;
 
 import static org.lateralgm.main.Util.deRef;
 
@@ -162,28 +163,28 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 	 *
 	 * @param resources An array of resource nodes to delete.
 	 */
-	protected static int deleteResources(Object[] resources, JTree tree) {
+	protected static int deleteResources(ResNode[] resources, JTree tree) {
 		HashSet<Resource<?, ?>> rs = new HashSet<Resource<?, ?>>();
 		int last = -1;
-		for (int i = 0; i < resources.length; i++) {
-			ResNode node = (ResNode) resources[i];
-			if (node == null) {
+		for (ResNode resource : resources) {
+			if (resource == null) {
 				continue;
 			}
-			if (node.status == ResNode.STATUS_SECONDARY) {
-				if (node.frame != null) node.frame.dispose();
-				Resource<?, ?> res = deRef((ResourceReference<?>) node.getRes());
+			if (resource.status == ResNode.STATUS_SECONDARY) {
+				if (resource.frame != null) resource.frame.dispose();
+				Resource<?, ?> res = deRef((ResourceReference<?>) resource.getRes());
 				if (res != null) {
 					rs.add(res);
-					((ResourceList<?>) LGM.currentFile.resMap.get(node.kind)).remove(res);
+					((ResourceList<?>) LGM.currentFile.resMap.get(resource.kind)).remove(res);
 				}
-				last = tree.getRowForPath(new TreePath(node));
-			} else if (node.status == ResNode.STATUS_GROUP) {
-				if (node.getChildren() != null) {
-					deleteResources(node.getChildren().toArray(), tree);
+				last = tree.getRowForPath(new TreePath(resource));
+			} else if (resource.status == ResNode.STATUS_GROUP) {
+				final Vector<ResNode> children = resource.getChildren();
+				if (children != null) {
+					deleteResources(children.toArray(new ResNode[children.size()]), tree);
 				}
-				node.removeFromParent();
-				last = tree.getRowForPath(new TreePath(node));
+				resource.removeFromParent();
+				last = tree.getRowForPath(new TreePath(resource));
 			}
 		}
 		for (Resource<?, ?> r : rs)
@@ -201,9 +202,9 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 			//NOTE: Must be obtained before the for loop deletes the path.
 			int row = -1;
 
-			Object[] resources = new Object[selections.length];
+			ResNode[] resources = new ResNode[selections.length];
 			for (int i = 0; i < selections.length; i++) {
-				resources[i] = selections[i].getLastPathComponent();
+				resources[i] = (ResNode)selections[i].getLastPathComponent();
 
 			}
 			row = deleteResources(resources, tree);
@@ -511,8 +512,8 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 
 		// Check each of the nodes being dragged.
 		TreePath[] paths = ((JTree) support.getComponent()).getSelectionPaths();
-		for (int i = 0; i < paths.length; i++) {
-			ResNode dragNode = (ResNode) paths[i].getLastPathComponent();
+		for (TreePath path : paths) {
+			ResNode dragNode = (ResNode) path.getLastPathComponent();
 			if (!canImportNode(dragNode, dropNode)) {
 				return false;
 			} else {
@@ -654,8 +655,8 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 			boolean inpath = false;
 
 			if (paths != null) {
-				for (int i = 0; i < paths.length; i++) {
-					if (paths[i].equals(path)) {
+				for (TreePath path1 : paths) {
+					if (path1.equals(path)) {
 						inpath = true;
 					}
 				}

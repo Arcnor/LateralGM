@@ -218,14 +218,14 @@ public class GmStreamEncoder extends StreamEncoder {
 		//Because apparently there's no pretty way of fetching the
 		//pixels of a BufferedImage in the desired format (BGRA)...
 		//ARGB => BGRA
-		for (int p = 0; p < pixels.length; p++) {
-			write(pixels[p] & 0xFF);
-			write(pixels[p] >>> 8 & 0xFF);
-			write(pixels[p] >>> 16 & 0xFF);
-			if (useTransp && ((pixels[p] & 0x00FFFFFF) == trans))
+		for (int pixel : pixels) {
+			write(pixel & 0xFF);
+			write(pixel >>> 8 & 0xFF);
+			write(pixel >>> 16 & 0xFF);
+			if (useTransp && ((pixel & 0x00FFFFFF) == trans))
 				write(0);
 			else
-				write(pixels[p] >>> 24);
+				write(pixel >>> 24);
 		}
 	}
 
