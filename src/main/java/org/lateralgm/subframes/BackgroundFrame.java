@@ -26,6 +26,7 @@ import org.lateralgm.messages.Messages;
 import org.lateralgm.resources.Background;
 import org.lateralgm.resources.Background.PBackground;
 import org.lateralgm.ui.swing.util.SwingExecutor;
+import org.lateralgm.util.PlatformHelper;
 import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
 import org.lateralgm.util.PropertyMap.PropertyUpdateListener;
 
@@ -49,7 +50,6 @@ import javax.swing.SwingConstants;
 import javax.swing.text.NumberFormatter;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -599,7 +599,7 @@ public class BackgroundFrame extends InstantiableResourceFrame<Background, PBack
 			}
 			if (!Prefs.useExternalBackgroundEditor || Prefs.externalBackgroundEditorCommand == null)
 				try {
-					Desktop.getDesktop().edit(monitor.file);
+					PlatformHelper.openEditor(monitor.file);
 				} catch (UnsupportedOperationException e) {
 					throw new UnsupportedOperationException("no internal or system background editor", e);
 				}

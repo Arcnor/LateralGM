@@ -29,6 +29,7 @@ import org.lateralgm.resources.Sound.SoundType;
 import org.lateralgm.ui.swing.propertylink.ComboBoxLink.DefaultComboBoxConversion;
 import org.lateralgm.ui.swing.propertylink.ComboBoxLink.KeyComboBoxConversion;
 import org.lateralgm.ui.swing.util.SwingExecutor;
+import org.lateralgm.util.PlatformHelper;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -56,7 +57,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -667,7 +667,7 @@ public class SoundFrame extends InstantiableResourceFrame<Sound, PSound> {
 		public void start() throws IOException {
 			if (!Prefs.useExternalSoundEditor || Prefs.externalSoundEditorCommand == null)
 				try {
-					Desktop.getDesktop().edit(monitor.file);
+					PlatformHelper.openEditor(monitor.file);
 				} catch (UnsupportedOperationException e) {
 					throw new UnsupportedOperationException("no internal or system sound editor", e);
 				} catch (IOException e) {

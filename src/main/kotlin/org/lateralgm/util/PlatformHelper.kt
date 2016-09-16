@@ -19,13 +19,22 @@
 package org.lateralgm.util
 
 import java.awt.Desktop
+import java.io.File
 import java.io.IOException
 import java.net.URI
 
 object PlatformHelper {
+	private val desktop = Desktop.getDesktop()
+
 	@JvmStatic
 	@Throws(IOException::class)
 	fun showDocumentation(location: URI) {
-		Desktop.getDesktop().browse(location)
+		desktop.browse(location)
+	}
+
+	@JvmStatic
+	@Throws(IOException::class)
+	fun openEditor(file: File) {
+		desktop.edit(file)
 	}
 }

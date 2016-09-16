@@ -42,6 +42,7 @@ import org.lateralgm.messages.Messages;
 import org.lateralgm.resources.Shader;
 import org.lateralgm.resources.Shader.PShader;
 import org.lateralgm.ui.swing.util.SwingExecutor;
+import org.lateralgm.util.PlatformHelper;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -58,7 +59,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.InternalFrameEvent;
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -402,11 +402,7 @@ public class ShaderFrame extends InstantiableResourceFrame<Shader, PShader> {
 			out.close();
 			if (!Prefs.useExternalScriptEditor || Prefs.externalScriptEditorCommand == null)
 				try {
-					System.out.println(Desktop.getDesktop());
-					//					Desktop d = Desktop.getDesktop();
-					//					Desktop.Action.EDIT;
-					//					Toolkit.getDefaultToolkit().createDesktopPeer(d);
-					Desktop.getDesktop().edit(monitor.file);
+					PlatformHelper.openEditor(monitor.file);
 				} catch (UnsupportedOperationException e) {
 					throw new UnsupportedOperationException("no internal or system script editor", e);
 				}

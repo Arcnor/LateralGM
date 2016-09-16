@@ -33,6 +33,7 @@ import org.lateralgm.resources.Sprite;
 import org.lateralgm.resources.Sprite.BBMode;
 import org.lateralgm.resources.Sprite.PSprite;
 import org.lateralgm.ui.swing.util.SwingExecutor;
+import org.lateralgm.util.PlatformHelper;
 import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
 import org.lateralgm.util.PropertyMap.PropertyUpdateListener;
 
@@ -76,7 +77,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -1599,7 +1599,7 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 			}
 			if (!Prefs.useExternalSpriteEditor || Prefs.externalSpriteEditorCommand == null)
 				try {
-					Desktop.getDesktop().edit(monitor.file);
+					PlatformHelper.openEditor(monitor.file);
 				} catch (UnsupportedOperationException e) {
 					throw new UnsupportedOperationException("no internal or system sprite editor", e);
 				}

@@ -26,6 +26,7 @@ import org.lateralgm.messages.Messages;
 import org.lateralgm.resources.Script;
 import org.lateralgm.resources.Script.PScript;
 import org.lateralgm.ui.swing.util.SwingExecutor;
+import org.lateralgm.util.PlatformHelper;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -36,7 +37,6 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.InternalFrameEvent;
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -163,11 +163,7 @@ public class ScriptFrame extends InstantiableResourceFrame<Script, PScript> {
 			}
 			if (!Prefs.useExternalScriptEditor || Prefs.externalScriptEditorCommand == null)
 				try {
-					System.out.println(Desktop.getDesktop());
-					//					Desktop d = Desktop.getDesktop();
-					//					Desktop.Action.EDIT;
-					//					Toolkit.getDefaultToolkit().createDesktopPeer(d);
-					Desktop.getDesktop().edit(monitor.file);
+					PlatformHelper.openEditor(monitor.file);
 				} catch (UnsupportedOperationException e) {
 					throw new UnsupportedOperationException("no internal or system script editor", e);
 				}
