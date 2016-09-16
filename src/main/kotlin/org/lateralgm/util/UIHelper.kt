@@ -53,10 +53,10 @@ object UIHelper {
 		YES, NO, APPLY, CANCEL, CLOSE, FINISH, NEXT, OK, PREVIOUS;
 
 		companion object {
-			@JvmStatic
-			val YES_NO = EnumSet.of(YES, NO)
-			@JvmStatic
-			val OK = EnumSet.of(DialogAction.OK)
+			@JvmField
+			val YES_NO_SET = EnumSet.of(YES, NO)
+			@JvmField
+			val OK_SET = EnumSet.of(DialogAction.OK)
 		}
 
 		fun toJavaFX(): ButtonType {

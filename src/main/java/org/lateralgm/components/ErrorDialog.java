@@ -186,7 +186,7 @@ public class ErrorDialog extends JDialog implements ActionListener {
 			} catch (IOException e1) {
 				UIHelper.showMessageDialog(this,
 						UIHelper.DialogType.ERROR,
-						UIHelper.DialogAction.getOK(),
+						UIHelper.DialogAction.OK_SET,
 						Messages.getString("ErrorDialog.DESKTOP_TITLE"),
 						Messages.format("ErrorDialog.DESKTOP_MESSAGE", submitURI));
 			}

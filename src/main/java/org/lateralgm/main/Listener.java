@@ -270,7 +270,7 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				final String message = Messages.getString("Listener.CONFIRM_NEW");
 
 				final UIHelper.DialogAction result = UIHelper.showMessageDialog(
-						LGM.frame, UIHelper.DialogType.CONFIRMATION, UIHelper.DialogAction.getYES_NO(),
+						LGM.frame, UIHelper.DialogType.CONFIRMATION, UIHelper.DialogAction.YES_NO_SET,
 						title, message, null, UIHelper.DialogAction.NO
 				);
 				if (result == UIHelper.DialogAction.YES) {
@@ -367,7 +367,7 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				final String message = Messages.getString("Listener.CONFIRM_DEFRAGIDS");
 
 				final UIHelper.DialogAction result = UIHelper.showMessageDialog(
-						LGM.frame, UIHelper.DialogType.WARNING, UIHelper.DialogAction.getYES_NO(),
+						LGM.frame, UIHelper.DialogType.WARNING, UIHelper.DialogAction.YES_NO_SET,
 						title, message, null, UIHelper.DialogAction.NO
 				);
 				if (result == UIHelper.DialogAction.YES) {
@@ -408,13 +408,13 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				} catch (URISyntaxException e1) {
 					UIHelper.showMessageDialog(LGM.frame,
 							UIHelper.DialogType.ERROR,
-							UIHelper.DialogAction.getOK(),
+							UIHelper.DialogAction.OK_SET,
 							Messages.getString("HelpDialog.MALFORMED_TITLE"),
 							Messages.format("HelpDialog.MALFORMED_MESSAGE", uri));
 				} catch (IOException ioe) {
 					UIHelper.showMessageDialog(LGM.frame,
 							UIHelper.DialogType.ERROR,
-							UIHelper.DialogAction.getOK(),
+							UIHelper.DialogAction.OK_SET,
 							Messages.getString("HelpDialog.UNAVAILABLE_TITLE"),
 							Messages.format("HelpDialog.UNAVAILABLE_MESSAGE", uri));
 				}
