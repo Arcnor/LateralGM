@@ -79,10 +79,7 @@ import org.lateralgm.subframes.TimelineFrame;
 import org.lateralgm.util.PlatformHelper;
 
 import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
 import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DropMode;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -91,7 +88,6 @@ import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -108,7 +104,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
@@ -181,6 +176,7 @@ import static javax.swing.GroupLayout.PREFERRED_SIZE;
 
 public final class LGM {
 	public static final String version = "1.8.7.11";
+
 	private static final Pattern NEWLINE = Pattern.compile("\r\n|\r|\n");
 	// TODO: This list holds the class loader for any loaded plugins which should be
 	// cleaned up and closed when the application closes.
@@ -202,14 +198,12 @@ public final class LGM {
 	public static ProjectFile currentFile = new ProjectFile();
 	public static MDIPane mdi;
 	public static EventPanel eventSelect;
-	public static AbstractButton eventButton;
 	public static PreferencesFrame prefFrame;
 	public static Cursor zoomCursor;
 	public static Cursor zoomInCursor;
 	public static Cursor zoomOutCursor;
 	public static GmMenuBar menuBar;
 	public static JToolBar filterPanel;
-	public static JComboBox<GameSettings> configsCombo;
 	protected static ArrayList<ReloadListener> reloadListeners = new ArrayList<ReloadListener>();
 	private static ConstantsFrame constantsFrame;
 	private static GameInformationFrame gameInfo;
@@ -265,6 +259,9 @@ public final class LGM {
 			System.err.println(Messages.format("LGM.NO_WORKDIR", e.getClass(), e.getLocalizedMessage()));
 		}
 	}
+
+	// FIXME: This initialization is order dependent, which is BAD!
+	private static final LGMToolbar toolbar = new LGMToolbar();
 
 	private LGM() {
 
@@ -540,63 +537,6 @@ public final class LGM {
 		return null;
 	}
 
-	public static JButton makeButton(String key) {
-		JButton but = new JButton();
-		makeButton(but, key);
-		return but;
-	}
-
-	public static AbstractButton makeButton(AbstractButton but, String key) {
-		Icon ico = LGM.getIconForKey(key);
-		if (ico != null)
-			but.setIcon(ico);
-		else
-			but.setIcon(GmTreeGraphics.getBlankIcon());
-		but.setActionCommand(key);
-		but.setToolTipText(Messages.getString(key));
-		but.addActionListener(Listener.getInstance());
-
-		return but;
-	}
-
-	private static JToolBar createToolBar() {
-		tool = new JToolBar();
-		tool.setFloatable(true);
-		tool.add(makeButton("Toolbar.NEW")); //$NON-NLS-1$
-		tool.add(makeButton("Toolbar.OPEN")); //$NON-NLS-1$
-		tool.add(makeButton("Toolbar.SAVE")); //$NON-NLS-1$
-		tool.add(makeButton("Toolbar.SAVEAS")); //$NON-NLS-1$
-		tool.addSeparator();
-		for (Class<? extends Resource<?, ?>> k : Resource.kinds)
-			if (InstantiableResource.class.isAssignableFrom(k)) {
-				Icon ico = ResNode.ICON.get(k);
-				if (ico == null) ico = GmTreeGraphics.getBlankIcon();
-				JButton but = new JButton(ico);
-				but.setToolTipText(Messages.format("Toolbar.ADD", Resource.kindNames.get(k)));
-				but.addActionListener(new Listener.ResourceAdder(false, k));
-				tool.add(but);
-			}
-		tool.addSeparator();
-		tool.add(makeButton("Toolbar.CST")); //$NON-NLS-1$
-		tool.add(makeButton("Toolbar.GMI")); //$NON-NLS-1$
-		tool.add(makeButton("Toolbar.PKG")); //$NON-NLS-1$
-		tool.addSeparator();
-		tool.add(new JLabel(Messages.getString("Toolbar.CONFIGURATIONS"))); //$NON-NLS-1$
-		configsCombo = new JComboBox<GameSettings>();
-		configsCombo.setModel(new DefaultComboBoxModel<GameSettings>(LGM.currentFile.gameSettings));
-		configsCombo.setMaximumSize(configsCombo.getPreferredSize());
-		tool.add(configsCombo);
-		tool.add(makeButton("Toolbar.CONFIG_MANAGE")); //$NON-NLS-1$
-		tool.addSeparator();
-		tool.add(makeButton("Toolbar.GMS")); //$NON-NLS-1$
-		tool.addSeparator();
-		tool.add(makeButton("Toolbar.PREFERENCES")); //$NON-NLS-1$
-		tool.add(makeButton("Toolbar.DOCUMENTATION")); //$NON-NLS-1$
-		tool.add(Box.createHorizontalGlue()); //right align after this
-		tool.add(eventButton = makeButton(new JToggleButton(), "Toolbar.EVENT_BUTTON")); //$NON-NLS-1$
-		return tool;
-	}
-
 	private static JTree createTree() {
 		return createTree(newRoot());
 	}
@@ -828,8 +768,7 @@ public final class LGM {
 
 		LGM.eventSelect.reload();
 
-		ConfigurationManager.getInstance().setConfigList(LGM.currentFile.gameSettings);
-		configsCombo.setModel(new DefaultComboBoxModel<GameSettings>(LGM.currentFile.gameSettings));
+		ConfigurationManager.getInstance().setConfigList();
 
 		// NOTE: We do this to update the reference to the one now loaded
 		// since we never close these frames, then we simply revert their controls.
@@ -1582,7 +1521,6 @@ public final class LGM {
 		LibManager.autoLoad();
 
 		splashProgress.progress(30, Messages.getString("LGM.SPLASH_TOOLS")); //$NON-NLS-1$
-		JToolBar toolbar = createToolBar();
 		treeTabs = new JTabbedPane();
 		tree = createTree();
 		DefaultMutableTreeNode sroot = new DefaultMutableTreeNode("root"); //$NON-NLS-1$
@@ -2258,7 +2196,22 @@ public final class LGM {
 	}
 
 	public static GameSettings getSelectedConfig() {
-		return (GameSettings) configsCombo.getSelectedItem();
+		return toolbar.getSelectedGameSettings();
+	}
+
+	// FIXME: This should not be necessary, this should go!!
+	public static void refreshConfigsCombo() {
+		toolbar.refreshConfigsCombo();
+	}
+
+	// FIXME: This should not be necessary, this should go!!
+	public static void validateConfigsComboSelection() {
+		toolbar.validateConfigsComboSelection();
+	}
+
+	// FIXME: This should not be necessary, this should go!!
+	public static void setEventButtonSelected(boolean selected) {
+		toolbar.setEventButtonSelected(selected);
 	}
 
 	public interface ReloadListener {
@@ -2298,23 +2251,6 @@ public final class LGM {
 		ResourceFrameFactory getResourceFrameFactory();
 	}
 
-	public static abstract class SingletonPluginResource<T extends Resource<T, ?>> implements
-			PluginResource {
-		public String getPlural() {
-			return getName();
-		}
-
-		public String getPrefix() {
-			return null;
-		}
-
-		public ResourceHolder<?> getResourceHolder() {
-			return new SingletonResourceHolder<T>(getInstance());
-		}
-
-		public abstract T getInstance();
-	}
-
 	public static class InvisibleTreeModel extends DefaultTreeModel {
 		/**
 		 *
@@ -2327,7 +2263,7 @@ public final class LGM {
 		}
 
 		public InvisibleTreeModel(TreeNode root, boolean asksAllowsChildren) {
-			this(root, false, false);
+			this(root, asksAllowsChildren, false);
 		}
 
 		public InvisibleTreeModel(TreeNode root, boolean asksAllowsChildren,

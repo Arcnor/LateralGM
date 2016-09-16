@@ -141,7 +141,7 @@ public class ConfigurationManager extends JDialog implements ActionListener {
 	public static ConfigurationManager getInstance() {
 		if (INSTANCE == null) {
 			INSTANCE = new ConfigurationManager();
-			INSTANCE.setConfigList(LGM.currentFile.gameSettings);
+			INSTANCE.setConfigList();
 		}
 		return INSTANCE;
 	}
@@ -171,7 +171,7 @@ public class ConfigurationManager extends JDialog implements ActionListener {
 			config.setName("Configuration" + id);
 			model.addElement(config);
 			configList.setSelectedValue(config, true);
-			LGM.configsCombo.updateUI();
+			LGM.refreshConfigsCombo();
 		} else if (cmd.endsWith("COPY")) {
 			GameSettings sel = configList.getSelectedValue();
 			if (sel == null) return;
@@ -185,7 +185,7 @@ public class ConfigurationManager extends JDialog implements ActionListener {
 			config.setName("Configuration" + id);
 			model.addElement(config);
 			configList.setSelectedValue(config, true);
-			LGM.configsCombo.updateUI();
+			LGM.refreshConfigsCombo();
 		} else if (cmd.endsWith("DELETE")) {
 			//Stop the user from deleting all configs, they must keep at least 1
 			List<GameSettings> selList = configList.getSelectedValuesList();
@@ -193,11 +193,8 @@ public class ConfigurationManager extends JDialog implements ActionListener {
 				selList.remove(0);
 			}
 			model.removeAll(selList);
-			// Make sure the JCombo on the main toolbar wasn't selecting what we just deleted
-			if (LGM.configsCombo.getSelectedIndex() >= LGM.configsCombo.getItemCount() || LGM.configsCombo.getSelectedIndex() < 0) {
-				LGM.configsCombo.setSelectedIndex(0);
-			}
-			LGM.configsCombo.updateUI();
+			LGM.validateConfigsComboSelection();
+			LGM.refreshConfigsCombo();
 		} else if (cmd.endsWith("EDIT_SETTINGS")) {
 			GameSettings sel = configList.getSelectedValue();
 			if (sel == null) return;
@@ -210,8 +207,8 @@ public class ConfigurationManager extends JDialog implements ActionListener {
 		}
 	}
 
-	public void setConfigList(Vector<GameSettings> gameSettings) {
-		vlm = new VectorListModel<GameSettings>(LGM.currentFile.gameSettings);
+	public void setConfigList() {
+		vlm = new VectorListModel<>(LGM.currentFile.gameSettings);
 		vlm.addListDataListener(new ListDataListener() {
 
 			@Override

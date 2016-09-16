@@ -210,10 +210,11 @@ public class ProjectFile implements UpdateListener {
 	public List<String> packages = new ArrayList<String>();
 	public Constants defaultConstants = new Constants();
 	public GameInformation gameInfo = new GameInformation();
-	public Vector<GameSettings> gameSettings = new Vector<GameSettings>();
+	public final Vector<GameSettings> gameSettings = new Vector<>();
 	public ExtensionPackages extPackages = new ExtensionPackages();
 	public int lastInstanceId = 100000;
 	public int lastTileId = 10000000;
+
 	public ProjectFile() {
 		resMap = new ResourceMap();
 		for (Class<?> kind : Resource.kinds)

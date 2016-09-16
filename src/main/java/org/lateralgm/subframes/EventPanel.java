@@ -448,7 +448,7 @@ public class EventPanel extends CustomJToolBar implements ActionListener, TreeSe
 			if (c != this) c.setVisible(b);
 		}
 		super.setVisible(b);
-		LGM.eventButton.setSelected(b);
+		LGM.setEventButtonSelected(b);
 	}
 
 	public void valueChanged(TreeSelectionEvent e) {
