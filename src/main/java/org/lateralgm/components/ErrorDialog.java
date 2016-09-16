@@ -23,8 +23,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -191,8 +189,7 @@ public class ErrorDialog extends JDialog implements ActionListener {
 						Messages.format("ErrorDialog.DESKTOP_MESSAGE", submitURI));
 			}
 		} else if (e.getSource() == copy) {
-			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
-					new StringSelection(debugInfo.getText()), null);
+			PlatformHelper.clipboardPut(debugInfo.getText());
 		} else if (e.getSource() == cancel) {
 			dispose();
 		}

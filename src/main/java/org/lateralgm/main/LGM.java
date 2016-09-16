@@ -76,6 +76,7 @@ import org.lateralgm.subframes.RoomFrame;
 import org.lateralgm.subframes.ScriptFrame;
 import org.lateralgm.subframes.ShaderFrame;
 import org.lateralgm.subframes.TimelineFrame;
+import org.lateralgm.util.PlatformHelper;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -144,8 +145,6 @@ import java.awt.Rectangle;
 import java.awt.SplashScreen;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -246,9 +245,7 @@ public final class LGM {
 				text += (i > 0 ? "\n" : "") + path.getLastPathComponent().toString().replaceAll("\\<[^>]*>", "");
 			}
 
-			StringSelection selection = new StringSelection(text);
-			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clipboard.setContents(selection, selection);
+			PlatformHelper.clipboardPut(text);
 		}
 	};
 	private static JTabbedPane treeTabs;

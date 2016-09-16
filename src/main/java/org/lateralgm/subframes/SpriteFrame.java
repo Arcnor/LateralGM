@@ -33,6 +33,7 @@ import org.lateralgm.resources.Sprite;
 import org.lateralgm.resources.Sprite.BBMode;
 import org.lateralgm.resources.Sprite.PSprite;
 import org.lateralgm.ui.swing.util.SwingExecutor;
+import org.lateralgm.util.ClipboardFormat;
 import org.lateralgm.util.PlatformHelper;
 import org.lateralgm.util.PropertyMap.PropertyUpdateEvent;
 import org.lateralgm.util.PropertyMap.PropertyUpdateListener;
@@ -83,7 +84,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -126,6 +126,8 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 	private static final ImageIcon ZOOM_OUT_ICON = LGM.getIconForKey("SpriteFrame.ZOOM_OUT"); //$NON-NLS-1$
 	private static DataFlavor imgClipFlavor = new DataFlavor(ClipboardImages.class,
 			"Buffered Images Clipboard");
+	private static ClipboardFormat<ClipboardImages> imgClipFormat = new ClipboardFormat<>("lateralgm/buf-img", ClipboardImages.class);
+
 	private final SpritePropertyListener spl = new SpritePropertyListener();
 	//toolbar
 	public JButton load, loadSubimages, loadStrip, saveSubimages, zoomIn, zoomOut;
@@ -919,8 +921,7 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 				res.subImages.remove(selections[i] - i);
 			}
 
-			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clip.setContents(new TransferableImages(new ClipboardImages(images)), this);
+			PlatformHelper.clipboardPut(imgClipFormat, new ClipboardImages(images));
 			imageChanged = true;
 			subList.setSelectedIndex(pos - 1);
 			return;
@@ -931,21 +932,11 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 				images.add(res.subImages.get(selections[i]));
 			}
 
-			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-			clip.setContents(new TransferableImages(new ClipboardImages(images)), this);
+			PlatformHelper.clipboardPut(imgClipFormat, new ClipboardImages(images));
 			return;
 		} else if (cmd.endsWith(".PASTE")) {
-			Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-			Transferable content = clipboard.getContents(this);
-			if (content.isDataFlavorSupported(imgClipFlavor)) {
-				ClipboardImages images = null;
-				try {
-					images = (ClipboardImages) content.getTransferData(imgClipFlavor);
-				} catch (UnsupportedFlavorException e) {
-					LGM.showDefaultExceptionHandler(e);
-				} catch (IOException e) {
-					LGM.showDefaultExceptionHandler(e);
-				}
+			final ClipboardImages images = PlatformHelper.clipboardGet(imgClipFormat);
+			if (images != null) {
 				imageChanged = true;
 				res.subImages.addAll(pos + 1, images.bi);
 				subList.setSelectionInterval(pos + 1, pos + images.bi.size());
@@ -1354,32 +1345,6 @@ public class SpriteFrame extends InstantiableResourceFrame<Sprite, PSprite> impl
 
 		public ClipboardImages(List<BufferedImage> images) {
 			bi = images;
-		}
-	}
-
-	private static class TransferableImages implements Transferable {
-
-		ClipboardImages ci;
-
-		public TransferableImages(ClipboardImages images) {
-			this.ci = images;
-		}
-
-		public DataFlavor[] getTransferDataFlavors() {
-			DataFlavor[] ret = {imgClipFlavor};
-			return ret;
-		}
-
-		public boolean isDataFlavorSupported(DataFlavor flavor) {
-			return imgClipFlavor.equals(flavor);
-		}
-
-		public synchronized Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
-			if (isDataFlavorSupported(flavor)) {
-				return this.ci;
-			} else {
-				throw new UnsupportedFlavorException(imgClipFlavor);
-			}
 		}
 	}
 

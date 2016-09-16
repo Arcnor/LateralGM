@@ -18,6 +18,9 @@
  */
 package org.lateralgm.util
 
+import javafx.scene.input.Clipboard
+import javafx.scene.input.ClipboardContent
+import javafx.scene.input.DataFormat
 import java.awt.Desktop
 import java.io.File
 import java.io.IOException
@@ -52,4 +55,38 @@ object PlatformHelper {
 	fun openFile(file: File) {
 		desktop.open(file)
 	}
+
+	@JvmStatic
+	fun clipboardPut(text: String) {
+		val clipboard = Clipboard.getSystemClipboard()
+		val content = ClipboardContent()
+		content.putString(text)
+		clipboard.setContent(content)
+	}
+
+	@JvmStatic
+	fun <T> clipboardPut(format: ClipboardFormat<T>, content: T) {
+		val clipboard = Clipboard.getSystemClipboard()
+		val clipboardContent = ClipboardContent()
+		clipboardContent.put(format.javaFxFormat, content)
+		clipboard.setContent(clipboardContent)
+	}
+
+	@JvmStatic
+	fun clipboardGet() : String? {
+		val clipboard = Clipboard.getSystemClipboard()
+		return clipboard.string
+	}
+
+	@JvmStatic
+	fun <T> clipboardGet(format: ClipboardFormat<T>): T? {
+		val clipboard = Clipboard.getSystemClipboard()
+		val content = clipboard.getContent(format.javaFxFormat) ?: return null
+		@Suppress("UNCHECKED_CAST")
+		return content as T
+	}
+}
+
+data class ClipboardFormat<T>(val mimeType: String, val type: Class<T>) {
+	internal val javaFxFormat = DataFormat(mimeType)
 }

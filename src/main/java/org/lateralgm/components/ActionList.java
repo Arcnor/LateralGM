@@ -26,6 +26,8 @@ import org.lateralgm.resources.sub.Action;
 import org.lateralgm.resources.sub.ActionContainer;
 import org.lateralgm.resources.sub.Argument;
 import org.lateralgm.subframes.ActionFrame;
+import org.lateralgm.util.ClipboardFormat;
+import org.lateralgm.util.PlatformHelper;
 
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
@@ -52,7 +54,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
@@ -65,7 +66,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
-import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -88,6 +88,7 @@ public class ActionList extends JList<Action> implements ActionListener, Clipboa
 	public static final DataFlavor ACTION_ARRAY_FLAVOR = new DataFlavor(List.class, "Action array"); //$NON-NLS-1$
 	public static final DataFlavor LIB_ACTION_FLAVOR = new DataFlavor(LibAction.class,
 			"Library action"); //$NON-NLS-1$
+	private static final ClipboardFormat<List> ACTION_ARRAY_CLIP_FORMAT = new ClipboardFormat<>("lateralgm/action-array", List.class);
 	private static final long serialVersionUID = 1L;
 	private static final Map<Action, WeakReference<ActionFrame>> FRAMES;
 	private static final ActionListKeyListener ALKL = new ActionListKeyListener();
@@ -314,38 +315,22 @@ public class ActionList extends JList<Action> implements ActionListener, Clipboa
 		int[] indices = list.getSelectedIndices();
 		ArrayList<Action> actions = (ArrayList<Action>) list.getSelectedValuesList();
 		if (indices.length <= 0) return;
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
-		ActionTransferable at = new ActionTransferable(actions);
-
-		clipboard.setContents(at, this);
+		PlatformHelper.clipboardPut(ACTION_ARRAY_CLIP_FORMAT, actions);
 	}
 
 	public void ActionsPaste(JList<Action> list) {
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable clipboardContents = clipboard.getContents(this);
+		@SuppressWarnings("unchecked")
+		List<Action> actions = PlatformHelper.clipboardGet(ACTION_ARRAY_CLIP_FORMAT);
 
-		for (DataFlavor flavor : clipboardContents.getTransferDataFlavors()) {
-			Object content = null;
-			try {
-				content = clipboardContents.getTransferData(flavor);
-			} catch (UnsupportedFlavorException e) {
-				LGM.showDefaultExceptionHandler(e);
-			} catch (IOException e) {
-				LGM.showDefaultExceptionHandler(e);
+		if (actions != null) {
+			ActionListModel alm = (ActionListModel) list.getModel();
+			int ind = list.getSelectedIndex();
+			if (ind < 0) {
+				ind = alm.getSize();
 			}
-			if (flavor.equals(ACTION_ARRAY_FLAVOR)) {
-				ActionListModel alm = (ActionListModel) list.getModel();
-				@SuppressWarnings("unchecked")
-				ArrayList<Action> actions = (ArrayList<Action>) content;
-				int ind = list.getSelectedIndex();
-				if (ind < 0) {
-					ind = alm.getSize();
-				}
-				alm.addAll(ind, (List<Action>) actions);
-				list.setSelectionInterval(ind, ind += actions.size() - 1);
-			}
-			// throw unsupported flavor exception?
+			alm.addAll(ind, actions);
+			list.setSelectionInterval(ind, ind + (actions.size() - 1));
 		}
 	}
 
