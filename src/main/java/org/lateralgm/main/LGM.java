@@ -951,38 +951,6 @@ public final class LGM {
 		return res;
 	}
 
-	public static void buildSearchHierarchy(ResNode resNode, SearchResultNode resultRoot) {
-		DefaultMutableTreeNode searchNode = (DefaultMutableTreeNode) LGM.searchTree.getModel().getRoot();
-		if (resNode == null) {
-			searchNode.add(resultRoot);
-			return;
-		}
-		TreeNode[] paths = resNode.getPath();
-		// start at 1 because we don't want to copy the root
-		// subtract 1 so we don't consider the node itself
-		for (int n = 1; n < paths.length - 1; n++) {
-			ResNode pathNode = (ResNode) paths[n];
-			boolean found = false;
-			for (int y = 0; y < searchNode.getChildCount(); y++) {
-				DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) searchNode.getChildAt(y);
-				if (childNode.getUserObject() == pathNode.getUserObject()) {
-					searchNode = childNode;
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				SearchResultNode newSearchNode = new SearchResultNode(pathNode.getUserObject());
-				newSearchNode.status = pathNode.status;
-				searchNode.add(newSearchNode);
-				searchNode = newSearchNode;
-			}
-			if (pathNode == resNode.getParent()) {
-				searchNode.insert(resultRoot, searchNode.getChildCount() + resNode.getDepth());
-			}
-		}
-	}
-
 	public static void searchInResourcesRecursion(DefaultMutableTreeNode node, Pattern pattern) {
 		int numChildren = node.getChildCount();
 		for (int i = 0; i < numChildren; ++i) {
@@ -1876,34 +1844,6 @@ public final class LGM {
 			LOADING_PROJECT = false;
 		}
 	}
-
-
-	/*
-	public static void assertEquals(Object obj1, Object obj2) {
-		if (obj1.equals(obj2)) {
-			Debug.println("assertEquals: ",obj1.toString() + "," + obj2.toString());
-		} else {
-			Debug.println("assertEquals: ","false");
-		}
-	}
-
-  public static void testThing() {
-          String CODE = "runatestinatestwith\nsomemoretestsandthen\nyou'redone";
-          List<LineMatch> match  = getMatchingLines(CODE, Pattern.compile("test"));
-          LineMatch[] matches = (LineMatch[]) match.toArray(new LineMatch[match.size()]);
-          assertEquals(2, matches.length);
-          assertEquals(5, matches[0].matchedText.size());
-          assertEquals("runa",     matches[0].matchedText.get(0).content);
-          assertEquals("test",     matches[0].matchedText.get(1).content);
-          assertEquals("ina",      matches[0].matchedText.get(2).content);
-          assertEquals("test",     matches[0].matchedText.get(3).content);
-          assertEquals("with",     matches[0].matchedText.get(4).content);
-          assertEquals(3, matches[1].matchedText.size());
-          assertEquals("somemore", matches[1].matchedText.get(0).content);
-          assertEquals("test",     matches[1].matchedText.get(1).content);
-          assertEquals("sandthen", matches[1].matchedText.get(2).content);
-  }
-  */
 
 	private static JFrame createFilterSettingsFrame() {
 		final JFrame filterSettings = new JFrame();
