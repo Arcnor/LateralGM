@@ -13,6 +13,7 @@ package org.lateralgm.components;
 import org.lateralgm.main.LGM;
 import org.lateralgm.main.Prefs;
 import org.lateralgm.messages.Messages;
+import org.lateralgm.util.PlatformHelper;
 import org.lateralgm.util.UIHelper;
 
 import javax.swing.JButton;
@@ -181,7 +182,7 @@ public class ErrorDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == submit) {
 			try {
-				UIHelper.showDocumentation(java.net.URI.create(submitURI));
+				PlatformHelper.showDocumentation(java.net.URI.create(submitURI));
 			} catch (IOException e1) {
 				UIHelper.showMessageDialog(this,
 						UIHelper.DialogType.ERROR,

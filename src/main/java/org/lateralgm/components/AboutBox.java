@@ -11,18 +11,16 @@ package org.lateralgm.components;
 
 import org.lateralgm.main.LGM;
 import org.lateralgm.messages.Messages;
-import org.lateralgm.util.UIHelper;
+import org.lateralgm.util.PlatformHelper;
 
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.StyleSheet;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
@@ -66,26 +64,15 @@ public class AboutBox extends JDialog implements PropertyChangeListener {
 	}
 
 	protected static void setLinkHandler(JEditorPane ep) {
-		try {
-			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-				ep.addHyperlinkListener(new HyperlinkListener() {
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED
-								&& Desktop.isDesktopSupported()) {
-							try {
-								UIHelper.showDocumentation(e.getURL().toURI());
-							} catch (URISyntaxException | IOException use) {
-								LGM.showDefaultExceptionHandler(use);
-							}
-						}
-					}
-				});
-				return;
+		ep.addHyperlinkListener(e -> {
+			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+				try {
+					PlatformHelper.showDocumentation(e.getURL().toURI());
+				} catch (URISyntaxException | IOException use) {
+					LGM.showDefaultExceptionHandler(use);
+				}
 			}
-		} catch (NoClassDefFoundError e) {
-			//Desktop not defined in Java 1.5
-			LGM.showDefaultExceptionHandler(e);
-		}
+		});
 	}
 
 	private void showLicense() {

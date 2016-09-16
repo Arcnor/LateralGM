@@ -18,22 +18,14 @@
  */
 package org.lateralgm.util
 
-import javafx.application.HostServices
 import javafx.application.Platform
-import javafx.collections.FXCollections
-import javafx.collections.ObservableList
 import javafx.scene.control.Alert
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonType
 import java.awt.Component
-import java.awt.Desktop
-import java.io.IOException
-import java.net.URI
-import java.net.URL
 import java.util.EnumSet
 import java.util.Optional
 import java.util.concurrent.Callable
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.FutureTask
 
 var Alert.defaultButton: ButtonType
@@ -116,12 +108,6 @@ object UIHelper {
 
 			alert.showAndWait()
 		})
-	}
-
-	@JvmStatic
-	@Throws(IOException::class)
-	fun showDocumentation(location: URI) {
-		Desktop.getDesktop().browse(location)
 	}
 
 	private fun callJavaFX(callable: Callable<Optional<ButtonType>>): DialogAction {

@@ -20,6 +20,7 @@ import org.lateralgm.messages.Messages;
 import org.lateralgm.resources.Resource;
 import org.lateralgm.resources.ResourceReference;
 import org.lateralgm.subframes.ConfigurationManager;
+import org.lateralgm.util.PlatformHelper;
 import org.lateralgm.util.UIHelper;
 
 import javax.swing.JComponent;
@@ -406,7 +407,7 @@ public class Listener extends TransferHandler implements ActionListener, CellEdi
 				}
 				//uri = uri.replace('\\','/').replace(" ","%20");
 				try {
-					UIHelper.showDocumentation(new URI(uri));
+					PlatformHelper.showDocumentation(new URI(uri));
 				} catch (URISyntaxException e1) {
 					UIHelper.showMessageDialog(LGM.frame,
 							UIHelper.DialogType.ERROR,
