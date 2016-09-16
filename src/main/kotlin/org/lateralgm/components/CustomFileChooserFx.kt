@@ -21,14 +21,21 @@ class CustomFileChooserFx(node: String, private val propertyName: String) {
 
 	init {
 		prefs = Preferences.userRoot().node(node)
-		fc.initialDirectory = File(prefs.get(propertyName, fc.initialDirectory?.absolutePath))
+		val initialDir = prefs.get(propertyName, fc.initialDirectory?.absolutePath)
+		if (initialDir != null) {
+			fc.initialDirectory = File(initialDir)
+		}
 	}
 
 	// FIXME: Parent window should be set
-	fun showOpenDialog(frame: JFrame) = UIHelper.callJavaFX(Callable { fc.showOpenDialog(null) })
+	fun showOpenDialog(frame: JFrame, title: String) = UIHelper.callJavaFX(Callable {
+		fc.title = title
+		fc.showOpenDialog(null)
+	})
 
 	// FIXME: Parent window should be set
-	fun showSaveDialog(frame: JFrame, initialDir: File?): File? = UIHelper.callJavaFX(Callable {
+	fun showSaveDialog(frame: JFrame, title: String, initialDir: File?): File? = UIHelper.callJavaFX(Callable {
+		fc.title = title
 		fc.initialDirectory = initialDir
 		fc.showSaveDialog(null)
 	})

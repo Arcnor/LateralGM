@@ -245,7 +245,7 @@ public class FileChooser {
 
 	public void openNewFile() {
 		fc.setFilterSet(openFs);
-		File f = fc.showOpenDialog(LGM.frame);
+		File f = fc.showOpenDialog(LGM.frame, Messages.getString("FileChooser.PROJECT_LOAD"));
 		if (f == null) return;
 		open(f.toURI());
 	}
@@ -363,7 +363,7 @@ public class FileChooser {
 		uri = null;
 		do //repeatedly display dialog until a valid response is given
 		{
-			file = fc.showSaveDialog(LGM.frame, file);
+			file = fc.showSaveDialog(LGM.frame, Messages.getString("FileChooser.PROJECT_SAVE"), file);
 			if (file == null) return false;
 			if (forceExt.isSelected()) {
 				String ext = selectedWriter.getExtension();
